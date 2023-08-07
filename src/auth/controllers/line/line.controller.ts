@@ -1,7 +1,17 @@
-import { Controller, Get, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  Res,
+  UseInterceptors,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import axios from 'axios';
 import { randomBytes } from 'crypto';
 import { stringify } from 'qs';
+import { TransformInterceptor } from 'src/common/api.interceptor';
+import { LineService } from 'src/auth/services/line/line.service';
 
 interface LineProfile {
   userId: string;
@@ -15,6 +25,8 @@ export class LineController {
   private readonly channelId = process.env.LINE_CHANNEL_ID;
   private readonly channelSecret = process.env.LINE_CHANNEL_SECRET;
   private readonly callbackUrl = process.env.CLIENT_URL;
+
+  constructor(private readonly userService: LineService) {}
 
   @Get('login')
   async login(@Req() req, @Res() res) {
@@ -34,6 +46,7 @@ export class LineController {
   }
 
   @Get('callback')
+  @UsePipes(ValidationPipe)
   async callback(@Req() req, @Res() res) {
     try {
       const { code } = req.query;
@@ -59,7 +72,23 @@ export class LineController {
         },
       );
       const profile: LineProfile = profileResponse.data;
-      res.json({ data: profile });
+      const { userId, displayName, pictureUrl, statusMessage } = profile;
+
+      const user = await this.userService.findLineAccountByLineId(userId);
+      if (!user) {
+        await this.userService.createLineAccount({
+          line_id: userId,
+          display_name: displayName,
+          picture_url: pictureUrl,
+          status_message: statusMessage,
+          user_id: userId,
+          creation_time: new Date(),
+          update_time: new Date(),
+        });
+      }
+
+      return { profile };
+      // res.json({ data: profile });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: error.message });
