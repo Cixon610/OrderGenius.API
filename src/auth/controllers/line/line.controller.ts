@@ -3,14 +3,12 @@ import {
   Get,
   Req,
   Res,
-  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import axios from 'axios';
 import { randomBytes } from 'crypto';
 import { stringify } from 'qs';
-import { TransformInterceptor } from 'src/common/api.interceptor';
 import { LineService } from 'src/auth/services/line/line.service';
 
 interface LineProfile {
@@ -87,8 +85,7 @@ export class LineController {
         });
       }
 
-      return { profile };
-      // res.json({ data: profile });
+      res.json({ data: profile });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: error.message });
