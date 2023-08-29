@@ -2,22 +2,22 @@ import { IsNotEmpty } from 'class-validator';
 
 export class CreateLineAccountDto {
   @IsNotEmpty()
-  line_id: string;
+  lineId: string;
 
   @IsNotEmpty()
-  display_name: string;
+  displayName: string;
 
   @IsNotEmpty()
-  picture_url: string;
+  pictureUrl: string;
 
-  status_message: string;
-
-  @IsNotEmpty()
-  user_id: string;
+  statusMessage: string;
 
   @IsNotEmpty()
-  creation_time: Date;
+  userId: string;
 
   @IsNotEmpty()
-  update_time: Date;
+  creationTime: Date;
+
+  @IsNotEmpty()
+  updateTime: Date;
 }

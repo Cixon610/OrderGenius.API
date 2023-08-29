@@ -17,7 +17,7 @@ export class LineService {
     return this.lineAccountRepository.save(newLineAccount);
   }
 
-  findLineAccountByLineId(line_id: string) {
-    return this.lineAccountRepository.findOne({ where: { line_id } });
+  findLineAccountByLineId(lineId: string) {
+    return this.lineAccountRepository.findOne({ where: { lineId } });
   }
 }

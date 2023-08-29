@@ -75,13 +75,13 @@ export class LineController {
       const user = await this.userService.findLineAccountByLineId(userId);
       if (!user) {
         await this.userService.createLineAccount({
-          line_id: userId,
-          display_name: displayName,
-          picture_url: pictureUrl,
-          status_message: statusMessage,
-          user_id: userId,
-          creation_time: new Date(),
-          update_time: new Date(),
+          lineId: userId,
+          displayName: displayName,
+          pictureUrl: pictureUrl,
+          statusMessage: statusMessage,
+          userId: userId,
+          creationTime: new Date(),
+          updateTime: new Date(),
         });
       }
 

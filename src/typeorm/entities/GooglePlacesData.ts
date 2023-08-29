@@ -1,6 +1,6 @@
 import { Column, Entity, Index } from 'typeorm';
 
-@Index('google_places_data_pkey', ['id'], { unique: true })
+// @Index('google_places_data_pkey', ['id'], { unique: true })
 @Entity('google_places_data', { schema: 'public' })
 export class GooglePlacesData {
   @Column('uuid', { primary: true, name: 'id' })

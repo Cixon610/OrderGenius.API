@@ -1,6 +1,6 @@
 import { Column, Entity, Index } from 'typeorm';
 
-@Index('ip_blocker_pkey', ['id'], { unique: true })
+// @Index('ip_blocker_pkey', ['id'], { unique: true })
 @Entity('ip_blocker', { schema: 'public' })
 export class IpBlocker {
   @Column('uuid', { primary: true, name: 'id' })

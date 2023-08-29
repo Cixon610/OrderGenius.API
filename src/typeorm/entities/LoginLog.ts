@@ -1,6 +1,6 @@
 import { Column, Entity, Index } from 'typeorm';
 
-@Index('login_log_pkey', ['id'], { unique: true })
+// @Index('login_log_pkey', ['id'], { unique: true })
 @Entity('login_log', { schema: 'public' })
 export class LoginLog {
   @Column('uuid', { primary: true, name: 'id' })

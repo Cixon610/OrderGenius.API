@@ -1,6 +1,6 @@
 import { Column, Entity, Index } from 'typeorm';
 
-@Index('menu_mapping_pkey', ['id'], { unique: true })
+// @Index('menu_mapping_pkey', ['id'], { unique: true })
 @Entity('menu_mapping', { schema: 'public' })
 export class MenuMapping {
   @Column('uuid', { primary: true, name: 'id' })
