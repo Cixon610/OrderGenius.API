@@ -1,26 +1,26 @@
-import { Column, Entity, Index } from "typeorm";
+import { Column, Entity, Index } from 'typeorm';
 
-@Index("login_log_pkey", ["id"], { unique: true })
-@Entity("login_log", { schema: "public" })
+@Index('login_log_pkey', ['id'], { unique: true })
+@Entity('login_log', { schema: 'public' })
 export class LoginLog {
-  @Column("uuid", { primary: true, name: "id" })
+  @Column('uuid', { primary: true, name: 'id' })
   id: string;
 
-  @Column("uuid", { name: "user_c_id", nullable: true })
+  @Column('uuid', { name: 'user_c_id', nullable: true })
   userCId: string | null;
 
-  @Column("text", { name: "ip_address", nullable: true })
+  @Column('text', { name: 'ip_address', nullable: true })
   ipAddress: string | null;
 
-  @Column("uuid", { name: "device_id", nullable: true })
+  @Column('uuid', { name: 'device_id', nullable: true })
   deviceId: string | null;
 
-  @Column("text", { name: "device_name", nullable: true })
+  @Column('text', { name: 'device_name', nullable: true })
   deviceName: string | null;
 
-  @Column("text", { name: "country_code", nullable: true })
+  @Column('text', { name: 'country_code', nullable: true })
   countryCode: string | null;
 
-  @Column("date", { name: "creation_time", nullable: true })
+  @Column('date', { name: 'creation_time', nullable: true })
   creationTime: string | null;
 }

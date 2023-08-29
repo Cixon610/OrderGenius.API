@@ -1,26 +1,26 @@
-import { Column, Entity, Index } from "typeorm";
+import { Column, Entity, Index } from 'typeorm';
 
-@Index("menu_mapping_pkey", ["id"], { unique: true })
-@Entity("menu_mapping", { schema: "public" })
+@Index('menu_mapping_pkey', ['id'], { unique: true })
+@Entity('menu_mapping', { schema: 'public' })
 export class MenuMapping {
-  @Column("uuid", { primary: true, name: "id" })
+  @Column('uuid', { primary: true, name: 'id' })
   id: string;
 
-  @Column("uuid", { name: "menu_id", nullable: true })
+  @Column('uuid', { name: 'menu_id', nullable: true })
   menuId: string | null;
 
-  @Column("uuid", { name: "menu_category_id", nullable: true })
+  @Column('uuid', { name: 'menu_category_id', nullable: true })
   menuCategoryId: string | null;
 
-  @Column("uuid", { name: "menu_item_id", nullable: true })
+  @Column('uuid', { name: 'menu_item_id', nullable: true })
   menuItemId: string | null;
 
-  @Column("date", { name: "creation_time", nullable: true })
+  @Column('date', { name: 'creation_time', nullable: true })
   creationTime: string | null;
 
-  @Column("date", { name: "update_time", nullable: true })
+  @Column('date', { name: 'update_time', nullable: true })
   updateTime: string | null;
 
-  @Column("uuid", { name: "update_user_id", nullable: true })
+  @Column('uuid', { name: 'update_user_id', nullable: true })
   updateUserId: string | null;
 }
