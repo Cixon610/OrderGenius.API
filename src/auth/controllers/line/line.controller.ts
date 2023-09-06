@@ -6,6 +6,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import axios from 'axios';
 import { randomBytes } from 'crypto';
 import { stringify } from 'qs';
@@ -17,7 +18,7 @@ interface LineProfile {
   pictureUrl: string;
   statusMessage: string;
 }
-
+@ApiTags('line')
 @Controller('line')
 export class LineController {
   private readonly channelId = process.env.LINE_CHANNEL_ID;

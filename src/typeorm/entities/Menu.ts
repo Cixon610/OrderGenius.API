@@ -13,10 +13,10 @@ export class Menu {
   content: object | null;
 
   @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: string | null;
+  creationTime: Date | null;
 
   @Column('date', { name: 'update_time', nullable: true })
-  updateTime: string | null;
+  updateTime: Date | null;
 
   @Column('uuid', { name: 'update_user_id', nullable: true })
   updateUserId: string | null;
