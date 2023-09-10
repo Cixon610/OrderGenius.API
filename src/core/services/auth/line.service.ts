@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateLineAccountDto } from 'src/auth/controllers/line/line.dto';
-import { LineAccount } from 'src/typeorm';
+import { CreateLineAccountDto } from 'src/core/models';
+import { LineAccount } from 'src/infra/typeorm';
 
 @Injectable()
 export class LineService {

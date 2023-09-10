@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
-import { MenuDto } from './menu.dto';
-import { MenuService } from './menu.service';
+import { MenuDto } from 'src/core/models';
+import { MenuService } from 'src/core/services';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('menu')

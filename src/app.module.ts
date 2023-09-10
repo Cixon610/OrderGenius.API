@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import entities from './typeorm';
-import { AuthModule } from './auth/auth.module';
-import { MenuModule } from './domain/2b/menu/menu.module';
+import { ServicesModule } from './core/services/services.module';
+import { ApplicationModule } from './application/application.module';
+import * as typeorm from './infra/typeorm';
 
+const entities = Object.values(typeorm);
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -18,10 +19,8 @@ import { MenuModule } from './domain/2b/menu/menu.module';
       }),
       inject: [ConfigService],
     }),
-    AuthModule,
-    MenuModule,
+    ServicesModule,
+    ApplicationModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}

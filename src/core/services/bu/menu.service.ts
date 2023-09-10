@@ -1,8 +1,8 @@
-import { Menu } from './../../../typeorm/entities/Menu';
+import { Menu } from 'src/infra/typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { MenuDto } from './menu.dto';
+import { MenuDto } from 'src/core/models';
 import * as crypto from 'crypto';
 
 @Injectable()

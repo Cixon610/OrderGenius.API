@@ -10,7 +10,7 @@ import { ApiTags } from '@nestjs/swagger';
 import axios from 'axios';
 import { randomBytes } from 'crypto';
 import { stringify } from 'qs';
-import { LineService } from 'src/auth/services/line/line.service';
+import { LineService } from 'src/core/services';
 
 interface LineProfile {
   userId: string;
