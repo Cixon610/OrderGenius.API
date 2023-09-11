@@ -7,10 +7,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import axios from 'axios';
 import { randomBytes } from 'crypto';
 import { stringify } from 'qs';
 import { LineService } from 'src/core/services';
+import axios from 'axios';
 
 interface LineProfile {
   userId: string;

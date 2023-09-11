@@ -1,6 +1,2 @@
-import { CreateLineAccountDto } from './dto/line.dto';
-import { MenuDto } from './dto/menu.dto';
-const entities = [CreateLineAccountDto, MenuDto];
-
-export { CreateLineAccountDto, MenuDto };
-export default entities;
+export * from './dto/line.dto';
+export * from './dto/menu.dto';

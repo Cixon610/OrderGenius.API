@@ -1,4 +1,2 @@
-import { LineController } from './controllers/line.controller';
-import { MenuController } from './controllers/menu.controller';
-
-export { LineController, MenuController };
+export * from './controllers/line.controller';
+export * from './controllers/menu.controller';
