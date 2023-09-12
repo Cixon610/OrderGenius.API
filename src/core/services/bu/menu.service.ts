@@ -12,6 +12,7 @@ export class MenuService {
   ) {}
 
   add(menuDto: MenuAddReqVo) {
+    //TODO:抽Adapter層
     const newMenu = this.menuRepository.create(
       new MenuDto({
         businessId: menuDto.businessId,
