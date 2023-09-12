@@ -2,8 +2,7 @@ import { Menu } from 'src/infra/typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { MenuDto } from 'src/core/models';
-import * as crypto from 'crypto';
+import { MenuAddReqVo, MenuDto } from 'src/core/models';
 
 @Injectable()
 export class MenuService {
@@ -12,14 +11,15 @@ export class MenuService {
     private readonly menuRepository: Repository<Menu>,
   ) {}
 
-  add(menuDto: MenuDto) {
-    menuDto.id = crypto.randomUUID();
-    menuDto.businessId = crypto.randomUUID();
-    menuDto.updateUserId = crypto.randomUUID();
-    menuDto.creationTime = new Date();
-    menuDto.updateTime = new Date();
-    const newLineAccount = this.menuRepository.create(menuDto);
-    return this.menuRepository.save(newLineAccount);
+  add(menuDto: MenuAddReqVo) {
+    const newMenu = this.menuRepository.create(
+      new MenuDto({
+        businessId: menuDto.businessId,
+        name: menuDto.name,
+        description: menuDto.description,
+      }),
+    );
+    return this.menuRepository.save(newMenu);
   }
 
   get(id: string) {

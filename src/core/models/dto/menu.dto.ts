@@ -1,21 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
-
 export class MenuDto {
-  @ApiProperty({ example: '1', description: 'id' })
-  id: string;
+  public constructor(init?: Partial<MenuDto>) {
+    Object.assign(this, init);
+  }
 
-  @ApiProperty({ example: '1', description: 'name' })
+  id: string = crypto.randomUUID();
   businessId: string;
-
-  @ApiProperty({ example: '1', description: 'price' })
-  content: object;
-
-  @ApiProperty({ example: '1', description: 'creation_time' })
-  creationTime: Date;
-
-  @ApiProperty({ example: '1', description: 'update_time' })
-  updateTime: Date;
-
-  @ApiProperty({ example: '1', description: 'update_user_id' })
+  name: string;
+  description: string;
+  creationTime: Date = new Date();
+  updateTime: Date = new Date();
   updateUserId: string;
 }
