@@ -9,8 +9,11 @@ export class Menu {
   @Column('uuid', { name: 'business_id', nullable: true })
   businessId: string | null;
 
-  @Column('json', { name: 'content', nullable: true })
-  content: object | null;
+  @Column('text', { name: 'name', nullable: true })
+  name: string | null;
+
+  @Column('text', { name: 'description', nullable: true })
+  description: string | null;
 
   @Column('date', { name: 'creation_time', nullable: true })
   creationTime: Date | null;
