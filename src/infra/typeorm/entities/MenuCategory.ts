@@ -6,9 +6,6 @@ export class MenuCategory {
   @Column('uuid', { primary: true, name: 'id' })
   id: string;
 
-  @Column('uuid', { name: 'menu_id', nullable: true })
-  menuId: string | null;
-
   @Column('uuid', { name: 'business_id', nullable: true })
   businessId: string | null;
 
@@ -22,10 +19,10 @@ export class MenuCategory {
   pictureUrl: string | null;
 
   @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: string | null;
+  creationTime: Date | null;
 
   @Column('date', { name: 'update_time', nullable: true })
-  updateTime: string | null;
+  updateTime: Date | null;
 
   @Column('uuid', { name: 'update_user_id', nullable: true })
   updateUserId: string | null;

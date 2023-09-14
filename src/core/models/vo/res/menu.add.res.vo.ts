@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ResBaseVo } from './res.base.vo';
 
-export class MenuAddRes {
-  public constructor(init?: Partial<MenuAddRes>) {
+export class MenuAddResVo {
+  public constructor(init?: Partial<MenuAddResVo>) {
     Object.assign(this, init);
   }
 
@@ -17,11 +16,4 @@ export class MenuAddRes {
 
   @ApiProperty({ example: 'description', description: 'description' })
   description: string;
-}
-
-export class MenuAddResVo extends ResBaseVo<MenuAddRes> {
-  constructor(data: MenuAddRes) {
-    super();
-    this.data = data;
-  }
 }
