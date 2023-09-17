@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class MenuAddResVo {
-  public constructor(init?: Partial<MenuAddResVo>) {
+export class MenuResVo {
+  public constructor(init?: Partial<MenuResVo>) {
     Object.assign(this, init);
   }
 

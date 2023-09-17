@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class MenuUpdateReqVo {
   @ApiProperty({ example: '1', description: 'Id' })
-  Id: string;
+  id: string;
 
   @ApiProperty({ example: '1', description: 'businessId' })
   businessId: string;

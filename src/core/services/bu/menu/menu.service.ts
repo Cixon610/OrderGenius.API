@@ -12,7 +12,7 @@ export class MenuService {
     private readonly menuRepository: Repository<Menu>,
   ) {}
 
-  add(vo: MenuAddReqVo) {
+  async add(vo: MenuAddReqVo) : Promise<Menu> {
     //TODO:抽Adapter層
     const newMenu = this.menuRepository.create(
       new MenuDto({
@@ -24,18 +24,18 @@ export class MenuService {
     return this.menuRepository.save(newMenu);
   }
 
-  async update(vo: MenuUpdateReqVo) {
+  async update(vo: MenuUpdateReqVo) : Promise<Menu> {
     const menuToUpdate = await this.menuRepository.findOne({
-      where: { id: vo.Id },
+      where: { id: vo.id },
     });
     if (!menuToUpdate) {
-      throw new Error(`Menu with id ${vo.Id} not found`);
+      throw new Error(`Menu with id ${vo.id} not found`);
     }
     const updatedMenu = Object.assign(menuToUpdate, vo);
     return this.menuRepository.save(updatedMenu);
   }
 
-  async delete(id: string) {
+  async delete(id: string) : Promise<boolean> {
     const menuToDelete = await this.menuRepository.findOne({
       where: { id },
     });
@@ -45,11 +45,11 @@ export class MenuService {
     return !!this.menuRepository.delete(id);
   }
 
-  get(id: string) {
+  async get(id: string) : Promise<Menu> {
     return this.menuRepository.findOne({ where: { id } });
   }
 
-  getByBusinessId(businessId: string) {
+  async getByBusinessId(businessId: string) : Promise<Menu[]> {
     return this.menuRepository.find({ where: { businessId } });
   }
 }

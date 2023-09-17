@@ -16,7 +16,7 @@ export class MenuItem {
   description: string | null;
 
   @Column('numeric', { name: 'price', nullable: true })
-  price: string | null;
+  price: number | null;
 
   @Column('json', { name: 'modification', nullable: true })
   modification: object | null;
@@ -25,7 +25,7 @@ export class MenuItem {
   note: string | null;
 
   @Column('bit', { name: 'enable', nullable: true })
-  enable: string | null;
+  enable: boolean | null;
 
   @Column('text', { name: 'picture_url', nullable: true })
   pictureUrl: string | null;

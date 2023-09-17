@@ -9,10 +9,9 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { MenuAddReqVo, MenuAddResVo } from 'src/core/models';
-import { MenuService } from 'src/core/services';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MenuUpdateReqVo } from 'src/core/models/vo/req/menu.update.req.vo';
+import { MenuAddReqVo, MenuResVo, MenuUpdateReqVo } from 'src/core/models';
+import { MenuService } from 'src/core/services';
 
 @ApiTags('menu')
 @Controller('menu')
@@ -20,10 +19,10 @@ export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Post()
-  @ApiResponse({ status: 200, type: MenuAddResVo })
+  @ApiResponse({ status: 200, type: MenuResVo })
   async Add(@Body() menuDto: MenuAddReqVo, @Res() res) {
     const menu = await this.menuService.add(menuDto);
-    const vo = new MenuAddResVo({
+    const vo = new MenuResVo({
       id: menu.id,
       businessId: menu.businessId,
       name: menu.name,
@@ -36,7 +35,7 @@ export class MenuController {
   @ApiResponse({ status: 200, type: MenuUpdateReqVo })
   async Update(@Body() menuDto: MenuUpdateReqVo, @Res() res) {
     const menu = await this.menuService.update(menuDto);
-    const vo = new MenuAddResVo({
+    const vo = new MenuResVo({
       id: menu.id,
       businessId: menu.businessId,
       name: menu.name,
@@ -46,17 +45,17 @@ export class MenuController {
   }
 
   @Delete(':menuId')
-  @ApiResponse({ status: 200, type: MenuAddResVo })
+  @ApiResponse({ status: 200, type: MenuResVo })
   async Delete(@Param('menuId') menuId: string, @Res() res) {
     const sucess = await this.menuService.delete(menuId);
     res.json(sucess);
   }
 
   @Get()
-  @ApiResponse({ status: 200, type: MenuAddResVo })
+  @ApiResponse({ status: 200, type: MenuResVo })
   async Get(@Query('id') id: string, @Res() res) {
     const menu = await this.menuService.get(id);
-    const vo = new MenuAddResVo({
+    const vo = new MenuResVo({
       id: menu.id,
       businessId: menu.businessId,
       name: menu.name,
@@ -66,12 +65,12 @@ export class MenuController {
   }
 
   @Get(':businessId')
-  @ApiResponse({ status: 200, type: [MenuAddResVo] })
+  @ApiResponse({ status: 200, type: [MenuResVo] })
   async GetByBusiness(@Param('businessId') id: string, @Res() res) {
     const menu = await this.menuService.getByBusinessId(id);
     const vos = menu.map(
       (x) =>
-        new MenuAddResVo({
+        new MenuResVo({
           id: x.id,
           businessId: x.businessId,
           name: x.name,
