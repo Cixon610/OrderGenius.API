@@ -2,11 +2,11 @@ export class MenuCategoryReqVo {
     constructor(init) {
         Object.assign(this, init);
     }
-    id;
-    businessId;
-    name;
-    description;
-    creationTime;
-    updateTime;
-    updateUserId;
+
+    id: string;
+    businessId: string;
+    name: string;
+    description: string | null;
+    pictureUrl: string | null;
+    menuItemIds: string[];
 }

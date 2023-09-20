@@ -2,8 +2,7 @@ import { Menu } from 'src/infra/typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { MenuAddReqVo, MenuDto } from 'src/core/models';
-import { MenuUpdateReqVo } from 'src/core/models/vo/req/menu.update.req.vo';
+import { MenuAddReqVo, MenuDto, MenuUpdateReqVo } from 'src/core/models';
 
 @Injectable()
 export class MenuService {

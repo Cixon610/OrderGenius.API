@@ -1,34 +1,29 @@
-// import {
-//   Body,
-//   Controller,
-//   Delete,
-//   Get,
-//   Param,
-//   Post,
-//   Put,
-//   Query,
-//   Res,
-// } from '@nestjs/common';
-// import { ApiResponse } from '@nestjs/swagger';
-// import { MenuAddReqVo, MenuAddResVo } from 'src/core/models';
-// import { CategoryService } from 'src/core/services';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Res,
+} from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { MenuCategoryReqVo } from 'src/core/models';
+import { MenuCategoryService } from 'src/core/services';
 
-// @Controller('category')
-// export class CategoryController {
-//   constructor(private readonly menuService: CategoryService) {}
+@ApiTags('menuCategory')
+@Controller('menuCategory')
+export class MenuCategoryController {
+  constructor(private readonly menuCategoryService: MenuCategoryService) {}
 
-//   @Post()
-//   @ApiResponse({ status: 200, type: MenuAddResVo })
-//   async Add(@Body() menuDto: MenuAddReqVo, @Res() res) {
-//     const menu = await this.menuService.add(menuDto);
-//     const vo = new MenuAddResVo({
-//       id: menu.id,
-//       businessId: menu.businessId,
-//       name: menu.name,
-//       description: menu.description,
-//     });
-//     res.json(vo);
-//   }
+  @Post()
+  @ApiResponse({ status: 200, type: MenuCategoryReqVo })
+  async Add(@Body() dto: MenuCategoryReqVo, @Res() res) {
+    const vo = await this.menuCategoryService.add(dto);
+    res.json(vo);
+  }
 
 //   @Put()
 //   @ApiResponse({ status: 200, type: MenuUpdateReqVo })
@@ -78,4 +73,4 @@
 //     );
 //     res.json(vos);
 //   }
-// }
+}
