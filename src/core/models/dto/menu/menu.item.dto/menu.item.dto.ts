@@ -1,10 +1,11 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from 'crypto';
 
 export class MenuItemDto {
-    public constructor(init?: Partial<MenuItemDto>) {
-      Object.assign(this, init);
-    }
-  id: string  = randomUUID();
+  public constructor(init?: Partial<MenuItemDto>) {
+    Object.assign(this, init);
+  }
+  
+  id: string = randomUUID();
   businessId: string;
   name: string;
   description: string | null;

@@ -7,8 +7,6 @@ export class MenuDto {
   id: string = randomUUID();
   businessId: string;
   name: string;
-  description: string;
-  creationTime: Date = new Date();
-  updateTime: Date = new Date();
-  updateUserId: string;
+  description: string | null;
+  updateUserId: string | null;
 }

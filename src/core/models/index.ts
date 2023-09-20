@@ -1,7 +1,7 @@
 //#region dto
 export * from './dto/line.dto';
-export * from './dto/menu/menu.dto';
-export * from './dto/menu/menu.item.dto';
+export * from './dto/menu/menu.dto/menu.dto';
+export * from './dto/menu/menu.item.dto/menu.item.dto';
 //#endregion
 
 //#region vo/req
