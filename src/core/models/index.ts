@@ -11,7 +11,8 @@ export * from './vo/req/menu.add.req.vo/menu.add.req.vo';
 export * from './vo/req/menu.update.req.vo/menu.update.req.vo';
 export * from './vo/req/menu.item.add.req.vo/menu.item.add.req.vo';
 export * from './vo/req/menu.item.update.req.vo/menu.item.update.req.vo';
-export * from './vo/req/menu.category.req.vo/menu.category.req.vo';
+export * from './vo/req/menu.category.add.req.vo/menu.category.add.req.vo';
+export * from './vo/req/menu.category.update.req.vo/menu.category.update.req.vo';
 //#endregion
 
 //#region vo/res

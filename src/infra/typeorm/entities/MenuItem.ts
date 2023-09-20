@@ -31,11 +31,11 @@ export class MenuItem {
   pictureUrl: string | null;
 
   @CreateDateColumn()
-  @Column('date', { name: 'creation_time', nullable: true })
+  @Column('timestamp', { name: 'creation_time', nullable: true })
   creationTime: Date | null;
 
   @UpdateDateColumn()
-  @Column('date', { name: 'update_time', nullable: true })
+  @Column('timestamp', { name: 'update_time', nullable: true })
   updateTime: Date | null;
 
   @Column('uuid', { name: 'update_user_id', nullable: true })

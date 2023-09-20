@@ -8,6 +8,7 @@ export * from './entities/LineAccount';
 export * from './entities/LoginLog';
 export * from './entities/Menu';
 export * from './entities/MenuCategory';
+export * from './entities/MenuCategoryMapping';
 export * from './entities/MenuItem';
 export * from './entities/MenuMapping';
 export * from './entities/Message';

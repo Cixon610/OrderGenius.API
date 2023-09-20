@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
 
 // @Index('menu_mapping_pkey', ['id'], { unique: true })
-@Entity('menu_mapping', { schema: 'public' })
-export class MenuMapping {
+@Entity('menu_category_mapping', { schema: 'public' })
+export class MenuCategoryMapping {
   @Column('uuid', { primary: true, name: 'id' })
   id: string;
 

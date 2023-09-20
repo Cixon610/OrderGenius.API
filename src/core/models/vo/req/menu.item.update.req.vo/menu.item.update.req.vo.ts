@@ -1,27 +1,31 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class MenuItemUpdateReqVo {
-    @ApiProperty({ example: '1', description: 'Id' })
-    id: string;
+  @ApiProperty({ example: '1', description: 'Id' })
+  id: string;
 
-    @ApiProperty({ example: '1', description: 'name' })
-    name: string;
+  @ApiProperty({ example: 'MenuItemName', description: 'name' })
+  name: string;
 
-    @ApiProperty({ example: '1', description: 'description' })
-    description: string | null;
+  @ApiProperty({ example: 'MenuItemDescription', description: 'description' })
+  description: string | null;
 
-    @ApiProperty({ example: '1', description: 'price' })
-    price: number;
+  @ApiProperty({ example: '200', description: 'price' })
+  price: number;
 
-    @ApiProperty({ example: '1', description: 'modification' })
-    modification: object | null;
+  @ApiProperty({ example: '["property02":"02"]', description: 'modification' })
+  modification: object | null;
 
-    @ApiProperty({ example: '1', description: 'note' })
-    note: string | null;
+  @ApiProperty({ example: 'updateNote', description: 'note' })
+  note: string | null;
 
-    @ApiProperty({ example: '1', description: 'enable' })
-    enable: boolean;
+  @ApiProperty({ example: '1', description: 'enable' })
+  enable: boolean;
 
-    @ApiProperty({ example: '1', description: 'pictureUrl' })
-    pictureUrl: string | null;
+  @ApiProperty({
+    example:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXXvEho1fs41b6aEIfbg-gnX9vsOF0m6CzSiK-kREDYdlW7ZyBTJdab_w0GjirnXsrYcQ&usqp=CAU',
+    description: 'pictureUrl',
+  })
+  pictureUrl: string | null;
 }
