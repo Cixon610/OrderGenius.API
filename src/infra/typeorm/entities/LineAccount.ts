@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
 
 // @Index('line_account_pkey', ['id'], { unique: true })
 // @Index('line_account_line_id_key', ['lineId'], { unique: true })
@@ -22,9 +22,11 @@ export class LineAccount {
   @Column('text', { name: 'status_message', nullable: true })
   statusMessage: string | null;
 
+  @CreateDateColumn()
   @Column('date', { name: 'creation_time', nullable: true })
   creationTime: Date | null;
 
+  @UpdateDateColumn()
   @Column('date', { name: 'update_time', nullable: true })
   updateTime: Date | null;
 }

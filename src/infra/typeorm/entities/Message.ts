@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index } from 'typeorm';
 
 // @Index('message_pkey', ['id'], { unique: true })
 @Entity('message', { schema: 'public' })
@@ -13,8 +13,9 @@ export class Message {
   message: string | null;
 
   @Column('integer', { name: 'order_id', nullable: true })
-  orderId: number | null;
+  orderId: string | null;
 
+  @CreateDateColumn()
   @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: string | null;
+  creationTime: Date | null;
 }

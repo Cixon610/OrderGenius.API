@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
 
 // @Index('client_user_pkey', ['id'], { unique: true })
 @Entity('client_user', { schema: 'public' })
@@ -24,9 +24,11 @@ export class ClientUser {
   @Column('text', { name: 'address', nullable: true })
   address: string | null;
 
+  @CreateDateColumn()
   @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: string | null;
+  creationTime: Date | null;
 
+  @UpdateDateColumn()
   @Column('date', { name: 'update_time', nullable: true })
-  updateTime: string | null;
+  updateTime: Date | null;
 }

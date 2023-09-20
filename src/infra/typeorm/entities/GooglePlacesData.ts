@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
 
 // @Index('google_places_data_pkey', ['id'], { unique: true })
 @Entity('google_places_data', { schema: 'public' })
@@ -12,9 +12,11 @@ export class GooglePlacesData {
   @Column('json', { name: 'data', nullable: true })
   data: object | null;
 
+  @CreateDateColumn()
   @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: string | null;
+  creationTime: Date | null;
 
+  @UpdateDateColumn()
   @Column('date', { name: 'update_time', nullable: true })
-  updateTime: string | null;
+  updateTime: Date | null;
 }

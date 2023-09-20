@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index } from 'typeorm';
 
 // @Index('ip_blocker_pkey', ['id'], { unique: true })
 @Entity('ip_blocker', { schema: 'public' })
@@ -18,6 +18,7 @@ export class IpBlocker {
   @Column('bit', { name: 'enable', nullable: true })
   enable: string | null;
 
+  @CreateDateColumn()
   @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: string | null;
+  creationTime: Date | null;
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
 
 // @Index('order_detail_pkey', ['id'], { unique: true })
 @Entity('order_detail', { schema: 'public' })
@@ -13,10 +13,10 @@ export class OrderDetail {
   itemId: string | null;
 
   @Column('numeric', { name: 'item_price', nullable: true })
-  itemPrice: string | null;
+  itemPrice: Number | null;
 
   @Column('numeric', { name: 'total_price', nullable: true })
-  totalPrice: string | null;
+  totalPrice: Number | null;
 
   @Column('json', { name: 'modification', nullable: true })
   modification: object | null;
@@ -24,9 +24,11 @@ export class OrderDetail {
   @Column('text', { name: 'memo', nullable: true })
   memo: string | null;
 
+  @CreateDateColumn()
   @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: string | null;
+  creationTime: Date | null;
 
+  @UpdateDateColumn()
   @Column('date', { name: 'update_time', nullable: true })
-  updateTime: string | null;
+  updateTime: Date | null;
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
 
 // @Index('menu_mapping_pkey', ['id'], { unique: true })
 @Entity('menu_mapping', { schema: 'public' })
@@ -15,11 +15,13 @@ export class MenuMapping {
   @Column('uuid', { name: 'menu_item_id', nullable: true })
   menuItemId: string | null;
 
+  @CreateDateColumn()
   @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: string | null;
+  creationTime: Date | null;
 
+  @UpdateDateColumn()
   @Column('date', { name: 'update_time', nullable: true })
-  updateTime: string | null;
+  updateTime: Date | null;
 
   @Column('uuid', { name: 'update_user_id', nullable: true })
   updateUserId: string | null;

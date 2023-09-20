@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
 
 // @Index('menu_category_pkey', ['id'], { unique: true })
 @Entity('menu_category', { schema: 'public' })
@@ -18,9 +18,11 @@ export class MenuCategory {
   @Column('text', { name: 'picture_url', nullable: true })
   pictureUrl: string | null;
 
+  @CreateDateColumn()
   @Column('date', { name: 'creation_time', nullable: true })
   creationTime: Date | null;
 
+  @UpdateDateColumn()
   @Column('date', { name: 'update_time', nullable: true })
   updateTime: Date | null;
 

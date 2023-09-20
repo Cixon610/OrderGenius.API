@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index } from 'typeorm';
 
 // @Index('login_log_pkey', ['id'], { unique: true })
 @Entity('login_log', { schema: 'public' })
@@ -21,6 +21,7 @@ export class LoginLog {
   @Column('text', { name: 'country_code', nullable: true })
   countryCode: string | null;
 
+  @CreateDateColumn()
   @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: string | null;
+  creationTime: Date | null;
 }
