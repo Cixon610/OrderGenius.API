@@ -82,6 +82,7 @@ export class MenuItemService {
       modification: menuItem.modification,
       note: menuItem.note,
       enable: menuItem.enable,
+      promoted: menuItem.promoted,
       pictureUrl: menuItem.pictureUrl,
     });
   }
