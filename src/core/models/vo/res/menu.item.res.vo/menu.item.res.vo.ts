@@ -30,6 +30,9 @@ export class MenuItemResVo {
   @ApiProperty({ example: true, description: 'enable' })
   enable: boolean;
 
+  @ApiProperty({ example: true, description: 'promoted' })
+  promoted: boolean;
+
   @ApiProperty({
     example: 'https://example.com/pizza.jpg',
     description: 'pictureUrl',

@@ -27,6 +27,7 @@ export class MenuItemService {
         modification: vo.modification,
         note: vo.note,
         enable: vo.enable,
+        promoted: vo.enable,
         pictureUrl: vo.pictureUrl,
       }),
     );

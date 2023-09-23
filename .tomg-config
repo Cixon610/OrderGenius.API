@@ -1,6 +1,6 @@
 [
   {
-    "resultsPath": "C:\\Git\\Personal\\MenuGeniusBE\\src\\typeorm",
+    "resultsPath": "C:\\Git\\Personal\\OrderGenius.API\\src\\infra\\typeorm",
     "pluralizeNames": true,
     "noConfigs": false,
     "convertCaseFile": "pascal",

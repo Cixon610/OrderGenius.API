@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  UpdateDateColumn,
+} from 'typeorm';
+import { BooleanBitTransformer } from '..';
 
 // @Index('menu_item_pkey', ['id'], { unique: true })
 @Entity('menu_item', { schema: 'public' })
@@ -24,8 +31,25 @@ export class MenuItem {
   @Column('text', { name: 'note', nullable: true })
   note: string | null;
 
-  @Column('bit', { name: 'enable', nullable: true })
+  @Column('bit', {
+    name: 'enable',
+    nullable: true,
+    transformer: {
+      to: (enable: boolean) => (enable ? 1 : 0),
+      from: (enable: number) => (enable === 1 ? true : false),
+    },
+  })
   enable: boolean | null;
+
+  @Column('bit', {
+    name: 'promoted',
+    nullable: true,
+    transformer: {
+      to: (enable: boolean) => (enable ? 1 : 0),
+      from: (enable: number) => (enable === 1 ? true : false),
+    },
+  })
+  promoted: boolean | null;
 
   @Column('text', { name: 'picture_url', nullable: true })
   pictureUrl: string | null;

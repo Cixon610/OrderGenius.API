@@ -22,8 +22,11 @@ export class MenuItemAddReqVo {
   @ApiProperty({ example: 'note', description: 'note' })
   note: string | null;
 
-  @ApiProperty({ example: '1', description: 'enable' })
+  @ApiProperty({ example: true, description: 'enable' })
   enable: boolean;
+
+  @ApiProperty({ example: true, description: 'promoted' })
+  promoted: boolean;
 
   @ApiProperty({
     example:

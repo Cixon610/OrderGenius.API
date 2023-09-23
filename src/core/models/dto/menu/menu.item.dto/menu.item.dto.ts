@@ -13,5 +13,6 @@ export class MenuItemDto {
   modification: object | null;
   note: string | null;
   enable: boolean;
+  promoted: boolean;
   pictureUrl: string | null;
 }
