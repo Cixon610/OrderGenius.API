@@ -5,7 +5,6 @@ import {
   Index,
   UpdateDateColumn,
 } from 'typeorm';
-import { BooleanBitTransformer } from '..';
 
 // @Index('menu_item_pkey', ['id'], { unique: true })
 @Entity('menu_item', { schema: 'public' })
