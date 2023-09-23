@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
-import { MenuCategory, MenuCategoryMapping } from 'src/infra/typeorm';
+import {
+  MenuCategory,
+  MenuCategoryMapping,
+  ViewCategoryItem,
+} from 'src/infra/typeorm';
 import {
   MenuCategoryDto,
   MenuCategoryMappingDto,
@@ -17,6 +21,8 @@ export class MenuCategoryService {
     private readonly menuCategoryRepository: Repository<MenuCategory>,
     @InjectRepository(MenuCategoryMapping)
     private readonly menuCategoryMappingRepository: Repository<MenuCategoryMapping>,
+    @InjectRepository(ViewCategoryItem)
+    private readonly viewCategoryItemRepository: Repository<ViewCategoryItem>,
   ) {}
 
   async add(vo: MenuCategoryAddReqVo): Promise<MenuCategoryResVo> {
@@ -39,7 +45,7 @@ export class MenuCategoryService {
     }
 
     await this.addMapping(vo.menuItemIds, newItem.id);
-    return this.toVo(newItem);
+    return this.get(newItem.id);
   }
 
   async update(vo: MenuCategoryUpdateReqVo): Promise<MenuCategoryResVo> {
@@ -60,13 +66,13 @@ export class MenuCategoryService {
     }
 
     if (vo.menuItemIds.length === 0) {
-      return this.toVo(updated);
+      return this.get(vo.id);
     }
 
     await this.deleteMapping(vo.id);
     await this.addMapping(vo.menuItemIds, vo.id);
 
-    return this.toVo(updated);
+    return this.get(vo.id);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -85,47 +91,82 @@ export class MenuCategoryService {
 
   async get(id: string): Promise<MenuCategoryResVo> {
     return this.toVo(
-      await this.menuCategoryRepository.findOne({ where: { id } }),
+      await this.viewCategoryItemRepository.find({ where: { categoryId : id } }),
     );
   }
 
-  //Todo: 測試，所有get都要取其下的item回傳
-  async getWithMapping(id: string): Promise<MenuCategoryResVo> {
-    const queryBuilder = this.menuCategoryRepository.createQueryBuilder('category');
-    queryBuilder.leftJoinAndSelect('category.mappings', 'mapping')
-      .leftJoinAndSelect('mapping.menuItem', 'menuItem')
-      .where('category.id = :id', { id });
-
-    const category = await queryBuilder.getOne();
-    return this.toVo(category);
-  }
-
   async getByKey(key: string): Promise<MenuCategoryResVo[]> {
-    var vos = await this.menuCategoryRepository.find({
-      where: { name: Like(`%${key}%`) },
+    var vos = await this.viewCategoryItemRepository.find({
+      where: { categoryName: Like(`%${key}%`) },
     });
-    return vos.map((vo) => this.toVo(vo));
+    return this.toVos(vos);
   }
 
   async getByBusinessId(businessId: string): Promise<MenuCategoryResVo[]> {
-    var vos = await this.menuCategoryRepository.find({ where: { businessId } });
-    return vos.map((vo) => this.toVo(vo));
+    var vos = await this.viewCategoryItemRepository.find({ where: { businessId } });
+    return this.toVos(vos);
   }
 
-  private toVo(Item: MenuCategory): MenuCategoryResVo {
+  //region private
+
+  private toVo(Item: ViewCategoryItem[]): MenuCategoryResVo {
     if (!Item) {
       return null;
     }
-    return new MenuCategoryResVo({
-      id: Item.id,
-      businessId: Item.businessId,
-      name: Item.name,
-      description: Item.description,
-      pictureUrl: Item.pictureUrl,
-    });
+    
+    const res = this.toVos(Item);
+    return res[0];
   }
 
-  private async addMapping(itemIds: string[], menuCategoryId: string): Promise<void> {
+  private toVos(Item: ViewCategoryItem[]): MenuCategoryResVo[] {
+    if (!Item) {
+      return null;
+    }
+    
+    const grouped = Item.reduce((arr, view) => {
+      const key = view.categoryId;
+      if (!arr[key]) {
+        arr[key] = [];
+      }
+      arr[key].push(view);
+      return arr;
+    }, {});
+
+    const res = [];
+    for (const key in grouped) {
+      if (Object.prototype.hasOwnProperty.call(grouped, key)) {
+        const element = grouped[key];
+        res.push(
+          new MenuCategoryResVo({
+            id: element[0].categoryId,
+            businessId: element[0].businessId,
+            name: element[0].categoryName,
+            description: element[0].categoryDescription,
+            pictureUrl: element[0].categoryPictureUrl,
+            menuItems: element.map((item) => {
+              return {
+                id: item.itemId,
+                name: item.itemName,
+                description: item.itemDescription,
+                price: item.itemPrice,
+                modification: item.itemModification,
+                note: item.itemNote,
+                enable: item.itemEnable,
+                promoted: item.itemPromoted,
+                pictureUrl: item.itemPictureUrl,
+              };
+            }),
+          }),
+        );
+      }
+    }
+    return res;
+  }
+
+  private async addMapping(
+    itemIds: string[],
+    menuCategoryId: string,
+  ): Promise<void> {
     if (itemIds.length === 0) {
       return;
     }
@@ -151,7 +192,9 @@ export class MenuCategoryService {
     }
 
     this.menuCategoryMappingRepository.delete(
-      mappings.map((mapping) => mapping.id)
+      mappings.map((mapping) => mapping.id),
     );
   }
+
+  //endregion
 }
