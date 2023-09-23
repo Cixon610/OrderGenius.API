@@ -71,3 +71,10 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## Swagger
+
+| Name | Url |
+| --- | --- |
+| Swagger UI | http://localhost:9000/api
+| Swagger JSON | http://localhost:9000/api-json
