@@ -18,4 +18,10 @@ export class MenuUpdateReqVo {
 
   @ApiProperty({ example: 'updateMenuDescription', description: 'description' })
   description: string;
+
+  @ApiProperty({
+    example: '["d5de5474-5a01-11ee-8c99-0242ac120002"]',
+    description: 'categoryIds',
+  })
+  categoryIds: string[];
 }

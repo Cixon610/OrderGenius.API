@@ -1,3 +1,4 @@
+//#region entities
 export * from './entities/Business';
 export * from './entities/BusinessUser';
 export * from './entities/ClientUser';
@@ -14,5 +15,9 @@ export * from './entities/MenuMapping';
 export * from './entities/Message';
 export * from './entities/Order';
 export * from './entities/OrderDetail';
+//#endregion
 
+//#region views
 export * from './view/ViewCategoryItem';
+export * from './view/ViewMenuCategory';
+//#endregion

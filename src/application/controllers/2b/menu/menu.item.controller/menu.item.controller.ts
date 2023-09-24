@@ -11,7 +11,11 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MenuItemService } from 'src/core/services';
-import { MenuItemAddReqVo, MenuItemResVo, MenuItemUpdateReqVo } from 'src/core/models';
+import {
+  MenuItemAddReqVo,
+  MenuItemResVo,
+  MenuItemUpdateReqVo,
+} from 'src/core/models';
 
 @ApiTags('menuItem')
 @Controller('menuItem')
@@ -45,7 +49,7 @@ export class MenuItemController {
     const vo = await this.menuItemService.get(id);
     res.json(vo);
   }
-  
+
   @Get('key')
   @ApiResponse({ status: 200, type: [MenuItemResVo] })
   async GetByKey(@Query('key') key: string, @Res() res) {

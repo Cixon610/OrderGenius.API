@@ -85,7 +85,7 @@ export class MenuCategoryService {
     }
 
     const deleted = await this.menuCategoryRepository.delete(id);
-    await this.deleteMapping(id);
+    deleted && await this.deleteMapping(id);
     return !!deleted;
   }
 
@@ -107,7 +107,7 @@ export class MenuCategoryService {
     return this.toVos(vos);
   }
 
-  //region private
+  //#region private
 
   private toVo(Item: ViewCategoryItem[]): MenuCategoryResVo {
     if (!Item) {
@@ -196,5 +196,5 @@ export class MenuCategoryService {
     );
   }
 
-  //endregion
+  //#endregion
 }

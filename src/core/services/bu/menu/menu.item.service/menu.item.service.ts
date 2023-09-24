@@ -60,7 +60,9 @@ export class MenuItemService {
   }
 
   async getByKey(key: string): Promise<MenuItemResVo[]> {
-    var vos = await this.menuItemRepository.find({ where: { name: Like(`%${key}%`) } });
+    var vos = await this.menuItemRepository.find({
+      where: { name: Like(`%${key}%`) },
+    });
     return vos.map((vo) => this.toVo(vo));
   }
 

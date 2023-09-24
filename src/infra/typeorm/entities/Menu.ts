@@ -15,6 +15,9 @@ export class Menu {
   @Column('text', { name: 'description', nullable: true })
   description: string | null;
 
+  @Column('text', { name: 'picture_url', nullable: true })
+  pictureUrl: string | null;
+  
   @CreateDateColumn()
   @Column('date', { name: 'creation_time', nullable: true })
   creationTime: Date | null;

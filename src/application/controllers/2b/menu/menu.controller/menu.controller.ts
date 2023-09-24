@@ -21,26 +21,14 @@ export class MenuController {
   @Post()
   @ApiResponse({ status: 200, type: MenuResVo })
   async Add(@Body() menuDto: MenuAddReqVo, @Res() res) {
-    const menu = await this.menuService.add(menuDto);
-    const vo = new MenuResVo({
-      id: menu.id,
-      businessId: menu.businessId,
-      name: menu.name,
-      description: menu.description,
-    });
+    const vo = await this.menuService.add(menuDto);
     res.json(vo);
   }
 
   @Put()
   @ApiResponse({ status: 200, type: MenuUpdateReqVo })
   async Update(@Body() menuDto: MenuUpdateReqVo, @Res() res) {
-    const menu = await this.menuService.update(menuDto);
-    const vo = new MenuResVo({
-      id: menu.id,
-      businessId: menu.businessId,
-      name: menu.name,
-      description: menu.description,
-    });
+    const vo = await this.menuService.update(menuDto);
     res.json(vo);
   }
 
@@ -54,29 +42,14 @@ export class MenuController {
   @Get()
   @ApiResponse({ status: 200, type: MenuResVo })
   async Get(@Query('id') id: string, @Res() res) {
-    const menu = await this.menuService.get(id);
-    const vo = new MenuResVo({
-      id: menu.id,
-      businessId: menu.businessId,
-      name: menu.name,
-      description: menu.description,
-    });
+    const vo = await this.menuService.get(id);
     res.json(vo);
   }
 
   @Get(':businessId')
   @ApiResponse({ status: 200, type: [MenuResVo] })
   async GetByBusiness(@Param('businessId') id: string, @Res() res) {
-    const menu = await this.menuService.getByBusinessId(id);
-    const vos = menu.map(
-      (x) =>
-        new MenuResVo({
-          id: x.id,
-          businessId: x.businessId,
-          name: x.name,
-          description: x.description,
-        }),
-    );
+    const vos = await this.menuService.getByBusinessId(id);
     res.json(vos);
   }
 }

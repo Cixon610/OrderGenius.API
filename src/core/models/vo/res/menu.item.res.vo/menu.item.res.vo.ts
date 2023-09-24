@@ -6,7 +6,7 @@ export class MenuItemResVo {
   @ApiProperty({ example: 'id', description: 'id' })
   id: string;
 
-  @ApiProperty({ example: 'id', description: 'id' })
+  @ApiProperty({ example: 'businessId', description: 'businessId' })
   businessId: string;
 
   @ApiProperty({ example: 'name', description: 'name' })

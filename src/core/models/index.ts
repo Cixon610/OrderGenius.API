@@ -4,6 +4,7 @@ export * from './dto/menu/menu.dto/menu.dto';
 export * from './dto/menu/menu.item.dto/menu.item.dto';
 export * from './dto/menu/menu.category.dto/menu.category.dto';
 export * from './dto/menu/menu.category.mapping.dto/menu.category.mapping.dto';
+export * from './dto/menu/menu.mapping.dto/menu.mapping.dto'; 
 //#endregion
 
 //#region vo/req
