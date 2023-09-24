@@ -30,6 +30,7 @@ export class MenuService {
           businessId: vo.businessId,
           name: vo.name,
           description: vo.description,
+          pictureUrl: vo.pictureUrl,
         }),
       ),
     );
