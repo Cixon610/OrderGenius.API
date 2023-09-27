@@ -30,25 +30,17 @@ export class MenuItem {
   @Column('text', { name: 'note', nullable: true })
   note: string | null;
 
-  @Column('bit', {
+  @Column('boolean', {
     name: 'enable',
-    nullable: true,
-    transformer: {
-      to: (enable: boolean) => (enable ? 1 : 0),
-      from: (enable: number) => (enable === 1 ? true : false),
-    },
+    nullable: false
   })
-  enable: boolean | null;
+  enable: boolean;
 
-  @Column('bit', {
+  @Column('boolean', {
     name: 'promoted',
-    nullable: true,
-    transformer: {
-      to: (enable: boolean) => (enable ? 1 : 0),
-      from: (enable: number) => (enable === 1 ? true : false),
-    },
+    nullable: false
   })
-  promoted: boolean | null;
+  promoted: boolean;
 
   @Column('text', { name: 'picture_url', nullable: true })
   pictureUrl: string | null;
