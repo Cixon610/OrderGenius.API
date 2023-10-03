@@ -12,12 +12,7 @@ export class CreateLineAccountDto {
 
   statusMessage: string;
 
-  @IsNotEmpty()
-  userId: string;
-
-  @IsNotEmpty()
   creationTime: Date;
 
-  @IsNotEmpty()
   updateTime: Date;
 }
