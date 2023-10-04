@@ -1,9 +1,21 @@
 import { Module } from '@nestjs/common';
-import { LineController, MenuController, MenuItemController, MenuCategoryController } from './index';
+import {
+  LineController,
+  MenuController,
+  MenuItemController,
+  MenuCategoryController,
+  BusinessController,
+} from './index';
 import { ServicesModule } from 'src/core/services';
 
 @Module({
   imports: [ServicesModule],
-  controllers: [LineController, MenuController, MenuItemController, MenuCategoryController],
+  controllers: [
+    LineController,
+    MenuController,
+    MenuItemController,
+    MenuCategoryController,
+    BusinessController,
+  ],
 })
 export class ApplicationModule {}

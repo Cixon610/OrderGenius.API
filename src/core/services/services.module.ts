@@ -4,6 +4,7 @@ import {
   LineService,
   MenuService,
   MenuItemService,
+  BusinessService,
 } from './index';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as typeorm from 'src/infra/typeorm';
@@ -12,7 +13,7 @@ import { SysConfigService } from 'src/infra/services';
 const entities = Object.values(typeorm);
 @Module({
   imports: [TypeOrmModule.forFeature([...entities])],
-  providers: [LineService, MenuService, MenuCategoryService, MenuItemService, SysConfigService],
-  exports: [LineService, MenuService, MenuCategoryService, MenuItemService],
+  providers: [SysConfigService, LineService, MenuService, MenuCategoryService, MenuItemService, BusinessService],
+  exports: [LineService, MenuService, MenuCategoryService, MenuItemService, BusinessService],
 })
 export class ServicesModule {}
