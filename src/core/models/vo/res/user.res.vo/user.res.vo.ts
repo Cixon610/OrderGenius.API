@@ -17,8 +17,8 @@ export class UserResVo {
     @ApiProperty({ example: 'account', description: 'account' })
     account: string;
     
-    @ApiProperty({ example: 'password', description: 'password' })
-    password: string;
+    // @ApiProperty({ example: 'password', description: 'password' })
+    // password: string;
     
     @ApiProperty({ example: 'email', description: 'email' })
     email: string;

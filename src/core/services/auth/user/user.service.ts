@@ -3,21 +3,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BusinessUserDto, UserCreateReqVo, UserResVo } from 'src/core/models';
 import { BusinessUser } from 'src/infra/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { SysConfigService } from 'src/infra/services';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(BusinessUser)
     private readonly businessUserRepository: Repository<BusinessUser>,
+    private readonly sysConfigService: SysConfigService,
   ) {}
 
   async create2bUser(vo: UserCreateReqVo): Promise<UserResVo> {
+    const passwordHash = await bcrypt.hash(vo.password, this.sysConfigService.infra.saltRounds);
     const newUser = this.businessUserRepository.create(
       new BusinessUserDto({
         businessId: vo.businessId,
         userName: vo.userName,
         account: vo.account,
-        password: vo.password,
+        password: passwordHash,
         email: vo.email,
         phone: vo.phone,
         address: vo.address,
@@ -42,7 +46,6 @@ export class UserService {
       businessId: vo.businessId,
       userName: vo.userName,
       account: vo.account,
-      password: vo.password,
       email: vo.email,
       phone: vo.phone,
       address: vo.address,

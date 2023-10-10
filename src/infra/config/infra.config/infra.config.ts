@@ -10,4 +10,8 @@ export class InfraConfig {
   get dbType(): string {
     return process.env.DB_Type;
   }
+
+  get saltRounds(): number {
+    return Number(process.env.SALT_ROUNDS);
+  }
 }
