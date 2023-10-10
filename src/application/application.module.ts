@@ -5,17 +5,20 @@ import {
   MenuItemController,
   MenuCategoryController,
   BusinessController,
+  BusinessUserController,
 } from './index';
 import { ServicesModule } from 'src/core/services';
 
+const exportControllers = [
+  LineController,
+  MenuController,
+  MenuItemController,
+  MenuCategoryController,
+  BusinessController,
+  BusinessUserController,
+];
 @Module({
   imports: [ServicesModule],
-  controllers: [
-    LineController,
-    MenuController,
-    MenuItemController,
-    MenuCategoryController,
-    BusinessController,
-  ],
+  controllers: exportControllers,
 })
 export class ApplicationModule {}
