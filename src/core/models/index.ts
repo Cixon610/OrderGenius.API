@@ -29,3 +29,5 @@ export * from './vo/res/menu.item.res.vo/menu.item.res.vo';
 export * from './vo/res/menu.category.res.vo/menu.category.res.vo';
 export * from './vo/res/user.res.vo/user.res.vo';
 //#endregion
+
+export * from './auth/payload';

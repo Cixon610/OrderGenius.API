@@ -15,7 +15,10 @@ export class UserService {
   ) {}
 
   async create2bUser(vo: UserCreateReqVo): Promise<UserResVo> {
-    const passwordHash = await bcrypt.hash(vo.password, this.sysConfigService.infra.saltRounds);
+    const passwordHash = await bcrypt.hash(
+      vo.password,
+      this.sysConfigService.infra.saltRounds,
+    );
     const newUser = this.businessUserRepository.create(
       new BusinessUserDto({
         businessId: vo.businessId,
@@ -35,6 +38,20 @@ export class UserService {
       where: { account },
     });
     return user ? true : false;
+  }
+
+  async validate(username: string, password: string) {
+    const user = await this.businessUserRepository.findOne({
+      where: { account: username },
+    });
+    if (!user) {
+      return null;
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return null;
+    }
+    return user;
   }
 
   private toVo(vo: BusinessUser): UserResVo {

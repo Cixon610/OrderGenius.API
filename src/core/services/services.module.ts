@@ -6,6 +6,7 @@ import {
   MenuItemService,
   BusinessService,
   UserService,
+  LocalStrategy,
 } from './index';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as typeorm from 'src/infra/typeorm';
@@ -19,6 +20,7 @@ const exportServices = [
   MenuItemService,
   BusinessService,
   UserService,
+  LocalStrategy,
 ];
 @Module({
   imports: [TypeOrmModule.forFeature([...entities])],

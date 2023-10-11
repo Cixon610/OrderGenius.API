@@ -14,4 +14,8 @@ export class InfraConfig {
   get saltRounds(): number {
     return Number(process.env.SALT_ROUNDS);
   }
+
+  get jwtSecret(): string {
+    return String(process.env.JWT_SECRET);
+  }
 }
