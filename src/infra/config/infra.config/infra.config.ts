@@ -18,4 +18,16 @@ export class InfraConfig {
   get jwtSecret(): string {
     return String(process.env.JWT_SECRET);
   }
+
+  get awsS3AcessKeyId(): string {
+    return String(process.env.AWS_S3_ACESS_KEY_ID);
+  }
+
+  get AwsS3SecretAcessKey(): string {
+    return String(process.env.AWS_S3_SECRET_ACESS_KEY);
+  }
+
+  get AwsS3BuketNameImg(): string {
+    return String(process.env.AWS_S3_BUKET_NAME_IMG);
+  }
 }
