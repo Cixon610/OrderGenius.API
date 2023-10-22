@@ -19,6 +19,10 @@ export class InfraConfig {
     return String(process.env.JWT_SECRET);
   }
 
+  get awsS3Region(): string {
+    return String(process.env.AWS_S3_REGION);
+  }
+
   get awsS3AcessKeyId(): string {
     return String(process.env.AWS_S3_ACESS_KEY_ID);
   }
