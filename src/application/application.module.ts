@@ -6,6 +6,7 @@ import {
   MenuCategoryController,
   BusinessController,
   BusinessUserController,
+  FileController,
 } from './index';
 import { ServicesModule } from 'src/core/services';
 import { JwtModule } from '@nestjs/jwt';
@@ -19,6 +20,7 @@ const exportControllers = [
   MenuCategoryController,
   BusinessController,
   BusinessUserController,
+  FileController,
 ];
 const infraConfig = new InfraConfig();
 @Module({
