@@ -10,7 +10,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MenuItemService } from 'src/core/services';
 import {
   MenuItemAddReqVo,
@@ -27,6 +27,7 @@ export class MenuItemController {
   constructor(private readonly menuItemService: MenuItemService) {}
 
   @Post()
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuItemResVo })
   async Add(@Body() menuItemVo: MenuItemAddReqVo, @Res() res) {
     const vo = await this.menuItemService.add(menuItemVo);
@@ -34,6 +35,7 @@ export class MenuItemController {
   }
 
   @Put()
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuItemResVo })
   async Update(@Body() menuDto: MenuItemUpdateReqVo, @Res() res) {
     const vo = await this.menuItemService.update(menuDto);
@@ -41,6 +43,7 @@ export class MenuItemController {
   }
 
   @Delete(':menuItemId')
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuItemResVo })
   async Delete(@Param('menuItemId') menuId: string, @Res() res) {
     const sucess = await this.menuItemService.delete(menuId);
@@ -48,6 +51,7 @@ export class MenuItemController {
   }
 
   @Get()
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuItemResVo })
   async Get(@Query('id') id: string, @Res() res) {
     const vo = await this.menuItemService.get(id);
@@ -55,6 +59,7 @@ export class MenuItemController {
   }
 
   @Get('key')
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: [MenuItemResVo] })
   async GetByKey(@Query('key') key: string, @Res() res) {
     const vos = await this.menuItemService.getByKey(key);
@@ -62,6 +67,7 @@ export class MenuItemController {
   }
 
   @Get(':businessId')
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: [MenuItemResVo] })
   async GetByBusiness(@Param('businessId') id: string, @Res() res) {
     const vos = await this.menuItemService.getByBusinessId(id);

@@ -13,6 +13,7 @@ import { UserPayload } from 'src/core/decorator/user-payload.decorator';
 import {
   BusinessUserDto,
   IUserPayload,
+  LoginReqVo,
   UserCreateReqVo,
   UserResVo,
 } from 'src/core/models';
@@ -49,7 +50,11 @@ export class BusinessUserController {
 
   @UseGuards(AuthGuard('local'))
   @Post('signIn/local')
-  async signInLocal(@UserPayload() user: IUserPayload, @Res() res) {
+  async signInLocal(
+    @UserPayload() user: IUserPayload,
+    @Body() swaggermodel: LoginReqVo,
+    @Res() res,
+  ) {
     return res.json({ token: this.jwtService.sign(user) });
   }
 }

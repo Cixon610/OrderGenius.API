@@ -17,6 +17,7 @@ async function bootstrap() {
     .setTitle('MenuGeniuse API')
     .setDescription('MenuGeniuse API document')
     .setVersion('1.0')
+    .addBearerAuth()
     // .addTag('nestjs')
     .build();
 

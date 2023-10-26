@@ -1,8 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { RoleGuard } from 'src/core/guards/role/role.guard';
 import { BusinessAddReqVo, BusinessResVo, BusinessUpdateReqVo } from 'src/core/models';
 import { BusinessService } from 'src/core/services';
 
+@UseGuards(AuthGuard('jwt'), RoleGuard)
 @ApiTags('Business')
 @Controller('business')
 export class BusinessController {

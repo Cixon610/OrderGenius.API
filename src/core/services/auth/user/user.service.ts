@@ -42,19 +42,26 @@ export class UserService {
   }
 
   async validate(username: string, password: string) {
+    let role = Role.COSTUMER;
     //TODO: add cuser validate
     const cuser = null;
+
     const buser = await this.businessUserRepository.findOne({
       where: { account: username },
     });
-    if (!buser) {
-      return null;
+
+    if (!!buser) {
+      const isPasswordValid = await bcrypt.compare(password, buser.password);
+      if (!isPasswordValid) {
+        return null;
+      }
+      if( buser.userName == 'admin'){
+        role = Role.ADMIN;
+      }
+      
+      return { user: buser, role: role };
     }
-    const isPasswordValid = await bcrypt.compare(password, buser.password);
-    if (!isPasswordValid) {
-      return null;
-    }
-    return { user: buser, role: Role.BUSINESS };
+    return null;
   }
 
   private toVo(vo: BusinessUser): UserResVo {
