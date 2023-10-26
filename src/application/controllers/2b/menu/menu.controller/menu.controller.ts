@@ -8,17 +8,22 @@ import {
   Put,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';``
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { RoleGuard } from 'src/core/guards/role/role.guard';
 import { MenuAddReqVo, MenuResVo, MenuUpdateReqVo } from 'src/core/models';
 import { MenuService } from 'src/core/services';
 
+@UseGuards(AuthGuard('jwt'), RoleGuard)
 @ApiTags('menu')
 @Controller('menu')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Post()
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuResVo })
   async Add(@Body() menuDto: MenuAddReqVo, @Res() res) {
     const vo = await this.menuService.add(menuDto);
@@ -26,6 +31,7 @@ export class MenuController {
   }
 
   @Put()
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuUpdateReqVo })
   async Update(@Body() menuDto: MenuUpdateReqVo, @Res() res) {
     const vo = await this.menuService.update(menuDto);
@@ -33,6 +39,7 @@ export class MenuController {
   }
 
   @Delete(':menuId')
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuResVo })
   async Delete(@Param('menuId') menuId: string, @Res() res) {
     const sucess = await this.menuService.delete(menuId);
@@ -40,6 +47,7 @@ export class MenuController {
   }
 
   @Get()
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuResVo })
   async Get(@Query('id') id: string, @Res() res) {
     const vo = await this.menuService.get(id);
@@ -47,6 +55,7 @@ export class MenuController {
   }
 
   @Get(':businessId')
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: [MenuResVo] })
   async GetByBusiness(@Param('businessId') id: string, @Res() res) {
     const vos = await this.menuService.getByBusinessId(id);

@@ -8,8 +8,9 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserPayload } from 'src/core/decorator/user-payload.decorator';
+import { RoleGuard } from 'src/core/guards/role/role.guard';
 import {
   BusinessUserDto,
   IUserPayload,
@@ -27,7 +28,9 @@ export class BusinessUserController {
     private readonly userService: UserService,
   ) {}
 
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   @Post('create')
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UserResVo })
   async create(@Body() dto: UserCreateReqVo, @Res() res) {
     if (await this.userService.isUserExist(dto.account)) {
