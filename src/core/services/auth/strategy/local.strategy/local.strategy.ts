@@ -21,6 +21,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       id: user.id,
       username: user.userName,
       role: role,
+      businessId: user.businessId,
     };
 
     return payload;

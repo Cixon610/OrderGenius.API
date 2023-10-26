@@ -58,6 +58,10 @@ export class BusinessUserController {
     @Body() swaggermodel: LoginReqVo,
     @Res() res,
   ) {
-    return res.json({ token: this.jwtService.sign(user) });
+    //TODO: 包成class
+    return res.json({
+      businessId: user.businessId,
+      token: this.jwtService.sign(user),
+    });
   }
 }
