@@ -49,7 +49,7 @@ export class BusinessUserController {
 
   @UseGuards(AuthGuard('local'))
   @Post('signIn/local')
-  async signInLocal(@UserPayload() user: IUserPayload) {
-    return this.jwtService.sign(user);
+  async signInLocal(@UserPayload() user: IUserPayload, @Res() res) {
+    return res.json({ token: this.jwtService.sign(user) });
   }
 }
