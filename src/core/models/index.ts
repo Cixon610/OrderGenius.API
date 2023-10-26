@@ -30,4 +30,5 @@ export * from './vo/res/menu.category.res.vo/menu.category.res.vo';
 export * from './vo/res/user.res.vo/user.res.vo';
 //#endregion
 
-export * from './auth/payload';
+export * from './interface/payload';
+export * from './interface/option.model';

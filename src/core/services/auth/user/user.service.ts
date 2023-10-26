@@ -5,6 +5,7 @@ import { BusinessUser } from 'src/infra/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { SysConfigService } from 'src/infra/services';
+import { Role } from 'src/core/constants/enums/role.enum';
 
 @Injectable()
 export class UserService {
@@ -41,17 +42,19 @@ export class UserService {
   }
 
   async validate(username: string, password: string) {
-    const user = await this.businessUserRepository.findOne({
+    //TODO: add cuser validate
+    const cuser = null;
+    const buser = await this.businessUserRepository.findOne({
       where: { account: username },
     });
-    if (!user) {
+    if (!buser) {
       return null;
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, buser.password);
     if (!isPasswordValid) {
       return null;
     }
-    return user;
+    return { user: buser, role: Role.BUSINESS };
   }
 
   private toVo(vo: BusinessUser): UserResVo {

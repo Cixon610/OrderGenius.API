@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MenuItemService } from 'src/core/services';
@@ -16,7 +17,10 @@ import {
   MenuItemResVo,
   MenuItemUpdateReqVo,
 } from 'src/core/models';
+import { AuthGuard } from '@nestjs/passport';
+import { RoleGuard } from 'src/core/guards/role/role.guard';
 
+@UseGuards(AuthGuard('jwt'), RoleGuard)
 @ApiTags('menuItem')
 @Controller('menuItem')
 export class MenuItemController {
