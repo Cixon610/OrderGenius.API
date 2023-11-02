@@ -16,12 +16,12 @@ import { SysConfigService } from 'src/infra/services';
 
 const entities = Object.values(typeorm);
 const exportServices = [
+  UserService,
   LineService,
   MenuService,
   MenuCategoryService,
   MenuItemService,
   BusinessService,
-  UserService,
   LocalStrategy,
   JwtStrategy,
   FileService,

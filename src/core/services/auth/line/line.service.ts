@@ -7,12 +7,14 @@ import { randomBytes } from 'crypto';
 import { stringify } from 'qs';
 import { SysConfigService } from 'src/infra/services';
 import axios from 'axios';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class LineService {
   constructor(
     @InjectRepository(LineAccount)
     private readonly lineAccountRepository: Repository<LineAccount>,
+    private readonly userService: UserService,
     private readonly sysConfigService: SysConfigService,
   ) {}
 
@@ -49,20 +51,34 @@ export class LineService {
         Authorization: `Bearer ${access_token}`,
       },
     });
-    const profile: LineProfileDto = profileResponse.data;
-    const { userId, displayName, pictureUrl, statusMessage } = profile;
 
-    const user = await this.findLineAccountByLineId(userId);
+    const profile: LineProfileDto = profileResponse.data;
+    const user = await this.findLineAccountByLineId(profile.userId);
     if (!user) {
       await this.createLineAccount({
-        lineId: userId,
-        displayName: displayName,
-        pictureUrl: pictureUrl,
-        statusMessage: statusMessage,
+        lineId: profile.userId,
+        displayName: profile.displayName,
+        pictureUrl: profile.pictureUrl,
+        statusMessage: profile.statusMessage,
         creationTime: new Date(),
         updateTime: new Date(),
       });
     }
+    
+    const buser = await this.userService.find(profile.userId);
+    if( !buser){
+      await this.userService.create2bUser({
+        userName: profile.displayName,
+        account: profile.userId,
+        password: 'pass.123',
+        email: '',
+        phone: '',
+        address: '',
+        businessId: '',
+      });
+      return profile;
+    }
+    profile.businessId = buser.businessId;
     return profile;
   }
 

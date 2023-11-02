@@ -7,4 +7,5 @@ export class LineProfileDto {
   displayName: string;
   pictureUrl: string;
   statusMessage: string;
+  businessId: string;
 }

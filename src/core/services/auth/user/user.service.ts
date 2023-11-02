@@ -41,13 +41,19 @@ export class UserService {
     return user ? true : false;
   }
 
-  async validate(username: string, password: string) {
+  async find(account: string){
+    return await this.businessUserRepository.findOne({
+      where: { account },
+    });
+  }
+
+  async validate(account: string, password: string) {
     let role = Role.COSTUMER;
     //TODO: add cuser validate
     const cuser = null;
 
     const buser = await this.businessUserRepository.findOne({
-      where: { account: username },
+      where: { account },
     });
 
     if (!!buser) {
