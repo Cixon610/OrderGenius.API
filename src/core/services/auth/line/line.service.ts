@@ -56,7 +56,7 @@ export class LineService {
     const profile: LineProfileDto = profileResponse.data;
     const buser = await this.userService.find(profile.userId);
     if (!buser) {
-      await this.userService.create2bUser({
+      const user = await this.userService.create2bUser({
         userName: profile.displayName,
         account: profile.userId,
         password: 'pass.123',
@@ -65,8 +65,11 @@ export class LineService {
         address: '',
         businessId: '00000000-0000-0000-0000-000000000000',
       });
+      profile.businessId = user.businessId;
     }
-    profile.businessId = buser.businessId;
+    else{
+      profile.businessId = buser.businessId;
+    }
 
     const user = await this.findLineAccountByLineId(profile.userId);
     if (!user) {
