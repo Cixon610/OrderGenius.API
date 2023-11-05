@@ -54,20 +54,6 @@ export class LineService {
     });
 
     const profile: LineProfileDto = profileResponse.data;
-    const user = await this.findLineAccountByLineId(profile.userId);
-    if (!user) {
-      await this.createLineAccount(
-        new LineAccountAddReqVo({
-          lineId: profile.userId,
-          displayName: profile.displayName,
-          pictureUrl: profile.pictureUrl,
-          statusMessage: profile.statusMessage,
-          creationTime: new Date(),
-          updateTime: new Date(),
-        }),
-      );
-    }
-
     const buser = await this.userService.find(profile.userId);
     if (!buser) {
       await this.userService.create2bUser({
@@ -79,9 +65,24 @@ export class LineService {
         address: '',
         businessId: '00000000-0000-0000-0000-000000000000',
       });
-      return profile;
     }
     profile.businessId = buser.businessId;
+
+    const user = await this.findLineAccountByLineId(profile.userId);
+    if (!user) {
+      await this.createLineAccount(
+        new LineAccountAddReqVo({
+          lineId: profile.userId,
+          displayName: profile.displayName,
+          businessUserId: buser.businessId,
+          pictureUrl: profile.pictureUrl,
+          statusMessage: profile.statusMessage,
+          creationTime: new Date(),
+          updateTime: new Date(),
+        }),
+      );
+    }
+
     return profile;
   }
 
