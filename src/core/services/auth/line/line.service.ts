@@ -77,7 +77,7 @@ export class LineService {
         new LineAccountAddReqVo({
           lineId: profile.userId,
           displayName: profile.displayName,
-          businessUserId: buser.businessId,
+          businessUserId: !!profile.businessId ? profile.businessId : '00000000-0000-0000-0000-000000000000',
           pictureUrl: profile.pictureUrl,
           statusMessage: profile.statusMessage,
           creationTime: new Date(),
