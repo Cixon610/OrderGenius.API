@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateLineAccountDto, LineProfileDto } from 'src/core/models';
+import { LineAccountAddReqVo, LineProfileDto } from 'src/core/models';
 import { LineAccount } from 'src/infra/typeorm';
 import { randomBytes } from 'crypto';
 import { stringify } from 'qs';
@@ -55,18 +55,20 @@ export class LineService {
     const profile: LineProfileDto = profileResponse.data;
     const user = await this.findLineAccountByLineId(profile.userId);
     if (!user) {
-      await this.createLineAccount({
-        lineId: profile.userId,
-        displayName: profile.displayName,
-        pictureUrl: profile.pictureUrl,
-        statusMessage: profile.statusMessage,
-        creationTime: new Date(),
-        updateTime: new Date(),
-      });
+      await this.createLineAccount(
+        new LineAccountAddReqVo({
+          lineId: profile.userId,
+          displayName: profile.displayName,
+          pictureUrl: profile.pictureUrl,
+          statusMessage: profile.statusMessage,
+          creationTime: new Date(),
+          updateTime: new Date(),
+        }),
+      );
     }
-    
+
     const buser = await this.userService.find(profile.userId);
-    if( !buser){
+    if (!buser) {
       await this.userService.create2bUser({
         userName: profile.displayName,
         account: profile.userId,
@@ -83,7 +85,7 @@ export class LineService {
   }
 
   async createLineAccount(
-    createLineAccountDto: CreateLineAccountDto,
+    createLineAccountDto: LineAccountAddReqVo,
   ): Promise<LineAccount> {
     const newLineAccount =
       this.lineAccountRepository.create(createLineAccountDto);

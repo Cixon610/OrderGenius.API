@@ -1,6 +1,5 @@
 //#region dto
 export * from './dto/business/business.dto/business.dto';
-export * from './dto/line.dto';
 export * from './dto/menu/menu.dto/menu.dto';
 export * from './dto/menu/menu.item.dto/menu.item.dto';
 export * from './dto/menu/menu.category.dto/menu.category.dto';
@@ -21,6 +20,7 @@ export * from './vo/req/menu.item.update.req.vo/menu.item.update.req.vo';
 export * from './vo/req/menu.category.add.req.vo/menu.category.add.req.vo';
 export * from './vo/req/menu.category.update.req.vo/menu.category.update.req.vo';
 export * from './vo/req/user.create.req.vo/user.create.req.vo';
+export * from './vo/req/line.account.add.req.vo/line.account.add.req.vo';
 //#endregion
 
 //#region vo/res
