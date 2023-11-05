@@ -8,6 +8,7 @@ import { stringify } from 'qs';
 import { SysConfigService } from 'src/infra/services';
 import axios from 'axios';
 import { UserService } from '../user/user.service';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 
 @Injectable()
 export class LineService {
@@ -76,7 +77,7 @@ export class LineService {
         email: '',
         phone: '',
         address: '',
-        businessId: '',
+        businessId: '00000000-0000-0000-0000-000000000000',
       });
       return profile;
     }
