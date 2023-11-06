@@ -7,6 +7,7 @@ import {
   BusinessController,
   BusinessUserController,
   FileController,
+  BusinessUserAuthController,
 } from './index';
 import { ServicesModule } from 'src/core/services';
 import { JwtModule } from '@nestjs/jwt';
@@ -20,6 +21,7 @@ const exportControllers = [
   MenuCategoryController,
   BusinessController,
   BusinessUserController,
+  BusinessUserAuthController,
   FileController,
 ];
 const infraConfig = new InfraConfig();

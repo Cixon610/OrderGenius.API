@@ -7,15 +7,14 @@ import { randomBytes } from 'crypto';
 import { stringify } from 'qs';
 import { SysConfigService } from 'src/infra/services';
 import axios from 'axios';
-import { UserService } from '../user/user.service';
-import { UUID } from 'typeorm/driver/mongodb/bson.typings';
+import { BusinessUserService } from '../../bu/business/business.user/business.user.service';
 
 @Injectable()
 export class LineService {
   constructor(
     @InjectRepository(LineAccount)
     private readonly lineAccountRepository: Repository<LineAccount>,
-    private readonly userService: UserService,
+    private readonly businessUserService: BusinessUserService,
     private readonly sysConfigService: SysConfigService,
   ) {}
 
@@ -54,9 +53,9 @@ export class LineService {
     });
 
     const profile: LineProfileDto = profileResponse.data;
-    const buser = await this.userService.find(profile.userId);
+    const buser = await this.businessUserService.getByAccount(profile.userId);
     if (!buser) {
-      const user = await this.userService.create2bUser({
+      const user = await this.businessUserService.add({
         userName: profile.displayName,
         account: profile.userId,
         password: 'pass.123',

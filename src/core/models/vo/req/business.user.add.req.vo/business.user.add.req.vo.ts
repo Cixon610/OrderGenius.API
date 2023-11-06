@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserCreateReqVo {
+export class BusinessUserAddReqVo {
   @ApiProperty({
     example: '7709e3c4-57bc-11ee-8c99-0242ac120002',
-    description: 'Id',
+    description: 'businessId',
   })
   businessId: string;
 

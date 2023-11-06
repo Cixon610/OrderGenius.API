@@ -5,7 +5,7 @@ import {
   MenuService,
   MenuItemService,
   BusinessService,
-  UserService,
+  BusinessUserService,
   LocalStrategy,
   FileService,
   JwtStrategy,
@@ -16,7 +16,7 @@ import { SysConfigService } from 'src/infra/services';
 
 const entities = Object.values(typeorm);
 const exportServices = [
-  UserService,
+  BusinessUserService,
   LineService,
   MenuService,
   MenuCategoryService,

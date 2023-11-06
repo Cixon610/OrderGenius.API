@@ -1,21 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BusinessUserDto, UserCreateReqVo, UserResVo } from 'src/core/models';
+import {
+  BusinessUserDto,
+  BusinessUserUpdateReqVo,
+  BusinessUserAddReqVo,
+  BusinessUserResVo,
+} from 'src/core/models';
 import { BusinessUser } from 'src/infra/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { SysConfigService } from 'src/infra/services';
 import { Role } from 'src/core/constants/enums/role.enum';
 
 @Injectable()
-export class UserService {
+export class BusinessUserService {
   constructor(
     @InjectRepository(BusinessUser)
     private readonly businessUserRepository: Repository<BusinessUser>,
     private readonly sysConfigService: SysConfigService,
   ) {}
 
-  async create2bUser(vo: UserCreateReqVo): Promise<UserResVo> {
+  async add(vo: BusinessUserAddReqVo): Promise<BusinessUserResVo> {
     const passwordHash = await bcrypt.hash(
       vo.password,
       this.sysConfigService.infra.saltRounds,
@@ -41,12 +46,6 @@ export class UserService {
     return user ? true : false;
   }
 
-  async find(account: string){
-    return await this.businessUserRepository.findOne({
-      where: { account },
-    });
-  }
-
   async validate(account: string, password: string) {
     let role = Role.COSTUMER;
     //TODO: add cuser validate
@@ -61,20 +60,63 @@ export class UserService {
       if (!isPasswordValid) {
         return null;
       }
-      if( buser.userName == 'admin'){
+      if (buser.userName == 'admin') {
         role = Role.ADMIN;
       }
-      
+
       return { user: buser, role: role };
     }
     return null;
   }
 
-  private toVo(vo: BusinessUser): UserResVo {
+  async update(vo: BusinessUserUpdateReqVo): Promise<BusinessUserResVo> {
+    const toUpdate = await this.businessUserRepository.findOne({
+      where: { id: vo.id },
+    });
+    if (!toUpdate) {
+      throw new Error(`BusinessUser with id ${vo.id} not found`);
+    }
+    const updated = Object.assign(toUpdate, vo);
+    return this.toVo(await this.businessUserRepository.save(updated));
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const tooDelete = await this.businessUserRepository.findOne({
+      where: { id },
+    });
+    if (!tooDelete) {
+      throw new Error(`BusinessUser with id ${id} not found`);
+    }
+    return !!this.businessUserRepository.delete(id);
+  }
+
+  async get(id: string): Promise<BusinessUserResVo> {
+    return this.toVo(await this.businessUserRepository.findOne({ where: { id } }));
+  }
+
+  async getByKey(key: string): Promise<BusinessUserResVo[]> {
+    var vos = await this.businessUserRepository.find({
+      where: { userName: Like(`%${key}%`) },
+    });
+    return vos.map((vo) => this.toVo(vo));
+  }
+
+  async getByAccount(account: string) {
+    return await this.businessUserRepository.findOne({
+      where: { account },
+    });
+  }
+
+  async getByBusinessId(businessId: string): Promise<BusinessUserResVo[]> {
+    var vos = await this.businessUserRepository.find({ where: { businessId } });
+    return vos.map((vo) => this.toVo(vo));
+  }
+
+  private toVo(vo: BusinessUser): BusinessUserResVo {
     if (!vo) {
       return null;
     }
-    return new UserResVo({
+    return new BusinessUserResVo({
       id: vo.id,
       businessId: vo.businessId,
       userName: vo.userName,

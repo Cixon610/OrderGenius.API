@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
 import { BusinessAddReqVo, BusinessResVo, BusinessUpdateReqVo } from 'src/core/models';
 import { BusinessService } from 'src/core/services';
@@ -12,6 +12,7 @@ export class BusinessController {
     constructor(private readonly businessService: BusinessService) {}
 
     @Post()
+    @ApiBearerAuth()
     @ApiResponse({ status: 200, type: BusinessResVo })
     async Add(@Body() dto: BusinessAddReqVo, @Res() res) {
       const vo = await this.businessService.add(dto);
@@ -19,6 +20,7 @@ export class BusinessController {
     }
   
     @Put()
+    @ApiBearerAuth()
     @ApiResponse({ status: 200, type: BusinessResVo })
     async Update(@Body() dto: BusinessUpdateReqVo, @Res() res) {
       const vo = await this.businessService.update(dto);
@@ -26,6 +28,7 @@ export class BusinessController {
     }
   
     @Delete(':businessId')
+    @ApiBearerAuth()
     @ApiResponse({ status: 200, type: BusinessResVo })
     async Delete(@Param('businessId') businessId: string, @Res() res) {
       const sucess = await this.businessService.delete(businessId);
@@ -33,6 +36,7 @@ export class BusinessController {
     }
   
     @Get()
+    @ApiBearerAuth()
     @ApiResponse({ status: 200, type: BusinessResVo })
     async Get(@Query('id') id: string, @Res() res) {
       const vo = await this.businessService.get(id);
@@ -40,6 +44,7 @@ export class BusinessController {
     }
     
     @Get('key')
+    @ApiBearerAuth()
     @ApiResponse({ status: 200, type: [BusinessResVo] })
     async GetByKey(@Query('key') key: string, @Res() res) {
       const vos = await this.businessService.getByKey(key);

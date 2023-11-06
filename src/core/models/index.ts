@@ -19,15 +19,17 @@ export * from './vo/req/menu.item.add.req.vo/menu.item.add.req.vo';
 export * from './vo/req/menu.item.update.req.vo/menu.item.update.req.vo';
 export * from './vo/req/menu.category.add.req.vo/menu.category.add.req.vo';
 export * from './vo/req/menu.category.update.req.vo/menu.category.update.req.vo';
-export * from './vo/req/user.create.req.vo/user.create.req.vo';
+export * from './vo/req/business.user.add.req.vo/business.user.add.req.vo';
 export * from './vo/req/line.account.add.req.vo/line.account.add.req.vo';
+export * from './vo/req/business.user.update.req.vo/business.user.update.req.vo';
+
 //#endregion
 
 //#region vo/res
 export * from './vo/res/menu.res.vo/menu.res.vo';
 export * from './vo/res/menu.item.res.vo/menu.item.res.vo';
 export * from './vo/res/menu.category.res.vo/menu.category.res.vo';
-export * from './vo/res/user.res.vo/user.res.vo';
+export * from './vo/res/business.user.res.vo/business.user.res.vo';
 //#endregion
 
 export * from './vo/req/login.req.vo/login.req.vo';

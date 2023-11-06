@@ -2,42 +2,43 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
+  Get,
+  Param,
   Post,
+  Put,
+  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserPayload } from 'src/core/decorator/user-payload.decorator';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
 import {
   BusinessUserDto,
-  IUserPayload,
-  LoginReqVo,
-  UserCreateReqVo,
-  UserResVo,
+  BusinessUserUpdateReqVo,
+  BusinessUserAddReqVo,
+  BusinessUserResVo,
 } from 'src/core/models';
-import { UserService } from 'src/core/services';
+import { BusinessUserService } from 'src/core/services';
 
+@UseGuards(AuthGuard('jwt'), RoleGuard)
 @ApiTags('Business/User')
 @Controller('business/user')
 export class BusinessUserController {
   constructor(
-    private readonly jwtService: JwtService,
-    private readonly userService: UserService,
+    private readonly businessUserService: BusinessUserService,
   ) {}
 
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
-  @Post('create')
+  @Post()
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: UserResVo })
-  async create(@Body() dto: UserCreateReqVo, @Res() res) {
-    if (await this.userService.isUserExist(dto.account)) {
+  @ApiResponse({ status: 200, type: BusinessUserResVo })
+  async add(@Body() dto: BusinessUserAddReqVo, @Res() res) {
+    if (await this.businessUserService.isUserExist(dto.account)) {
       throw new BadRequestException('User already exist');
     }
 
-    const vo = await this.userService.create2bUser(
+    const vo = await this.businessUserService.add(
       new BusinessUserDto({
         businessId: dto.businessId,
         userName: dto.userName,
@@ -51,17 +52,43 @@ export class BusinessUserController {
     res.json(vo);
   }
 
-  @UseGuards(AuthGuard('local'))
-  @Post('signIn/local')
-  async signInLocal(
-    @UserPayload() user: IUserPayload,
-    @Body() swaggermodel: LoginReqVo,
-    @Res() res,
-  ) {
-    //TODO: 包成class
-    return res.json({
-      businessId: user.businessId,
-      token: this.jwtService.sign(user),
-    });
+  @Put()
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: BusinessUserResVo })
+  async Update(@Body() menuDto: BusinessUserUpdateReqVo, @Res() res) {
+    const vo = await this.businessUserService.update(menuDto);
+    res.json(vo);
+  }
+
+  @Delete(':businessUserId')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: BusinessUserResVo })
+  async Delete(@Param('businessUserId') menuId: string, @Res() res) {
+    const sucess = await this.businessUserService.delete(menuId);
+    res.json(sucess);
+  }
+
+  @Get()
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: BusinessUserResVo })
+  async Get(@Query('id') id: string, @Res() res) {
+    const vo = await this.businessUserService.get(id);
+    res.json(vo);
+  }
+
+  @Get('key')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: [BusinessUserResVo] })
+  async GetByKey(@Query('key') key: string, @Res() res) {
+    const vos = await this.businessUserService.getByKey(key);
+    res.json(vos);
+  }
+
+  @Get(':businessId')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: [BusinessUserResVo] })
+  async GetByBusiness(@Param('businessId') id: string, @Res() res) {
+    const vos = await this.businessUserService.getByBusinessId(id);
+    res.json(vos);
   }
 }
