@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { HttpExceptionFilter } from './core/filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,6 +21,10 @@ async function bootstrap() {
     .addBearerAuth()
     // .addTag('nestjs')
     .build();
+
+  //#region filter register
+  app.useGlobalFilters(new HttpExceptionFilter());
+  //#endregion
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
