@@ -1,19 +1,33 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import { ValidationError } from 'class-validator';
 
 @Catch(Error)
 export class HttpExceptionFilter<T> implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx?.getResponse();
-    let status = exception instanceof HttpException 
-      ? exception.getStatus()
-      : HttpStatus.INTERNAL_SERVER_ERROR;
-      
-    const message = exception?.message || 'Internal server error';
     const timestamp = new Date().toISOString();
+    let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = [exception.message ?? 'Internal server error'];
 
-    response.status(status).json({
-      statusCode: status,
+    if (exception instanceof HttpException) {
+      statusCode = exception.getStatus();
+      const msgRes = exception.getResponse();
+
+      //Get validatePipe messages
+      if (!!msgRes['message']) {
+        message = msgRes['message'];
+      }
+    }
+
+    response.status(statusCode).json({
+      statusCode,
       message,
       timestamp,
     });

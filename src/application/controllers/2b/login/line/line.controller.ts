@@ -28,7 +28,6 @@ export class LineController {
   }
 
   @Get('callback')
-  @UsePipes(ValidationPipe)
   async callback(@Req() req, @Res() res) {
     const { code } = req.query;
     const profile = await this.lineService.getLineProfile(code);
