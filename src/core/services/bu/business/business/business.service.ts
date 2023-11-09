@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  BusinessAddReqVo,
+  BusinessVo,
   BusinessDto,
   BusinessResVo,
   BusinessUpdateReqVo,
@@ -16,7 +16,7 @@ export class BusinessService {
     private readonly businessRepository: Repository<Business>,
   ) {}
 
-  async add(vo: BusinessAddReqVo): Promise<BusinessResVo> {
+  async add(vo: BusinessVo): Promise<BusinessResVo> {
     const newbusiness = this.businessRepository.create(
       new BusinessDto({
         name: vo.name,
@@ -65,11 +65,11 @@ export class BusinessService {
       return null;
     }
     return new BusinessResVo({
-        id: business.id,
-        name: business.name,
-        placeId: business.placeId,
-        address: business.address,
-        phone: business.phone,
+      id: business.id,
+      name: business.name,
+      placeId: business.placeId,
+      address: business.address,
+      phone: business.phone,
     });
   }
 }

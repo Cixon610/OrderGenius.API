@@ -17,7 +17,7 @@ import { RoleGuard } from 'src/core/guards/role/role.guard';
 import {
   BusinessUserDto,
   BusinessUserUpdateReqVo,
-  BusinessUserAddReqVo,
+  BusinessUserVo,
   BusinessUserResVo,
 } from 'src/core/models';
 import { BusinessUserService } from 'src/core/services';
@@ -26,14 +26,12 @@ import { BusinessUserService } from 'src/core/services';
 @ApiTags('Business/User')
 @Controller('business/user')
 export class BusinessUserController {
-  constructor(
-    private readonly businessUserService: BusinessUserService,
-  ) {}
+  constructor(private readonly businessUserService: BusinessUserService) {}
 
   @Post()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: BusinessUserResVo })
-  async add(@Body() dto: BusinessUserAddReqVo, @Res() res) {
+  async add(@Body() dto: BusinessUserVo, @Res() res) {
     if (await this.businessUserService.isUserExist(dto.account)) {
       throw new BadRequestException('User already exist');
     }

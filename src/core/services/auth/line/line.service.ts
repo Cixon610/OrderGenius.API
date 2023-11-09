@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { LineAccountAddReqVo, LineProfileDto } from 'src/core/models';
+import { LineAccountDto, LineProfileVo } from 'src/core/models';
 import { LineAccount } from 'src/infra/typeorm';
 import { randomBytes } from 'crypto';
 import { stringify } from 'qs';
@@ -32,7 +32,7 @@ export class LineService {
     return Promise.resolve(loginUrl);
   }
 
-  async getLineProfile(code: string): Promise<LineProfileDto> {
+  async getLineProfile(code: string): Promise<LineProfileVo> {
     const tokenResponse = await axios.post(
       'https://api.line.me/oauth2/v2.1/token',
       {
@@ -52,7 +52,7 @@ export class LineService {
       },
     });
 
-    const profile: LineProfileDto = profileResponse.data;
+    const profile: LineProfileVo = profileResponse.data;
     const buser = await this.businessUserService.getByAccount(profile.userId);
     if (!buser) {
       const user = await this.businessUserService.add({
@@ -65,22 +65,21 @@ export class LineService {
         businessId: '00000000-0000-0000-0000-000000000000',
       });
       profile.businessId = user.businessId;
-    }
-    else{
+    } else {
       profile.businessId = buser.businessId;
     }
 
     const user = await this.findLineAccountByLineId(profile.userId);
     if (!user) {
       await this.createLineAccount(
-        new LineAccountAddReqVo({
+        new LineAccountDto({
           lineId: profile.userId,
           displayName: profile.displayName,
-          businessUserId: !!profile.businessId ? profile.businessId : '00000000-0000-0000-0000-000000000000',
+          businessUserId: !!profile.businessId
+            ? profile.businessId
+            : '00000000-0000-0000-0000-000000000000',
           pictureUrl: profile.pictureUrl,
           statusMessage: profile.statusMessage,
-          creationTime: new Date(),
-          updateTime: new Date(),
         }),
       );
     }
@@ -89,7 +88,7 @@ export class LineService {
   }
 
   async createLineAccount(
-    createLineAccountDto: LineAccountAddReqVo,
+    createLineAccountDto: LineAccountDto,
   ): Promise<LineAccount> {
     const newLineAccount =
       this.lineAccountRepository.create(createLineAccountDto);

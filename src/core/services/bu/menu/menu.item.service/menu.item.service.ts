@@ -5,7 +5,7 @@ import { MenuItem } from 'src/infra/typeorm';
 import {
   MenuItemDto,
   MenuItemUpdateReqVo,
-  MenuItemAddReqVo,
+  MenuItemVo,
   MenuItemResVo,
 } from 'src/core/models';
 
@@ -16,7 +16,7 @@ export class MenuItemService {
     private readonly menuItemRepository: Repository<MenuItem>,
   ) {}
 
-  async add(vo: MenuItemAddReqVo): Promise<MenuItemResVo> {
+  async add(vo: MenuItemVo): Promise<MenuItemResVo> {
     //TODO:抽Adapter層
     const newMenuItem = this.menuItemRepository.create(
       new MenuItemDto({

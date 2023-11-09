@@ -9,9 +9,10 @@ import {
 import {
   MenuCategoryDto,
   MenuCategoryMappingDto,
-  MenuCategoryAddReqVo,
+  MenuCategoryVo,
   MenuCategoryResVo,
   MenuCategoryUpdateReqVo,
+  MenuItemResVo,
 } from 'src/core/models';
 
 @Injectable()
@@ -25,7 +26,7 @@ export class MenuCategoryService {
     private readonly viewCategoryItemRepository: Repository<ViewCategoryItem>,
   ) {}
 
-  async add(vo: MenuCategoryAddReqVo): Promise<MenuCategoryResVo> {
+  async add(vo: MenuCategoryVo): Promise<MenuCategoryResVo> {
     //TODO:抽Adapter層
     const newItem = await this.menuCategoryRepository.save(
       this.menuCategoryRepository.create(
@@ -85,13 +86,13 @@ export class MenuCategoryService {
     }
 
     const deleted = await this.menuCategoryRepository.delete(id);
-    deleted && await this.deleteMapping(id);
+    deleted && (await this.deleteMapping(id));
     return !!deleted;
   }
 
   async get(id: string): Promise<MenuCategoryResVo> {
     return this.toVo(
-      await this.viewCategoryItemRepository.find({ where: { categoryId : id } }),
+      await this.viewCategoryItemRepository.find({ where: { categoryId: id } }),
     );
   }
 
@@ -103,7 +104,9 @@ export class MenuCategoryService {
   }
 
   async getByBusinessId(businessId: string): Promise<MenuCategoryResVo[]> {
-    var vos = await this.viewCategoryItemRepository.find({ where: { businessId } });
+    var vos = await this.viewCategoryItemRepository.find({
+      where: { businessId },
+    });
     return this.toVos(vos);
   }
 
@@ -113,7 +116,7 @@ export class MenuCategoryService {
     if (!Item) {
       return null;
     }
-    
+
     const res = this.toVos(Item);
     return res[0];
   }
@@ -122,7 +125,7 @@ export class MenuCategoryService {
     if (!Item) {
       return null;
     }
-    
+
     const grouped = Item.reduce((arr, view) => {
       const key = view.categoryId;
       if (!arr[key]) {
@@ -136,15 +139,18 @@ export class MenuCategoryService {
     for (const key in grouped) {
       if (Object.prototype.hasOwnProperty.call(grouped, key)) {
         const element = grouped[key];
-        res.push(
-          new MenuCategoryResVo({
-            id: element[0].categoryId,
-            businessId: element[0].businessId,
-            name: element[0].categoryName,
-            description: element[0].categoryDescription,
-            pictureUrl: element[0].categoryPictureUrl,
-            menuItems: element.map((item) => {
-              return {
+        const vo = new MenuCategoryResVo({
+          id: element[0].categoryId,
+          businessId: element[0].businessId,
+          name: element[0].categoryName,
+          description: element[0].categoryDescription,
+          pictureUrl: element[0].categoryPictureUrl,
+          menuItems: element
+            .filter((item) => {
+              !!item.itemId;
+            })
+            .map((item) => {
+              return new MenuItemResVo({
                 id: item.itemId,
                 name: item.itemName,
                 description: item.itemDescription,
@@ -154,10 +160,10 @@ export class MenuCategoryService {
                 enable: item.itemEnable,
                 promoted: item.itemPromoted,
                 pictureUrl: item.itemPictureUrl,
-              };
+              });
             }),
-          }),
-        );
+        });
+        res.push(vo);
       }
     }
     return res;

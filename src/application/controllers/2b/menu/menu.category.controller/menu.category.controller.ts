@@ -13,7 +13,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
-import { MenuCategoryAddReqVo, MenuCategoryResVo, MenuCategoryUpdateReqVo } from 'src/core/models';
+import { MenuCategoryVo, MenuCategoryResVo, MenuCategoryUpdateReqVo } from 'src/core/models';
 import { MenuCategoryService } from 'src/core/services';
 
 @UseGuards(AuthGuard('jwt'), RoleGuard)
@@ -25,7 +25,7 @@ export class MenuCategoryController {
   @Post()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuCategoryResVo })
-  async Add(@Body() dto: MenuCategoryAddReqVo, @Res() res) {
+  async Add(@Body() dto: MenuCategoryVo, @Res() res) {
     const vo = await this.menuCategoryService.add(dto);
     res.json(vo);
   }

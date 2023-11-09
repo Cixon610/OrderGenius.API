@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
-  MenuAddReqVo,
+  MenuVo,
   MenuCategoryResVo,
   MenuDto,
   MenuMappingDto,
@@ -22,7 +22,7 @@ export class MenuService {
     private readonly viewMenuCategoryRepository: Repository<ViewMenuCategory>,
   ) {}
 
-  async add(vo: MenuAddReqVo): Promise<MenuResVo> {
+  async add(vo: MenuVo): Promise<MenuResVo> {
     //TODO:抽Adapter層
     const newMenu = await this.menuRepository.save(
       this.menuRepository.create(
@@ -54,9 +54,7 @@ export class MenuService {
       throw new Error(`MenuCategory with id ${vo.id} not found`);
     }
 
-    const updated = await this.menuRepository.save(
-      Object.assign(toUpdate, vo),
-    );
+    const updated = await this.menuRepository.save(Object.assign(toUpdate, vo));
 
     if (!updated) {
       throw new Error(`MenuCategory with id ${vo.id} not updated`);
@@ -125,14 +123,17 @@ export class MenuService {
     for (const key in grouped) {
       if (Object.prototype.hasOwnProperty.call(grouped, key)) {
         const element = grouped[key];
-        res.push(
-          new MenuResVo({
-            id: element[0].menuId,
-            businessId: element[0].businessId,
-            name: element[0].menuName,
-            description: element[0].menuDescription,
-            pictureUrl: element[0].menuPictureUrl,
-            menuCategories: element.map((category) => {
+        const vo = new MenuResVo({
+          id: element[0].menuId,
+          businessId: element[0].businessId,
+          name: element[0].menuName,
+          description: element[0].menuDescription,
+          pictureUrl: element[0].menuPictureUrl,
+          menuCategories: element
+            .filter((category) => {
+              !!category.categoryId;
+            })
+            .map((category) => {
               return new MenuCategoryResVo({
                 id: category.categoryId,
                 businessId: category.businessId,
@@ -141,8 +142,8 @@ export class MenuService {
                 pictureUrl: category.categoryPictureUrl,
               });
             }),
-          }),
-        );
+        });
+        res.push(vo);
       }
     }
     return res;

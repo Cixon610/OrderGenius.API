@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   BusinessUserDto,
   BusinessUserUpdateReqVo,
-  BusinessUserAddReqVo,
+  BusinessUserVo,
   BusinessUserResVo,
 } from 'src/core/models';
 import { BusinessUser } from 'src/infra/typeorm';
@@ -20,7 +20,7 @@ export class BusinessUserService {
     private readonly sysConfigService: SysConfigService,
   ) {}
 
-  async add(vo: BusinessUserAddReqVo): Promise<BusinessUserResVo> {
+  async add(vo: BusinessUserVo): Promise<BusinessUserResVo> {
     const passwordHash = await bcrypt.hash(
       vo.password,
       this.sysConfigService.infra.saltRounds,
@@ -91,7 +91,9 @@ export class BusinessUserService {
   }
 
   async get(id: string): Promise<BusinessUserResVo> {
-    return this.toVo(await this.businessUserRepository.findOne({ where: { id } }));
+    return this.toVo(
+      await this.businessUserRepository.findOne({ where: { id } }),
+    );
   }
 
   async getByKey(key: string): Promise<BusinessUserResVo[]> {

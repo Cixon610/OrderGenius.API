@@ -13,7 +13,7 @@ import {
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MenuItemService } from 'src/core/services';
 import {
-  MenuItemAddReqVo,
+  MenuItemVo,
   MenuItemResVo,
   MenuItemUpdateReqVo,
 } from 'src/core/models';
@@ -29,7 +29,7 @@ export class MenuItemController {
   @Post()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuItemResVo })
-  async Add(@Body() menuItemVo: MenuItemAddReqVo, @Res() res) {
+  async Add(@Body() menuItemVo: MenuItemVo, @Res() res) {
     const vo = await this.menuItemService.add(menuItemVo);
     res.json(vo);
   }
