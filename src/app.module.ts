@@ -8,6 +8,7 @@ import { InfraModule } from './infra/infra.module';
 import * as typeorm from './infra/typeorm';
 import { InfraConfig } from './infra/config';
 import { join } from 'path';
+import { RedisModule } from '@songkeys/nestjs-redis';
 
 const entities = Object.values(typeorm);
 const infraConfig = new InfraConfig();
@@ -30,6 +31,14 @@ const infraConfig = new InfraConfig();
       global: true,
       modelPath: join(__dirname, '../casbin/model.conf'),
       policyAdapter: join(__dirname, '../casbin/policy.csv'),
+    }),
+    RedisModule.forRoot({
+      config: {
+        host: infraConfig.redisHost,
+        port: infraConfig.redisPort,
+        username: infraConfig.redisUserName,
+        password: infraConfig.redisPassword,
+      },
     }),
   ],
 })

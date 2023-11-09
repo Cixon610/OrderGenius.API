@@ -27,11 +27,31 @@ export class InfraConfig {
     return String(process.env.AWS_S3_ACESS_KEY_ID);
   }
 
-  get AwsS3SecretAcessKey(): string {
+  get awsS3SecretAcessKey(): string {
     return String(process.env.AWS_S3_SECRET_ACESS_KEY);
   }
 
-  get AwsS3BuketNameImg(): string {
+  get awsS3BuketNameImg(): string {
     return String(process.env.AWS_S3_BUKET_NAME_IMG);
+  }
+
+  get redisHost(): string {
+    return String(process.env.REDIS_HOST);
+  }
+
+  get redisPort(): number {
+    return Number(process.env.REDIS_PORT);
+  }
+
+  get redisUserName(): string {
+    return String(process.env.REDIS_USERNAME);
+  }
+
+  get redisPassword(): string {
+    return String(process.env.PASSWORD);
+  }
+
+  get redisExpire(): number {
+    return Number(process.env.RESIS_EXPIRE);
   }
 }

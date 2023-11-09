@@ -10,14 +10,14 @@ export class FileService {
       region: this.sysConfigService.infra.awsS3Region,
       credentials: {
         accessKeyId: this.sysConfigService.infra.awsS3AcessKeyId,
-        secretAccessKey: this.sysConfigService.infra.AwsS3SecretAcessKey,
+        secretAccessKey: this.sysConfigService.infra.awsS3SecretAcessKey,
       },
     });
 
     try {
       const data = await s3Client.send(
         new PutObjectCommand({
-          Bucket: this.sysConfigService.infra.AwsS3BuketNameImg,
+          Bucket: this.sysConfigService.infra.awsS3BuketNameImg,
           Key: file.originalname,
           Body: file.buffer,
           ACL: 'public-read',
@@ -27,7 +27,7 @@ export class FileService {
 
       if(!data) throw new Error('Error uploading file to S3');
 
-      return `https://s3.${this.sysConfigService.infra.awsS3Region}.amazonaws.com/${this.sysConfigService.infra.AwsS3BuketNameImg}/${file.originalname}`;
+      return `https://s3.${this.sysConfigService.infra.awsS3Region}.amazonaws.com/${this.sysConfigService.infra.awsS3BuketNameImg}/${file.originalname}`;
     } catch (err) {
       console.log(err, err.stack);
       throw err;
