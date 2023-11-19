@@ -62,7 +62,7 @@ export class LineService {
         email: '',
         phone: '',
         address: '',
-        businessId: '00000000-0000-0000-0000-000000000000',
+        businessId: this.sysConfigService.common.defaultBzId,
       });
       profile.businessId = user.businessId;
     } else {
@@ -77,7 +77,7 @@ export class LineService {
           displayName: profile.displayName,
           businessUserId: !!profile.businessId
             ? profile.businessId
-            : '00000000-0000-0000-0000-000000000000',
+            : this.sysConfigService.common.defaultBzId,
           pictureUrl: profile.pictureUrl,
           statusMessage: profile.statusMessage,
         }),

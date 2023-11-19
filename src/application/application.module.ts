@@ -35,7 +35,9 @@ const infraConfig = new InfraConfig();
         },
       }),
     }),
-    ServicesModule],
+    ServicesModule,
+  ],
+  providers: [SysConfigService],
   controllers: exportControllers,
 })
 export class ApplicationModule {}

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InfraConfig, ThirdPartyConfig } from 'src/infra/config';
+import { CommonConfig, InfraConfig, ThirdPartyConfig } from 'src/infra/config';
 
 @Injectable()
 export class SysConfigService {
@@ -9,5 +9,9 @@ export class SysConfigService {
 
   get thirdParty(): ThirdPartyConfig {
     return new ThirdPartyConfig();
+  }
+
+  get common(): CommonConfig {
+    return new CommonConfig();
   }
 }
