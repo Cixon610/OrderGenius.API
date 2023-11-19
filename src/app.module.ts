@@ -34,10 +34,7 @@ const infraConfig = new InfraConfig();
     }),
     RedisModule.forRoot({
       config: {
-        host: infraConfig.redisHost,
-        port: infraConfig.redisPort,
-        username: infraConfig.redisUserName,
-        password: infraConfig.redisPassword,
+        url: infraConfig.redisUrl,
       },
     }),
   ],
