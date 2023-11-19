@@ -22,8 +22,9 @@ export class LoginLog {
   countryCode: string | null;
 
   @CreateDateColumn({
+    name: 'created_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
-  creationTime: Date | null;
+  createdAt: Date | null;
 }

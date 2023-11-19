@@ -11,7 +11,9 @@ import { ViewEntity, ViewColumn } from 'typeorm';
       mc.id AS category_id,
       mc.name AS category_name,
       mc.description AS category_description,
-      mc.picture_url AS category_picture_url
+      mc.picture_url AS category_picture_url,
+      mc.created_at AS category_created_at,
+      mc.updated_at AS category_updated_at
     FROM public.menu m
     LEFT JOIN public.menu_mapping mcm ON mcm.menu_id = m.id
     LEFT JOIN public.menu_category mc ON mcm.menu_category_id = mc.id
@@ -44,4 +46,10 @@ export class ViewMenuCategory {
 
   @ViewColumn({name:'category_picture_url'})
   categoryPictureUrl: string;
+
+  @ViewColumn({ name: 'category_created_at' })
+  categoryCreatedAt: Date | null;
+
+  @ViewColumn({ name: 'category_updated_at' })
+  categoryUpdatedAt: Date | null;
 }
