@@ -90,7 +90,10 @@ export class MenuService {
 
   async getByBusinessId(businessId: string): Promise<MenuResVo[]> {
     return this.toVos(
-      await this.viewMenuCategoryRepository.find({ where: { businessId } }),
+      await this.viewMenuCategoryRepository.find({
+        where: { businessId },
+        order: { categoryUpdatedAt: 'DESC' },
+      }),
     );
   }
 
@@ -109,6 +112,10 @@ export class MenuService {
     if (!Item) {
       return null;
     }
+
+    Item.sort((a, b) => {
+      return a.categoryUpdatedAt > b.categoryUpdatedAt ? -1 : 1;
+    });
 
     const grouped = Item.reduce((arr, view) => {
       const key = view.menuId;
