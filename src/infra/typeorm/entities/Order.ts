@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  UpdateDateColumn,
+} from 'typeorm';
 
 // @Index('order_pkey', ['id'], { unique: true })
 @Entity('order', { schema: 'public' })
@@ -21,11 +27,18 @@ export class Order {
   @Column('text', { name: 'memo', nullable: true })
   memo: string | null;
 
-  @CreateDateColumn()
-  @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: Date | null;
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: Date | null;
 
-  @UpdateDateColumn()
-  @Column('date', { name: 'update_time', nullable: true })
-  updateTime: Date | null;
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
+  updatedAt: Date | null;
 }

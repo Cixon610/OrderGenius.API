@@ -60,14 +60,18 @@ export class MenuItemService {
   }
 
   async getByKey(key: string): Promise<MenuItemResVo[]> {
-    var vos = await this.menuItemRepository.find({
+    const vos = await this.menuItemRepository.find({
       where: { name: Like(`%${key}%`) },
+      order: { updatedAt: 'DESC' },
     });
     return vos.map((vo) => this.toVo(vo));
   }
 
   async getByBusinessId(businessId: string): Promise<MenuItemResVo[]> {
-    var vos = await this.menuItemRepository.find({ where: { businessId } });
+    var vos = await this.menuItemRepository.find({
+      where: { businessId },
+      order: { updatedAt: 'DESC' },
+    });
     return vos.map((vo) => this.toVo(vo));
   }
 

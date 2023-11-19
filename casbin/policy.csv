@@ -1,9 +1,9 @@
-p, admin, /business/:businessId, *
 p, admin, /business/key?key=<string>, *
 p, admin, /business/user/create, *
 p, admin, /business, *
+p, admin, /business/:businessId, *
 
-
+p, business, /business, read
 p, business, /menuCategory/:menuCategoryId, *
 p, business, /menuCategory/key?key=<string>, *
 p, business, /menuCategory/:businessId

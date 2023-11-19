@@ -9,7 +9,10 @@ export class Conversation {
   @Column('uuid', { name: 'user_c_id', nullable: true })
   userCId: string | null;
 
-  @CreateDateColumn()
-  @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: Date | null;
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: Date | null;
 }

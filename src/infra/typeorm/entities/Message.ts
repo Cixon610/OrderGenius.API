@@ -15,7 +15,10 @@ export class Message {
   @Column('integer', { name: 'order_id', nullable: true })
   orderId: string | null;
 
-  @CreateDateColumn()
-  @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: Date | null;
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: Date | null;
 }

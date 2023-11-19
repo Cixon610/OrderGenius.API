@@ -32,26 +32,33 @@ export class MenuItem {
 
   @Column('boolean', {
     name: 'enable',
-    nullable: false
+    nullable: false,
   })
   enable: boolean;
 
   @Column('boolean', {
     name: 'promoted',
-    nullable: false
+    nullable: false,
   })
   promoted: boolean;
 
   @Column('text', { name: 'picture_url', nullable: true })
   pictureUrl: string | null;
 
-  @CreateDateColumn()
-  @Column('timestamp', { name: 'creation_time', nullable: true })
-  creationTime: Date | null;
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: Date | null;
 
-  @UpdateDateColumn()
-  @Column('timestamp', { name: 'update_time', nullable: true })
-  updateTime: Date | null;
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
+  updatedAt: Date | null;
 
   @Column('uuid', { name: 'update_user_id', nullable: true })
   updateUserId: string | null;

@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  UpdateDateColumn,
+} from 'typeorm';
 
 // @Index('line_account_pkey', ['id'], { unique: true })
 // @Index('line_account_line_id_key', ['lineId'], { unique: true })
@@ -22,11 +28,18 @@ export class LineAccount {
   @Column('text', { name: 'status_message', nullable: true })
   statusMessage: string | null;
 
-  @CreateDateColumn()
-  @Column('date', { name: 'creation_time', nullable: true })
-  creationTime: Date | null;
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: Date | null;
 
-  @UpdateDateColumn()
-  @Column('date', { name: 'update_time', nullable: true })
-  updateTime: Date | null;
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
+  updatedAt: Date | null;
 }

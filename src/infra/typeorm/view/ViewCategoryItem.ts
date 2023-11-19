@@ -1,4 +1,9 @@
-import { ViewEntity, ViewColumn } from 'typeorm';
+import {
+  ViewEntity,
+  ViewColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @ViewEntity({
   expression: `
@@ -14,7 +19,9 @@ import { ViewEntity, ViewColumn } from 'typeorm';
       mi.modification AS item_modification,
       mi.note AS item_note,
       mi.enable AS item_enable,
-      mi.picture_url AS item_pictureurl
+      mi.picture_url AS item_pictureurl,
+      mi.created_at AS item_created_at,
+      mi.updated_at AS item_updated_at
     FROM menu_category AS mc
     LEFT JOIN menu_category_mapping AS mcm ON mc.id = mcm.menu_category_id
     LEFT JOIN menu_item AS mi ON mi.id = mcm.menu_item_id;
@@ -59,4 +66,10 @@ export class ViewCategoryItem {
 
   @ViewColumn({ name: 'item_pictureurl' })
   itemPictureUrl: string;
+
+  @ViewColumn({ name: 'item_created_at' })
+  itemCreatedAt: Date | null;
+
+  @ViewColumn({ name: 'item_updated_at' })
+  itemUpdatedAt: Date | null;
 }
