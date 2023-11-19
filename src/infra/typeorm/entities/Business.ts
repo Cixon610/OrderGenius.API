@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  UpdateDateColumn,
+} from 'typeorm';
 
 // @Index('business_pkey', ['id'], { unique: true })
 @Entity('business', { schema: 'public' })
@@ -18,13 +24,19 @@ export class Business {
   @Column('text', { name: 'phone', nullable: true })
   phone: string | null;
 
-  @CreateDateColumn()
-  @Column('date', { name: 'creation_time', nullable: true })
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
   creationTime: Date | null;
 
-  @UpdateDateColumn()
-  @Column('date', { name: 'update_time', nullable: true })
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
   updateTime: Date | null;
+
   @Column('uuid', { name: 'update_user_id', nullable: true })
   updateUserId: string | null;
 }

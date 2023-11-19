@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  UpdateDateColumn,
+} from 'typeorm';
 
 // @Index('menu_mapping_pkey', ['id'], { unique: true })
 @Entity('menu_mapping', { schema: 'public' })
@@ -12,12 +18,17 @@ export class MenuMapping {
   @Column('uuid', { name: 'menu_category_id', nullable: true })
   menuCategoryId: string | null;
 
-  @CreateDateColumn()
-  @Column('date', { name: 'creation_time', nullable: true })
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
   creationTime: Date | null;
 
-  @UpdateDateColumn()
-  @Column('date', { name: 'update_time', nullable: true })
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
   updateTime: Date | null;
 
   @Column('uuid', { name: 'update_user_id', nullable: true })

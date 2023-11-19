@@ -26,12 +26,18 @@ export class BusinessUser {
 
   @Column('text', { name: 'address', nullable: true })
   address: string | null;
-
-  @CreateDateColumn()
-  @Column('date', { name: 'creation_time', nullable: true })
+  
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
   creationTime: Date | null;
 
-  @UpdateDateColumn()
-  @Column('date', { name: 'update_time', nullable: true })
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
   updateTime: Date | null;
+
 }
