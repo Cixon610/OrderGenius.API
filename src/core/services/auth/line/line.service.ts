@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { LineAccountDto, LineProfileVo } from 'src/core/models';
+import { BusinessUserVo, LineAccountDto, LineProfileVo } from 'src/core/models';
 import { LineAccount } from 'src/infra/typeorm';
 import { randomBytes } from 'crypto';
 import { stringify } from 'qs';
@@ -54,18 +54,23 @@ export class LineService {
 
     const profile: LineProfileVo = profileResponse.data;
     const buser = await this.businessUserService.getByAccount(profile.userId);
+    let buserId = this.sysConfigService.common.defaultBzId;
     if (!buser) {
-      const user = await this.businessUserService.add({
-        userName: profile.displayName,
-        account: profile.userId,
-        password: 'pass.123',
-        email: '',
-        phone: '',
-        address: '',
-        businessId: this.sysConfigService.common.defaultBzId,
-      });
+      const user = await this.businessUserService.add(
+        new BusinessUserVo({
+          userName: profile.displayName,
+          account: profile.userId,
+          password: 'pass.123',
+          email: '',
+          phone: '',
+          address: '',
+          businessId: this.sysConfigService.common.defaultBzId,
+        }),
+      );
+      buserId = user.id;
       profile.businessId = user.businessId;
     } else {
+      buserId = buser.id;
       profile.businessId = buser.businessId;
     }
 
@@ -75,9 +80,7 @@ export class LineService {
         new LineAccountDto({
           lineId: profile.userId,
           displayName: profile.displayName,
-          businessUserId: !!profile.businessId
-            ? profile.businessId
-            : this.sysConfigService.common.defaultBzId,
+          businessUserId: buserId,
           pictureUrl: profile.pictureUrl,
           statusMessage: profile.statusMessage,
         }),
