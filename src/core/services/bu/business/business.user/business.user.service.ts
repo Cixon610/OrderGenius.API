@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   BusinessUserDto,
@@ -49,24 +49,26 @@ export class BusinessUserService {
   async validate(account: string, password: string) {
     let role = Role.COSTUMER;
     //TODO: add cuser validate
-    const cuser = null;
+    //const cuser = null;
 
     const buser = await this.businessUserRepository.findOne({
       where: { account },
     });
 
-    if (!!buser) {
-      const isPasswordValid = await bcrypt.compare(password, buser.password);
-      if (!isPasswordValid) {
-        return null;
-      }
-      if (buser.userName == 'admin') {
-        role = Role.ADMIN;
-      }
-
-      return { user: buser, role: role };
+    if (!buser) {
+      throw new BadRequestException('User not found');
     }
-    return null;
+    role = Role.BUSINESS;
+    const isPasswordValid = await bcrypt.compare(password, buser.password);
+    if (!isPasswordValid) {
+      throw new BadRequestException('Password not valid');
+    }
+
+    if (buser.userName == 'admin') {
+      role = Role.ADMIN;
+    }
+
+    return { user: buser, role: role };
   }
 
   async update(vo: BusinessUserUpdateReqVo): Promise<BusinessUserResVo> {
