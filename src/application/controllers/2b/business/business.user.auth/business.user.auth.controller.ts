@@ -21,7 +21,7 @@ export class BusinessUserAuthController {
     return res.json(
       new LoginResVo({
         businessId: user.businessId,
-        token: this.jwtService.sign(user),
+        token: this.jwtService.sign(user, { expiresIn: '1d' }),
       }),
     );
   }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServicesModule } from './core/services/services.module';
@@ -9,6 +9,8 @@ import * as typeorm from './infra/typeorm';
 import { InfraConfig } from './infra/config';
 import { join } from 'path';
 import { RedisModule } from '@songkeys/nestjs-redis';
+import { JwtMiddleware } from './core/middlewares';
+import { JwtModule } from '@nestjs/jwt';
 
 const entities = Object.values(typeorm);
 const infraConfig = new InfraConfig();
@@ -24,9 +26,14 @@ const infraConfig = new InfraConfig();
         synchronize: true,
       }),
     }),
-    ServicesModule,
-    ApplicationModule,
-    InfraModule,
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: infraConfig.jwtSecret,
+        signOptions: {
+          expiresIn: '1d',
+        },
+      }),
+    }),
     AuthorizationModule.register({
       global: true,
       modelPath: join(__dirname, '../casbin/model.conf'),
@@ -37,6 +44,17 @@ const infraConfig = new InfraConfig();
         url: infraConfig.redisUrl,
       },
     }),
+    ServicesModule,
+    ApplicationModule,
+    InfraModule,
   ],
+  providers: [JwtMiddleware],
+  exports: [JwtMiddleware],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JwtMiddleware)
+      .forRoutes('*'); // apply the middleware to all routes
+  }
+}
