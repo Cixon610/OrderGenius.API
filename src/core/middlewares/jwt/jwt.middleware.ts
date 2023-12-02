@@ -8,7 +8,7 @@ export class JwtMiddleware implements NestMiddleware {
 
   use(req: any, res: any, next: () => void) {
     if (req.headers.authorization) {
-      const token = req.headers.authorization.split(' ')[1];
+      let token = req.headers.authorization.split(' ')[1];
       const decodedToken = this.jwtService.decode(token) as any;
 
       // Check if the token will expire in the next hour
@@ -22,11 +22,11 @@ export class JwtMiddleware implements NestMiddleware {
         };
 
         // If the token will expire in the next hour, generate a new one with extended validity
-        const newToken = this.jwtService.sign(userPayload, { expiresIn: '1d' }); // Set the token to expire in 1 day
+        token = this.jwtService.sign(userPayload, { expiresIn: '1d' }); // Set the token to expire in 1 day
 
-        // Add the new token to the response headers
-        res.setHeader('Authorization', `Bearer ${newToken}`);
       }
+      // Add the new token to the response headers
+      res.setHeader('Authorization', `Bearer ${token}`);
     }
     next();
   }
