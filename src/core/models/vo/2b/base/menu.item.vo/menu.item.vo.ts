@@ -39,7 +39,6 @@ export class MenuItemVo {
   price!: number;
 
   @IsOptional()
-  @IsObject()
   @ApiProperty({ example: '["Property01":"01"]', description: 'modification' })
   modification?: object;
 
