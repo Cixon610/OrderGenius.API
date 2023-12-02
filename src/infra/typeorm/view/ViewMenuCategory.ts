@@ -2,12 +2,14 @@ import { ViewEntity, ViewColumn } from 'typeorm';
 
 @ViewEntity({
   expression: `
-    SELECT  
+      SELECT  
       m.business_id AS business_id,
       m.id AS menu_id,
       m.name AS menu_name,
       m.description AS menu_description,
       m.picture_url AS menu_picture_url,
+      m.created_at AS menu_created_at,
+      m.updated_at AS menu_updated_at,
       mc.id AS category_id,
       mc.name AS category_name,
       mc.description AS category_description,
@@ -34,6 +36,12 @@ export class ViewMenuCategory {
 
   @ViewColumn({name:'menu_picture_url'})
   menuPictureUrl: string;
+  
+  @ViewColumn({ name: 'menu_created_at' })
+  menuCreatedAt: Date | null;
+
+  @ViewColumn({ name: 'menu_updated_at' })
+  menuUpdatedAt: Date | null;
 
   @ViewColumn({name:'category_id'})
   categoryId: string;

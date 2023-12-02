@@ -1,8 +1,6 @@
 import {
   ViewEntity,
   ViewColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
 @ViewEntity({
@@ -12,6 +10,8 @@ import {
       mc.name AS category_name,
       mc.description AS category_description,
       mc.picture_url AS category_pictureurl,
+      mc.created_at AS category_created_at,
+      mc.updated_at AS category_updated_at,
       mi.id AS item_id,
       mi.name AS item_name,
       mi.description AS item_description,
@@ -42,6 +42,12 @@ export class ViewCategoryItem {
 
   @ViewColumn({ name: 'category_pictureurl' })
   categoryPictureUrl: string;
+
+  @ViewColumn({ name: 'category_created_at' })
+  categoryCreatedAt: string;
+
+  @ViewColumn({ name: 'category_updated_at' })
+  categoryUpdatedAt: string;
 
   @ViewColumn({ name: 'item_id' })
   itemId: string;

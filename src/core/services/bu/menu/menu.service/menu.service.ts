@@ -92,7 +92,7 @@ export class MenuService {
     return this.toVos(
       await this.viewMenuCategoryRepository.find({
         where: { businessId },
-        order: { categoryUpdatedAt: 'DESC' },
+        order: { menuUpdatedAt: 'DESC', categoryUpdatedAt: 'DESC' },
       }),
     );
   }

@@ -94,7 +94,7 @@ export class MenuCategoryService {
     return this.toVo(
       await this.viewCategoryItemRepository.find({
         where: { categoryId: id },
-        order: { itemUpdatedAt: 'DESC' },
+        order: { categoryCreatedAt: 'DESC', itemUpdatedAt: 'DESC' },
       }),
     );
   }
@@ -102,7 +102,7 @@ export class MenuCategoryService {
   async getByKey(key: string): Promise<MenuCategoryResVo[]> {
     var vos = await this.viewCategoryItemRepository.find({
       where: { categoryName: Like(`%${key}%`) },
-      order: { itemUpdatedAt: 'DESC' },
+      order: { categoryCreatedAt: 'DESC', itemUpdatedAt: 'DESC' },
     });
     return this.toVos(vos);
   }
@@ -110,7 +110,7 @@ export class MenuCategoryService {
   async getByBusinessId(businessId: string): Promise<MenuCategoryResVo[]> {
     var vos = await this.viewCategoryItemRepository.find({
       where: { businessId },
-      order: { itemUpdatedAt: 'DESC' },
+      order: { categoryCreatedAt: 'DESC', itemUpdatedAt: 'DESC' },
     });
     return this.toVos(vos);
   }
