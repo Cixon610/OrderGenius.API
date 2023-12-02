@@ -60,7 +60,7 @@ export class BusinessUserController {
 
   @Delete(':businessUserId')
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: BusinessUserResVo })
+  @ApiResponse({ status: 200, type: Boolean })
   async Delete(@Param('businessUserId') menuId: string, @Res() res) {
     const sucess = await this.businessUserService.delete(menuId);
     res.json(sucess);

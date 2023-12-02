@@ -40,7 +40,7 @@ export class MenuCategoryController {
 
   @Delete(':menuCategoryId')
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: MenuCategoryResVo })
+  @ApiResponse({ status: 200, type: Boolean })
   async Delete(@Param('menuCategoryId') menuId: string, @Res() res) {
     const sucess = await this.menuCategoryService.delete(menuId);
     res.json(sucess);
