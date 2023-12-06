@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { SysConfigService } from './services/config/sys.config.service';
 import { InfraConfig, ThirdPartyConfig } from './config';
-import { RedisService } from './services';
+import { OpenaiService, RedisService } from './services';
 
-const exportServices = [SysConfigService, RedisService];
+const exportServices = [SysConfigService, RedisService, OpenaiService];
 
 @Module({
   imports: [InfraConfig, ThirdPartyConfig],
