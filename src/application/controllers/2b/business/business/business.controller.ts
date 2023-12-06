@@ -31,6 +31,9 @@ export class BusinessController {
   @ApiResponse({ status: 200, type: BusinessResVo })
   async Add(@Body() dto: BusinessVo, @Res() res) {
     const vo = await this.businessService.add(dto);
+    if(dto.userIds && dto.userIds.length > 0){
+      this.businessService.updateBusinessUser(vo.id, dto.userIds);
+    }
     res.json(vo);
   }
 
@@ -39,6 +42,9 @@ export class BusinessController {
   @ApiResponse({ status: 200, type: BusinessResVo })
   async Update(@Body() dto: BusinessUpdateReqVo, @Res() res) {
     const vo = await this.businessService.update(dto);
+    if(dto.userIds && dto.userIds.length > 0){
+      this.businessService.updateBusinessUser(dto.id, dto.userIds);
+    }
     res.json(vo);
   }
 

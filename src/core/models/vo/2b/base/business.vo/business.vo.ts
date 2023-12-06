@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  isArray,
+} from 'class-validator';
 
 export class BusinessVo {
   public constructor(init?: Partial<BusinessVo>) {
@@ -33,4 +39,14 @@ export class BusinessVo {
   @IsString()
   @ApiProperty({ example: '0222265930', description: 'phone', nullable: true })
   phone?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ApiProperty({
+    example:
+      '["8e06b7cb-f98b-4628-b7d1-4c18a10d5420","0f201050-8b13-470c-b45e-c6012bcd0ff1"]',
+    description: 'userIds',
+    nullable: true,
+  })
+  userIds?: string[];
 }

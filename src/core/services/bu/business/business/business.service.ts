@@ -6,14 +6,16 @@ import {
   BusinessResVo,
   BusinessUpdateReqVo,
 } from 'src/core/models';
-import { Business } from 'src/infra/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Business, BusinessUser } from 'src/infra/typeorm';
+import { In, Like, Repository } from 'typeorm';
 
 @Injectable()
 export class BusinessService {
   constructor(
     @InjectRepository(Business)
     private readonly businessRepository: Repository<Business>,
+    @InjectRepository(BusinessUser)
+    private readonly businessUserRepository: Repository<BusinessUser>,
   ) {}
 
   async add(vo: BusinessVo): Promise<BusinessResVo> {
@@ -60,6 +62,20 @@ export class BusinessService {
     return vos.map((vo) => this.toVo(vo));
   }
 
+  async updateBusinessUser(businessId: string, userIds: string[]): Promise<boolean> {
+    const matchedUsers = await this.businessUserRepository.find({ where: { id: In(userIds) } });
+    if (matchedUsers.length !== userIds.length) {
+      return false;
+    }
+    
+    matchedUsers.forEach(user => {
+      user.businessId = businessId;
+    });
+
+    await this.businessUserRepository.save(matchedUsers);
+
+    return true;
+  }
   private toVo(business: Business): BusinessResVo {
     if (!business) {
       return null;
