@@ -50,6 +50,17 @@ export class MenuItemController {
     res.json(sucess);
   }
 
+  @Delete()
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: Boolean })
+  async DeleteMany(@Body() menuItemIds: string[], @Res() res) {
+    const success = await Promise.all(
+      menuItemIds.map((Id) => this.menuItemService.delete(Id))
+    );
+    const result = success.reduce((result, value) => result && value, true);
+    res.json(result);
+  }
+
   @Get()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuItemResVo })

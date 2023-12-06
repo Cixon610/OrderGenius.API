@@ -46,6 +46,17 @@ export class MenuCategoryController {
     res.json(sucess);
   }
 
+  @Delete()
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: Boolean })
+  async DeleteMany(@Body() menuCategoryIds: string[], @Res() res) {
+    const success = await Promise.all(
+      menuCategoryIds.map((Id) => this.menuCategoryService.delete(Id))
+    );
+    const result = success.reduce((result, value) => result && value, true);
+    res.json(result);
+  }
+
   @Get()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: MenuCategoryResVo })

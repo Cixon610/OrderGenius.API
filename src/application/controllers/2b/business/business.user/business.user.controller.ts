@@ -66,6 +66,17 @@ export class BusinessUserController {
     res.json(sucess);
   }
 
+  @Delete()
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: Boolean })
+  async DeleteMany(@Body() businessUserIds: string[], @Res() res) {
+    const success = await Promise.all(
+      businessUserIds.map((Id) => this.businessUserService.delete(Id))
+    );
+    const result = success.reduce((result, value) => result && value, true);
+    res.json(result);
+  }
+
   @Get()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: BusinessUserResVo })
