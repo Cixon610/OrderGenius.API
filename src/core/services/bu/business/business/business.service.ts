@@ -58,6 +58,7 @@ export class BusinessService {
   async getByKey(key: string): Promise<BusinessResVo[]> {
     var vos = await this.businessRepository.find({
       where: { name: Like(`%${key}%`) },
+      order: { updatedAt : 'DESC' },
     });
     return vos.map((vo) => this.toVo(vo));
   }

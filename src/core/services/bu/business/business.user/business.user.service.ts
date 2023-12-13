@@ -101,6 +101,7 @@ export class BusinessUserService {
   async getByKey(key: string): Promise<BusinessUserResVo[]> {
     var vos = await this.businessUserRepository.find({
       where: { userName: Like(`%${key}%`) },
+      order: { updatedAt: 'DESC' },
     });
     return vos.map((vo) => this.toVo(vo));
   }
@@ -112,7 +113,10 @@ export class BusinessUserService {
   }
 
   async getByBusinessId(businessId: string): Promise<BusinessUserResVo[]> {
-    var vos = await this.businessUserRepository.find({ where: { businessId } });
+    var vos = await this.businessUserRepository.find({
+      where: { businessId },
+      order: { updatedAt: 'DESC' },
+    });
     return vos.map((vo) => this.toVo(vo));
   }
 
