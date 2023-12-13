@@ -150,23 +150,9 @@ export class MenuCategoryService {
           name: element[0].categoryName,
           description: element[0].categoryDescription,
           pictureUrl: element[0].categoryPictureUrl,
-          menuItems: element
-            .filter((item) => {
-              !!item.itemId;
-            })
-            .map((item) => {
-              return new MenuItemResVo({
-                id: item.itemId,
-                name: item.itemName,
-                description: item.itemDescription,
-                price: item.itemPrice,
-                modification: item.itemModification,
-                note: item.itemNote,
-                enable: item.itemEnable,
-                promoted: item.itemPromoted,
-                pictureUrl: item.itemPictureUrl,
-              });
-            }),
+          menuItemIds: element
+            .filter((item) => !!item.itemId)
+            .map((item) => item.itemId),
         });
         res.push(vo);
       }

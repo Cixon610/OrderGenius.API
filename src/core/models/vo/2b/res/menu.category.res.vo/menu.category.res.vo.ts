@@ -11,10 +11,4 @@ export class MenuCategoryResVo extends PartialType(MenuCategoryVo) {
     description: 'Id',
   })
   id!: string;
-
-  @ApiProperty({
-    example: '["7e52f036-e1c9-43aa-8870-9076cd9d5e3a"]',
-    description: '[MenuItem]',
-  })
-  menuItems?: MenuItemResVo[];
 }
