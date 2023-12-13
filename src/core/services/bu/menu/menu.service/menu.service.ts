@@ -144,19 +144,9 @@ export class MenuService {
           name: element[0].menuName,
           description: element[0].menuDescription,
           pictureUrl: element[0].menuPictureUrl,
-          menuCategories: element
-            .filter((category) => {
-              !!category.categoryId;
-            })
-            .map((category) => {
-              return new MenuCategoryResVo({
-                id: category.categoryId,
-                businessId: category.businessId,
-                name: category.categoryName,
-                description: category.categoryDescription,
-                pictureUrl: category.categoryPictureUrl,
-              });
-            }),
+          categoryIds: element
+            .filter((category) => !!category.categoryId)
+            .map((category) => category.categoryId),
         });
         res.push(vo);
       }
