@@ -1,7 +1,7 @@
 import { Menu, MenuMapping, ViewMenuCategory } from 'src/infra/typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import {
   MenuVo,
   MenuCategoryResVo,
@@ -86,6 +86,14 @@ export class MenuService {
     return this.toVo(
       await this.viewMenuCategoryRepository.find({ where: { menuId: id } }),
     );
+  }
+
+  async getByKey(key: string): Promise<MenuResVo[]> {
+    var vos = await this.viewMenuCategoryRepository.find({
+      where: { menuName: Like(`%${key}%`) },
+      order: { menuUpdatedAt: 'DESC', categoryUpdatedAt: 'DESC' },
+    });
+    return this.toVos(vos);
   }
 
   async getByBusinessId(businessId: string): Promise<MenuResVo[]> {

@@ -65,6 +65,15 @@ export class MenuController {
     res.json(vo);
   }
 
+
+  @Get('key')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: [MenuResVo] })
+  async GetByKey(@Query('key') key: string, @Res() res) {
+    const vos = await this.menuService.getByKey(key);
+    res.json(vos);
+  }
+
   @Get(':businessId')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: [MenuResVo] })
