@@ -1,10 +1,10 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { OpenaiService } from 'src/infra/services';
 
-@ApiTags('test')
-@Controller('test')
-export class TestController {
+@ApiTags('chat')
+@Controller('chat')
+export class ChatController {
   constructor(private readonly openaiService: OpenaiService) {}
 
   @Get()

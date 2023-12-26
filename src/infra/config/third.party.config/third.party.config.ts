@@ -6,4 +6,8 @@ export class ThirdPartyConfig {
   get lineChannelSecret(): string {
     return process.env.LINE_CHANNEL_SECRET;
   }
+  
+  get opeanaiApiKey(): string {
+    return process.env.OPENAI_API_KEY;
+  }
 }
