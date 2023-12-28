@@ -9,6 +9,7 @@ import {
   LocalStrategy,
   FileService,
   JwtStrategy,
+  OpenaiService,
 } from './index';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as typeorm from 'src/infra/typeorm';
@@ -25,6 +26,7 @@ const exportServices = [
   LocalStrategy,
   JwtStrategy,
   FileService,
+  OpenaiService,
 ];
 @Module({
   imports: [TypeOrmModule.forFeature([...entities])],

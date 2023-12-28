@@ -33,6 +33,11 @@ export * from './vo/2b/res/menu.category.res.vo/menu.category.res.vo';
 export * from './vo/2b/res/business.user.res.vo/business.user.res.vo';
 //#endregion
 
+//#region 2c vo/req
+export * from './vo/2c/req/chat.create.req.vo/chat.create.req.vo';
+export * from './vo/2c/req/chat.send.req.vo/chat.send.req.vo';
+//#endregion
+
 //#region inerface
 export * from './interface/payload';
 export * from './interface/option.model';

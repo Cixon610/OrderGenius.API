@@ -12,7 +12,7 @@ import {
 } from './index';
 import { ServicesModule } from 'src/core/services';
 import { JwtModule } from '@nestjs/jwt';
-import { OpenaiService, SysConfigService } from 'src/infra/services';
+import { SysConfigService } from 'src/infra/services';
 import { InfraConfig } from 'src/infra/config';
 
 const exportControllers = [
@@ -39,7 +39,7 @@ const infraConfig = new InfraConfig();
     }),
     ServicesModule,
   ],
-  providers: [SysConfigService, OpenaiService],
+  providers: [SysConfigService],
   controllers: exportControllers,
 })
 export class ApplicationModule {}

@@ -11,3 +11,4 @@ export * from './bu/menu/menu.category.service/menu.category.service';
 
 export * from './common/file/file.service';
 export * from './auth/authorization/authorization.service';
+export * from './ai/openai/openai.service';
