@@ -85,7 +85,8 @@ export class OpenaiService {
           鮮柚綠	$55	$65
 `,
       tools: [{ type: 'code_interpreter' }],
-      model: 'gpt-3.5-turbo',
+      // model: 'gpt-3.5-turbo',
+      model: 'gpt-4',
     });
 
     return {
