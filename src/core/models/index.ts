@@ -34,8 +34,14 @@ export * from './vo/2b/res/business.user.res.vo/business.user.res.vo';
 //#endregion
 
 //#region 2c vo/req
-export * from './vo/2c/req/chat.create.req.vo/chat.create.req.vo';
-export * from './vo/2c/req/chat.send.req.vo/chat.send.req.vo';
+export * from './vo/2c/req/chat/chat.create.req.vo/chat.create.req.vo';
+export * from './vo/2c/req/chat/chat.send.req.vo/chat.send.req.vo';
+export * from './vo/2c/req/order/order.create.req.vo/order.create.req.vo';
+//#endregion
+
+//#region 2c dto
+export * from './dto/order/order.dto/order.dto';
+export * from './dto/order/order.detail.dto/order.detail.dto';
 //#endregion
 
 //#region inerface
