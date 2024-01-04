@@ -1,10 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { MenuItemModificationDto } from 'src/core/models';
 
 export class OrderDetail {
-  itemId: string | null;
-  modification: object | null;
-  count: number | null;
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ description: 'itemId' })
+  itemId: string;
+
+  @IsOptional()
+  @ApiProperty({ description: 'modification' })
+  modification: MenuItemModificationDto | null;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({ description: 'count' })
+  count: number;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ description: 'memo' })
   memo: string | null;
 }
 

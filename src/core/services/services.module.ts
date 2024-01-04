@@ -10,6 +10,7 @@ import {
   FileService,
   JwtStrategy,
   OpenaiService,
+  OrderService,
 } from './index';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as typeorm from 'src/infra/typeorm';
@@ -27,6 +28,7 @@ const exportServices = [
   JwtStrategy,
   FileService,
   OpenaiService,
+  OrderService,
 ];
 @Module({
   imports: [TypeOrmModule.forFeature([...entities])],
