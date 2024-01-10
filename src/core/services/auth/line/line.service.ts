@@ -22,7 +22,7 @@ export class LineService {
     const queryParams = stringify({
       response_type: 'code',
       client_id: this.sysConfigService.thirdParty.lineChannelId,
-      redirect_uri: this.sysConfigService.infra.clientUrl,
+      redirect_uri: this.sysConfigService.infra.clientUrl2B,
       state: randomBytes(16).toString('hex'),
       scope: 'openid profile',
       nonce: randomBytes(16).toString('hex'),
@@ -40,7 +40,7 @@ export class LineService {
         code,
         client_id: this.sysConfigService.thirdParty.lineChannelId,
         client_secret: this.sysConfigService.thirdParty.lineChannelSecret,
-        redirect_uri: this.sysConfigService.infra.clientUrl,
+        redirect_uri: this.sysConfigService.infra.clientUrl2B,
       },
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     );

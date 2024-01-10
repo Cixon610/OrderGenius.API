@@ -1,6 +1,10 @@
 export class InfraConfig {
-  get clientUrl(): string {
-    return process.env.CLIENT_URL;
+  get clientUrl2B(): string {
+    return process.env.CLIENT_URL_2B;
+  }
+
+  get clientUrl2C(): string {
+    return process.env.CLIENT_URL_2C;
   }
 
   get dbUrl(): string {
