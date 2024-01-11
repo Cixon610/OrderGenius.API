@@ -119,7 +119,7 @@ export class LineService {
         code,
         client_id: this.sysConfigService.thirdParty.lineChannelId,
         client_secret: this.sysConfigService.thirdParty.lineChannelSecret,
-        redirect_uri: protalUrl,
+        redirect_uri: `https://${protalUrl}`,
       },
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     );
