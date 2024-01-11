@@ -30,8 +30,8 @@ export class LineService {
     private readonly businessUserService: BusinessUserService,
   ) {}
 
-  async getLoginUrl(origin: string): Promise<string> {
-    const { type, protalUrl } = this.#getProtalUrl(origin);
+  async getLoginUrl(host: string): Promise<string> {
+    const { type, protalUrl } = this.#getProtalUrl(host);
     const queryParams = stringify({
       response_type: 'code',
       client_id: this.sysConfigService.thirdParty.lineChannelId,
@@ -45,8 +45,8 @@ export class LineService {
     return Promise.resolve(loginUrl);
   }
 
-  async login(code: string, origin: string): Promise<LineCallbackResVo> {
-    const { type, protalUrl } = this.#getProtalUrl(origin);
+  async login(code: string, host: string): Promise<LineCallbackResVo> {
+    const { type, protalUrl } = this.#getProtalUrl(host);
     const Is2BProtal = type == '2B';
     let profile = await this.#getLineProfile(code, protalUrl);
 
@@ -86,7 +86,7 @@ export class LineService {
       return { type: '2C', protalUrl: this.sysConfigService.infra.clientUrl2C };
     if (host == 'localhost:9000')
       return { type: '2B', protalUrl: this.sysConfigService.infra.clientUrl2B };
-    throw new BadRequestException('Invalid origin');
+    throw new BadRequestException(`Invalid host: ${host}`);
   }
 
   async #checkLineAccount(profile: LineProfileVo): Promise<boolean> {

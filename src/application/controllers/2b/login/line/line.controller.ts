@@ -11,6 +11,7 @@ export class LineController {
   @ApiResponse({ status: 200, type: LineLoginResVo })
   @Get('login')
   async login(@Req() req, @Res() res) {
+    console.debug('Host', req.headers.host);
     const loginUrl = await this.lineService.getLoginUrl(req.headers.host);
     res.json(new LineLoginResVo({ url: loginUrl }));
   }
@@ -19,7 +20,7 @@ export class LineController {
   @Get('callback')
   async callback(@Req() req, @Res() res) {
     const { code } = req.query;
-    const result = await this.lineService.login(code, req.headers.origin);
+    const result = await this.lineService.login(code, req.headers.host);
     res.json(result);
   }
 }
