@@ -11,7 +11,7 @@ export class LineController {
   @ApiResponse({ status: 200, type: LineLoginResVo })
   @Get('login')
   async login(@Req() req, @Res() res) {
-    console.debug('Host', req.headers.host);
+    console.debug('headers', req.headers);
     const loginUrl = await this.lineService.getLoginUrl(req.headers.host);
     res.json(new LineLoginResVo({ url: loginUrl }));
   }
