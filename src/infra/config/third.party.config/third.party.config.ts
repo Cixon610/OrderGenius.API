@@ -1,10 +1,18 @@
 export class ThirdPartyConfig {
-  get lineChannelId(): string {
-    return process.env.LINE_CHANNEL_ID;
+  get lineChannelId2B(): string {
+    return process.env.LINE_CHANNEL_ID_2B;
   }
 
-  get lineChannelSecret(): string {
-    return process.env.LINE_CHANNEL_SECRET;
+  get lineChannelSecret2B(): string {
+    return process.env.LINE_CHANNEL_SECRET_2B;
+  }
+
+  get lineChannelId2C(): string {
+    return process.env.LINE_CHANNEL_ID_2C;
+  }
+
+  get lineChannelSecret2C(): string {
+    return process.env.LINE_CHANNEL_SECRET_2C;
   }
   
   get opeanaiApiKey(): string {

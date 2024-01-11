@@ -34,7 +34,10 @@ export class LineService {
     const { type, protalUrl } = this.#getProtalUrl(oringin);
     const queryParams = stringify({
       response_type: 'code',
-      client_id: this.sysConfigService.thirdParty.lineChannelId,
+      client_id:
+        type == '2B'
+          ? this.sysConfigService.thirdParty.lineChannelId2B
+          : this.sysConfigService.thirdParty.lineChannelId2C,
       redirect_uri: `https://${protalUrl}`,
       scope: 'openid profile',
       state: randomBytes(16).toString('hex'),
@@ -48,7 +51,7 @@ export class LineService {
   async login(code: string, oringin: string): Promise<LineCallbackResVo> {
     const { type, protalUrl } = this.#getProtalUrl(oringin);
     const Is2BProtal = type == '2B';
-    let profile = await this.#getLineProfile(code, protalUrl);
+    let profile = await this.#getLineProfile(code, protalUrl, Is2BProtal);
 
     profile = Is2BProtal
       ? await this.#businessLogin(profile)
@@ -111,14 +114,21 @@ export class LineService {
   async #getLineProfile(
     code: string,
     protalUrl: string,
+    is2BProtal: boolean,
   ): Promise<LineProfileVo> {
+    const channelId = is2BProtal
+      ? this.sysConfigService.thirdParty.lineChannelId2B
+      : this.sysConfigService.thirdParty.lineChannelId2C;
+    const channelSecret = is2BProtal
+      ? this.sysConfigService.thirdParty.lineChannelSecret2B
+      : this.sysConfigService.thirdParty.lineChannelSecret2C;
     const tokenResponse = await axios.post(
       'https://api.line.me/oauth2/v2.1/token',
       {
         grant_type: 'authorization_code',
         code,
-        client_id: this.sysConfigService.thirdParty.lineChannelId,
-        client_secret: this.sysConfigService.thirdParty.lineChannelSecret,
+        client_id: channelId,
+        client_secret: channelSecret,
         redirect_uri: `https://${protalUrl}`,
       },
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
