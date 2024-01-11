@@ -35,7 +35,7 @@ export class LineService {
     const queryParams = stringify({
       response_type: 'code',
       client_id: this.sysConfigService.thirdParty.lineChannelId,
-      redirect_uri: protalUrl,
+      redirect_uri: `https://${protalUrl}`,
       scope: 'openid profile',
       state: randomBytes(16).toString('hex'),
       nonce: randomBytes(16).toString('hex'),
