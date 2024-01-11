@@ -80,6 +80,7 @@ export class LineService {
 
   //#region private
   #getProtalUrl(oringin: string): { type: string; protalUrl: string } {
+    oringin = oringin.replace('https://', '');
     if (oringin == this.sysConfigService.infra.clientUrl2B)
       return { type: '2B', protalUrl: this.sysConfigService.infra.clientUrl2B };
     if (oringin == this.sysConfigService.infra.clientUrl2C)
