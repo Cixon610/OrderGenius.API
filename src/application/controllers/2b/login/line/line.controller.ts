@@ -2,17 +2,24 @@ import { Controller, Get, Req, Res } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LineCallbackResVo, LineLoginResVo } from 'src/core/models';
 import { LineService } from 'src/core/services';
+import { SysConfigService } from 'src/infra/services';
 
 @ApiTags('line')
 @Controller('line')
 export class LineController {
-  constructor(private readonly lineService: LineService) {}
+  constructor(
+    private readonly lineService: LineService,
+    private readonly sysConfigService: SysConfigService,
+  ) {}
 
   @ApiResponse({ status: 200, type: LineLoginResVo })
   @Get('login')
   async login(@Req() req, @Res() res) {
-    console.debug('headers', req.headers);
-    const loginUrl = await this.lineService.getLoginUrl(req.headers.host);
+    const origin =
+      req.headers.host == 'localhost:9000'
+        ? this.sysConfigService.infra.clientUrl2B
+        : req.headers.origin;
+    const loginUrl = await this.lineService.getLoginUrl(origin);
     res.json(new LineLoginResVo({ url: loginUrl }));
   }
 

@@ -30,8 +30,8 @@ export class LineService {
     private readonly businessUserService: BusinessUserService,
   ) {}
 
-  async getLoginUrl(host: string): Promise<string> {
-    const { type, protalUrl } = this.#getProtalUrl(host);
+  async getLoginUrl(oringin: string): Promise<string> {
+    const { type, protalUrl } = this.#getProtalUrl(oringin);
     const queryParams = stringify({
       response_type: 'code',
       client_id: this.sysConfigService.thirdParty.lineChannelId,
@@ -45,8 +45,8 @@ export class LineService {
     return Promise.resolve(loginUrl);
   }
 
-  async login(code: string, host: string): Promise<LineCallbackResVo> {
-    const { type, protalUrl } = this.#getProtalUrl(host);
+  async login(code: string, oringin: string): Promise<LineCallbackResVo> {
+    const { type, protalUrl } = this.#getProtalUrl(oringin);
     const Is2BProtal = type == '2B';
     let profile = await this.#getLineProfile(code, protalUrl);
 
@@ -79,14 +79,12 @@ export class LineService {
   }
 
   //#region private
-  #getProtalUrl(host: string): { type: string; protalUrl: string } {
-    if (host == this.sysConfigService.infra.clientUrl2B)
+  #getProtalUrl(oringin: string): { type: string; protalUrl: string } {
+    if (oringin == this.sysConfigService.infra.clientUrl2B)
       return { type: '2B', protalUrl: this.sysConfigService.infra.clientUrl2B };
-    if (host == this.sysConfigService.infra.clientUrl2C)
+    if (oringin == this.sysConfigService.infra.clientUrl2C)
       return { type: '2C', protalUrl: this.sysConfigService.infra.clientUrl2C };
-    if (host == 'localhost:9000')
-      return { type: '2B', protalUrl: this.sysConfigService.infra.clientUrl2B };
-    throw new BadRequestException(`Invalid host: ${host}`);
+    throw new BadRequestException(`Invalid oringin: ${oringin}`);
   }
 
   async #checkLineAccount(profile: LineProfileVo): Promise<boolean> {
