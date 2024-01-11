@@ -26,8 +26,12 @@ export class LineController {
   @ApiResponse({ status: 200, type: LineCallbackResVo })
   @Get('callback')
   async callback(@Req() req, @Res() res) {
+    const origin =
+      req.headers.host == 'localhost:9000'
+        ? this.sysConfigService.infra.clientUrl2B
+        : req.headers.origin;
     const { code } = req.query;
-    const result = await this.lineService.login(code, req.headers.host);
+    const result = await this.lineService.login(code, origin);
     res.json(result);
   }
 }
