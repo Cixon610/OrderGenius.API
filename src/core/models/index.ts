@@ -1,3 +1,5 @@
+import exp from 'constants';
+
 //#region 2b dto
 export * from './dto/business/business.dto/business.dto';
 export * from './dto/business/business.user.dto/business.user.dto';
@@ -37,21 +39,25 @@ export * from './vo/2b/res/business.user.res.vo/business.user.res.vo';
 //#region 2c vo/base
 export * from './vo/2c/base/order.vo/order.vo';
 export * from './vo/2c/base/order.detail.vo/order.detail.vo';
+export * from './vo/2c/base/client.user.vo/client.user.vo';
 //#endregion
 
 //#region 2c vo/req
 export * from './vo/2c/req/chat/chat.create.req.vo/chat.create.req.vo';
 export * from './vo/2c/req/chat/chat.send.req.vo/chat.send.req.vo';
 export * from './vo/2c/req/order/order.create.req.vo/order.create.req.vo';
+export * from './vo/2c/req/client.user.update.req.vo/client.user.update.req.vo';
 //#endregion
 
 //#region 2c vo/res
 export * from './vo/2c/res/order/order.res.vo/order.res.vo';
+export * from './vo/2c/res/client.user.res.vo/client.user.res.vo';
 //#endregion
 
 //#region 2c dto
 export * from './dto/order/order.dto/order.dto';
 export * from './dto/order/order.detail.dto/order.detail.dto';
+export * from './dto/client/client.user.dto/client.user.dto';
 //#endregion
 
 //#region inerface

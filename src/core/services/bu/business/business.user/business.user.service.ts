@@ -48,8 +48,6 @@ export class BusinessUserService {
 
   async validate(account: string, password: string) {
     let role = Role.COSTUMER;
-    //TODO: add cuser validate
-    //const cuser = null;
 
     const buser = await this.businessUserRepository.findOne({
       where: { account },

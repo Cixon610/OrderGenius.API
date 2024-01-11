@@ -5,6 +5,7 @@ export * from './auth/strategy/jwt.strategy/jwt.strategy';
 
 export * from './bu/business/business/business.service';
 export * from './bu/business/business.user/business.user.service';
+export * from './bu/client.user/client.user.service';
 export * from './bu/menu/menu.service/menu.service';
 export * from './bu/menu/menu.item.service/menu.item.service';
 export * from './bu/menu/menu.category.service/menu.category.service';

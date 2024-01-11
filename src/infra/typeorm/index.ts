@@ -15,6 +15,7 @@ export * from './entities/MenuMapping';
 export * from './entities/Message';
 export * from './entities/Order';
 export * from './entities/OrderDetail';
+export * from './entities/UserAccountMapping';
 //#endregion
 
 //#region views
