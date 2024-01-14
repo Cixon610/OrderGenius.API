@@ -51,7 +51,12 @@ export class LineService {
   async login(code: string, oringin: string): Promise<LineCallbackResVo> {
     const { type, protalUrl } = this.#getProtalUrl(oringin);
     const Is2BProtal = type == '2B';
-    let profile = await this.#getLineProfile(code, protalUrl, Is2BProtal);
+    const accessToken = await this.#getLineAccessToken(
+      code,
+      protalUrl,
+      Is2BProtal,
+    );
+    let profile = await this.#getLineProfile(accessToken);
 
     profile = Is2BProtal
       ? await this.#businessLogin(profile)
@@ -111,39 +116,52 @@ export class LineService {
     }
   }
 
-  async #getLineProfile(
+  async #getLineProfile(access_token: string): Promise<LineProfileVo> {
+    try {
+      const profileResponse = await axios.get(
+        'https://api.line.me/v2/profile',
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        },
+      );
+
+      const profile: LineProfileVo = profileResponse.data;
+      return profile;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async #getLineAccessToken(
     code: string,
     protalUrl: string,
     is2BProtal: boolean,
-  ): Promise<LineProfileVo> {
+  ) {
     const channelId = is2BProtal
       ? this.sysConfigService.thirdParty.lineChannelId2B
       : this.sysConfigService.thirdParty.lineChannelId2C;
     const channelSecret = is2BProtal
       ? this.sysConfigService.thirdParty.lineChannelSecret2B
       : this.sysConfigService.thirdParty.lineChannelSecret2C;
-    const tokenResponse = await axios.post(
-      'https://api.line.me/oauth2/v2.1/token',
-      {
-        grant_type: 'authorization_code',
-        code,
-        client_id: channelId,
-        client_secret: channelSecret,
-        redirect_uri: `https://${protalUrl}`,
-      },
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
-    );
 
-    const { access_token } = tokenResponse.data;
-
-    const profileResponse = await axios.get('https://api.line.me/v2/profile', {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-
-    const profile: LineProfileVo = profileResponse.data;
-    return profile;
+    try {
+      const tokenResponse = await axios.post(
+        'https://api.line.me/oauth2/v2.1/token',
+        {
+          grant_type: 'authorization_code',
+          code,
+          client_id: channelId,
+          client_secret: channelSecret,
+          redirect_uri: `https://${protalUrl}`,
+        },
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+      );
+      return tokenResponse.data.access_token;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async #businessLogin(profile: LineProfileVo): Promise<LineProfileVo> {

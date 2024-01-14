@@ -17,7 +17,7 @@ export class LineController {
   async login(@Req() req, @Res() res) {
     const origin =
       req.headers.host == 'localhost:9000'
-        ? this.sysConfigService.infra.clientUrl2B
+        ? this.sysConfigService.infra.clientUrl2C
         : req.headers.origin;
     const loginUrl = await this.lineService.getLoginUrl(origin);
     res.json(new LineLoginResVo({ url: loginUrl }));
@@ -28,7 +28,7 @@ export class LineController {
   async callback(@Req() req, @Res() res) {
     const origin =
       req.headers.host == 'localhost:9000'
-        ? this.sysConfigService.infra.clientUrl2B
+        ? this.sysConfigService.infra.clientUrl2C
         : req.headers.origin;
     const { code } = req.query;
     const result = await this.lineService.login(code, origin);
