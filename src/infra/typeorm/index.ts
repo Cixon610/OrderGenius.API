@@ -16,9 +16,12 @@ export * from './entities/Message';
 export * from './entities/Order';
 export * from './entities/OrderDetail';
 export * from './entities/UserAccountMapping';
+export * from './entities/MenuItemMapping';
+export * from './entities/Modification';
 //#endregion
 
 //#region views
 export * from './view/ViewCategoryItem';
 export * from './view/ViewMenuCategory';
+export * from './view/ViewItemModification';
 //#endregion

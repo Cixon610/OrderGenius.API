@@ -39,10 +39,6 @@ export class MenuItemVo {
   price!: number;
 
   @IsOptional()
-  @ApiProperty({ example: '["Property01":"01"]', description: 'modification' })
-  modification?: object;
-
-  @IsOptional()
   @IsString()
   @ApiProperty({ example: 'note', description: 'note' })
   note?: string;
@@ -65,4 +61,12 @@ export class MenuItemVo {
     description: 'pictureUrl',
   })
   pictureUrl?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ApiProperty({
+    example: '["7e52f036-e1c9-43aa-8870-9076cd9d5e3a"]',
+    description: 'modificationIds',
+  })
+  modificationIds?: string[];
 }

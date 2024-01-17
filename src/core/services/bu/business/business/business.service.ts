@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { plainToInstance } from 'class-transformer';
 import {
   BusinessVo,
   BusinessDto,
   BusinessResVo,
   BusinessUpdateReqVo,
+  BusinessUserResVo,
 } from 'src/core/models';
 import { Business, BusinessUser } from 'src/infra/typeorm';
 import { In, Like, Repository } from 'typeorm';
@@ -27,7 +29,8 @@ export class BusinessService {
         phone: vo.phone,
       }),
     );
-    return this.toVo(await this.businessRepository.save(newbusiness));
+    const result = await this.businessRepository.save(newbusiness);
+    return plainToInstance(BusinessResVo, result);
   }
 
   async update(vo: BusinessUpdateReqVo): Promise<BusinessResVo> {
@@ -38,7 +41,8 @@ export class BusinessService {
       throw new Error(`Menu with id ${vo.id} not found`);
     }
     const updatedBusiness = Object.assign(businessToUpdate, vo);
-    return this.toVo(await this.businessRepository.save(updatedBusiness));
+    const result = await this.businessRepository.save(updatedBusiness);
+    return plainToInstance(BusinessUserResVo, result);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -52,41 +56,35 @@ export class BusinessService {
   }
 
   async get(id: string): Promise<BusinessResVo> {
-    return this.toVo(await this.businessRepository.findOne({ where: { id } }));
+    const result = await this.businessRepository.findOne({ where: { id } });
+    return plainToInstance(BusinessResVo, result);
   }
 
   async getByKey(key: string): Promise<BusinessResVo[]> {
     var vos = await this.businessRepository.find({
       where: { name: Like(`%${key}%`) },
-      order: { updatedAt : 'DESC' },
+      order: { updatedAt: 'DESC' },
     });
-    return vos.map((vo) => this.toVo(vo));
+    return vos.map((vo) => plainToInstance(BusinessResVo, vo));
   }
 
-  async updateBusinessUser(businessId: string, userIds: string[]): Promise<boolean> {
-    const matchedUsers = await this.businessUserRepository.find({ where: { id: In(userIds) } });
+  async updateBusinessUser(
+    businessId: string,
+    userIds: string[],
+  ): Promise<boolean> {
+    const matchedUsers = await this.businessUserRepository.find({
+      where: { id: In(userIds) },
+    });
     if (matchedUsers.length !== userIds.length) {
       return false;
     }
-    
-    matchedUsers.forEach(user => {
+
+    matchedUsers.forEach((user) => {
       user.businessId = businessId;
     });
 
     await this.businessUserRepository.save(matchedUsers);
 
     return true;
-  }
-  private toVo(business: Business): BusinessResVo {
-    if (!business) {
-      return null;
-    }
-    return new BusinessResVo({
-      id: business.id,
-      name: business.name,
-      placeId: business.placeId,
-      address: business.address,
-      phone: business.phone,
-    });
   }
 }

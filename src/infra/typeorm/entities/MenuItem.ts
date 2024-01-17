@@ -24,9 +24,6 @@ export class MenuItem {
   @Column('numeric', { name: 'price', nullable: true })
   price: number | null;
 
-  @Column('json', { name: 'modification', nullable: true })
-  modification: object | null;
-
   @Column('text', { name: 'note', nullable: true })
   note: string | null;
 

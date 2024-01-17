@@ -23,5 +23,9 @@ p, business, /menuItem/key?key=<string>, *
 p, business, /menuItem/:businessId
 p, business, /menuItem, *
 
+p, business, /modification/:modificationId, *
+p, business, /modification/key?key=<string>, *
+p, business, /modification/:businessId
+p, business, /modification, *
 
 g, admin, business

@@ -6,6 +6,7 @@ export * from './controllers/2b/menu/menu.category.controller/menu.category.cont
 export * from './controllers/2b/business/business.user/business.user.controller';
 export * from './controllers/2b/common/file/file.controller';
 export * from './controllers/2b/business/business.user.auth/business.user.auth.controller';
+export * from './controllers/2b/menu/modification.controller/modification.controller';
 
 export * from './controllers/2c/chat/chat.controller';
 export * from './controllers/2c/order/order.controller';

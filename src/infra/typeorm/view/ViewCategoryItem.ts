@@ -16,7 +16,6 @@ import {
       mi.name AS item_name,
       mi.description AS item_description,
       mi.price AS item_price,
-      mi.modification AS item_modification,
       mi.note AS item_note,
       mi.enable AS item_enable,
       mi.picture_url AS item_pictureurl,
@@ -60,9 +59,6 @@ export class ViewCategoryItem {
 
   @ViewColumn({ name: 'item_price' })
   itemPrice: number;
-
-  @ViewColumn({ name: 'item_modification' })
-  itemModification: string;
 
   @ViewColumn({ name: 'item_note' })
   itemNote: string;

@@ -10,6 +10,8 @@ export * from './dto/menu/menu.category.dto/menu.category.dto';
 export * from './dto/menu/menu.category.mapping.dto/menu.category.mapping.dto';
 export * from './dto/auth/line.account.dto/line.account.dto';
 export * from './dto/menu/menu.item.modification.dto/menu.item.modification.dto';
+export * from './dto/menu/menu.item.mapping.dto/menu.item.mapping.dto';
+export * from './dto/menu/modification.dto/modification.dto';
 //#endregion
 
 //#region 2b vo/base
@@ -18,6 +20,7 @@ export * from './vo/2b/base/business.user.vo/business.user.vo';
 export * from './vo/2b/base/menu.vo/menu.vo';
 export * from './vo/2b/base/menu.category.vo/menu.category.vo';
 export * from './vo/2b/base/menu.item.vo/menu.item.vo';
+export * from './vo/2b/base/modification.vo/modification.vo';
 //#endregion
 
 //#region 2b vo/req
@@ -26,6 +29,7 @@ export * from './vo/2b/req/business.user.update.req.vo/business.user.update.req.
 export * from './vo/2b/req/menu.update.req.vo/menu.update.req.vo';
 export * from './vo/2b/req/menu.item.update.req.vo/menu.item.update.req.vo';
 export * from './vo/2b/req/menu.category.update.req.vo/menu.category.update.req.vo';
+export * from './vo/2b/req/modification.update.req.vo/modification.update.req.vo';
 //#endregion
 
 //#region 2b vo/res
@@ -34,6 +38,7 @@ export * from './vo/2b/res/menu.res.vo/menu.res.vo';
 export * from './vo/2b/res/menu.item.res.vo/menu.item.res.vo';
 export * from './vo/2b/res/menu.category.res.vo/menu.category.res.vo';
 export * from './vo/2b/res/business.user.res.vo/business.user.res.vo';
+export * from './vo/2b/res/modification.res.vo/modification.res.vo';
 //#endregion
 
 //#region 2c vo/base

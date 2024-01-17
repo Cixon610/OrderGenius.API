@@ -82,7 +82,7 @@ export class MenuCategoryService {
     });
 
     if (!menuToDelete) {
-      throw new Error(`MenuItem with id ${id} not found`);
+      throw new Error(`MenuCategory with id ${id} not found`);
     }
 
     const deleted = await this.menuCategoryRepository.delete(id);

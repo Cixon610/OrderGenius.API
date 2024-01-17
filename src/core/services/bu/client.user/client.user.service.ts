@@ -11,6 +11,7 @@ import { Like, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { SysConfigService } from 'src/infra/services';
 import { Role } from 'src/core/constants/enums/role.enum';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class ClientUserService {
@@ -35,7 +36,8 @@ export class ClientUserService {
         address: vo.address,
       }),
     );
-    return this.toVo(await this.clientUserRepository.save(newUser));
+    const result = await this.clientUserRepository.save(newUser);
+    return plainToInstance(ClientUserResVo, result);
   }
 
   async isUserExist(account: string): Promise<boolean> {
@@ -77,7 +79,8 @@ export class ClientUserService {
       throw new Error(`BusinessUser with id ${vo.id} not found`);
     }
     const updated = Object.assign(toUpdate, vo);
-    return this.toVo(await this.clientUserRepository.save(updated));
+    const result = await this.clientUserRepository.save(updated);
+    return plainToInstance(ClientUserResVo, result);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -91,9 +94,8 @@ export class ClientUserService {
   }
 
   async get(id: string): Promise<ClientUserResVo> {
-    return this.toVo(
-      await this.clientUserRepository.findOne({ where: { id } }),
-    );
+    const result = await this.clientUserRepository.findOne({ where: { id } });
+    return plainToInstance(ClientUserResVo, result);
   }
 
   async getByKey(key: string): Promise<ClientUserResVo[]> {
@@ -101,26 +103,13 @@ export class ClientUserService {
       where: { userName: Like(`%${key}%`) },
       order: { updatedAt: 'DESC' },
     });
-    return vos.map((vo) => this.toVo(vo));
+    return vos.map((vo) => plainToInstance(ClientUserResVo, vo));
   }
 
   async getByAccount(account: string) {
-    return await this.clientUserRepository.findOne({
+    const user = await this.clientUserRepository.findOne({
       where: { account },
     });
-  }
-
-  private toVo(vo: ClientUser): ClientUserResVo {
-    if (!vo) {
-      return null;
-    }
-    return new ClientUserResVo({
-      id: vo.id,
-      userName: vo.userName,
-      account: vo.account,
-      email: vo.email,
-      phone: vo.phone,
-      address: vo.address,
-    });
+    return plainToInstance(ClientUserResVo, user);
   }
 }

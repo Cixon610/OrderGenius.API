@@ -11,6 +11,7 @@ import { Like, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { SysConfigService } from 'src/infra/services';
 import { Role } from 'src/core/constants/enums/role.enum';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class BusinessUserService {
@@ -36,7 +37,8 @@ export class BusinessUserService {
         address: vo.address,
       }),
     );
-    return this.toVo(await this.businessUserRepository.save(newUser));
+    const result = await this.businessUserRepository.save(newUser);
+    return plainToInstance(BusinessUserResVo, result);
   }
 
   async isUserExist(account: string): Promise<boolean> {
@@ -77,7 +79,8 @@ export class BusinessUserService {
       throw new Error(`BusinessUser with id ${vo.id} not found`);
     }
     const updated = Object.assign(toUpdate, vo);
-    return this.toVo(await this.businessUserRepository.save(updated));
+    const result = await this.businessUserRepository.save(updated);
+    return plainToInstance(BusinessUserResVo, result);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -91,9 +94,8 @@ export class BusinessUserService {
   }
 
   async get(id: string): Promise<BusinessUserResVo> {
-    return this.toVo(
-      await this.businessUserRepository.findOne({ where: { id } }),
-    );
+    const result = await this.businessUserRepository.findOne({ where: { id } });
+    return plainToInstance(BusinessUserResVo, result);
   }
 
   async getByKey(key: string): Promise<BusinessUserResVo[]> {
@@ -101,13 +103,14 @@ export class BusinessUserService {
       where: { userName: Like(`%${key}%`) },
       order: { updatedAt: 'DESC' },
     });
-    return vos.map((vo) => this.toVo(vo));
+    return vos.map((vo) => plainToInstance(BusinessUserResVo, vo));
   }
 
   async getByAccount(account: string) {
-    return await this.businessUserRepository.findOne({
+    const result = await this.businessUserRepository.findOne({
       where: { account },
     });
+    return plainToInstance(BusinessUserResVo, result);
   }
 
   async getByBusinessId(businessId: string): Promise<BusinessUserResVo[]> {
@@ -115,21 +118,6 @@ export class BusinessUserService {
       where: { businessId },
       order: { updatedAt: 'DESC' },
     });
-    return vos.map((vo) => this.toVo(vo));
-  }
-
-  private toVo(vo: BusinessUser): BusinessUserResVo {
-    if (!vo) {
-      return null;
-    }
-    return new BusinessUserResVo({
-      id: vo.id,
-      businessId: vo.businessId,
-      userName: vo.userName,
-      account: vo.account,
-      email: vo.email,
-      phone: vo.phone,
-      address: vo.address,
-    });
+    return vos.map((vo) => plainToInstance(BusinessUserResVo, vo));
   }
 }

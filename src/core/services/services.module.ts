@@ -11,6 +11,7 @@ import {
   ClientUserService,
   MenuCategoryService,
   BusinessUserService,
+  ModificationService,
 } from './index';
 import { Module } from '@nestjs/common';
 import * as typeorm from 'src/infra/typeorm';
@@ -33,6 +34,7 @@ const exportServices = [
   ClientUserService,
   MenuCategoryService,
   BusinessUserService,
+  ModificationService,
 ];
 const infraConfig = new InfraConfig();
 @Module({
