@@ -28,4 +28,9 @@ p, business, /modification/key?key=<string>, *
 p, business, /modification/:businessId
 p, business, /modification, *
 
+p, costumer, /order/:orderId, *
+p, costumer, /order/:userId
+p, costumer, /order, *
+
 g, admin, business
+g, admin, costumer

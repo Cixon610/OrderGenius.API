@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { randomUUID } from 'crypto';
 import {
+  IUserPayload,
   OrderCreateReqVo,
   OrderDetailDto,
   OrderDetailVo,
   OrderDto,
   OrderResVo,
 } from 'src/core/models';
-import { MenuItem, Order, OrderDetail } from 'src/infra/typeorm';
+import { ClientUser, MenuItem, Order, OrderDetail } from 'src/infra/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -19,15 +21,23 @@ export class OrderService {
     private readonly orderDetailRepository: Repository<OrderDetail>,
     @InjectRepository(MenuItem)
     private readonly itemRepository: Repository<MenuItem>,
+    @InjectRepository(ClientUser)
+    private readonly userRepository: Repository<ClientUser>,
   ) {}
 
-  async create(vo: OrderCreateReqVo): Promise<any> {
-    const order = new OrderDto({
-      userCId: vo.userId,
-      memo: vo.memo,
+  async create(
+    userPayLoad: IUserPayload,
+    vo: OrderCreateReqVo,
+  ): Promise<OrderResVo> {
+    const orderId = randomUUID();
+
+    const user = await this.userRepository.findOne({
+      where: { id: userPayLoad.id },
     });
 
-    let orderResult = await this.orderRepository.save(order);
+    if (!user) {
+      throw new Error(`User with id ${userPayLoad.id} not found`);
+    }
 
     let orderDetailList = [];
     for (const v of vo.detail) {
@@ -44,7 +54,7 @@ export class OrderService {
       }
 
       const orderDetailDto = new OrderDetailDto({
-        orderId: orderResult.id,
+        orderId: orderId,
         itemId: v.itemId,
         itemPrice: item.price,
         totalPrice: totalPrice,
@@ -59,18 +69,27 @@ export class OrderService {
       orderDetailList,
     );
 
+    const totalValue = orderDetailList.reduce((a, b) => a + b.totalPrice, 0);
+    const totalCount = orderDetailList.length;
+    const order = new OrderDto({
+      id: orderId,
+      userCId: userPayLoad.id,
+      totalValue,
+      totalCount,
+      memo: vo.memo,
+    });
+
     //存Order
-    order.totalValue = orderDetailList.reduce((a, b) => a + b.totalPrice, 0);
-    order.totalCount = orderDetailList.length;
-    orderResult = await this.orderRepository.save(order);
+    const orderResult = await this.orderRepository.save(order);
 
     return new OrderResVo({
       id: orderResult.id,
       detail: orderDetailResult,
-      userCId: orderResult.userCId,
       totalValue: orderResult.totalValue,
       totalCount: orderResult.totalCount,
       memo: orderResult.memo,
+      userId: user.id,
+      userName: user.userName,
     });
   }
 
@@ -78,9 +97,19 @@ export class OrderService {
     const order = await this.orderRepository.findOne({
       where: { id },
     });
+
+    const user = await this.userRepository.findOne({
+      where: { id: order.userCId },
+    });
+
+    if (!user) {
+      throw new Error(`User with id ${order.userCId} not found`);
+    }
+
     if (!order) {
       throw new Error(`Order with id ${id} not found`);
     }
+
     const orderDetails = await this.orderDetailRepository.find({
       where: { orderId: id },
     });
@@ -90,34 +119,75 @@ export class OrderService {
       const item = await this.itemRepository.findOne({
         where: { id: v.itemId },
       });
-      orderDetailVos.push(await this.orderDetailToVo(v, item));
+      orderDetailVos.push(await this.#orderDetailToVo(v, item));
     }
 
     return new OrderResVo({
       id: order.id,
       detail: orderDetailVos,
-      userCId: order.userCId,
       totalValue: order.totalValue,
       totalCount: order.totalCount,
       memo: order.memo,
+      userId: user.id,
+      userName: user.userName,
     });
   }
 
-  async orderToVo(order: Order): Promise<OrderResVo> {
-    if (!order) {
-      return null;
+  async getByUserId(userId: string): Promise<OrderResVo[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new Error(`User with id ${userId} not found`);
     }
-    return new OrderResVo({
-      id: order.id,
-      userCId: order.userCId,
-      totalValue: order.totalValue,
-      totalCount: order.totalCount,
-      memo: order.memo,
-      detail: null,
+
+    const orders = await this.orderRepository.find({
+      where: { userCId: userId },
+      order: { createdAt: 'DESC' },
     });
+
+    if (orders?.length == 0) {
+      throw new Error(`Order with UserId ${userId} not found`);
+    }
+
+    const orderResVos = [];
+
+    for (const order of orders) {
+      const orderDetails = await this.#getOrderDetail(order.id);
+      orderResVos.push(
+        new OrderResVo({
+          id: order.id,
+          detail: orderDetails,
+          totalValue: order.totalValue,
+          totalCount: order.totalCount,
+          memo: order.memo,
+          userId: user.id,
+          userName: user.userName,
+        }),
+      );
+    }
+
+    return orderResVos;
   }
 
-  async orderDetailToVo(
+  async #getOrderDetail(Orderid: string): Promise<OrderDetailVo[]> {
+    const orderDetails = await this.orderDetailRepository.find({
+      where: { orderId: Orderid },
+      order: { createdAt: 'DESC' },
+    });
+
+    const orderDetailVos = [];
+    for (const v of orderDetails) {
+      const item = await this.itemRepository.findOne({
+        where: { id: v.itemId },
+      });
+      orderDetailVos.push(await this.#orderDetailToVo(v, item));
+    }
+
+    return orderDetailVos;
+  }
+
+  async #orderDetailToVo(
     orderDetail: OrderDetail,
     item,
   ): Promise<OrderDetailVo> {

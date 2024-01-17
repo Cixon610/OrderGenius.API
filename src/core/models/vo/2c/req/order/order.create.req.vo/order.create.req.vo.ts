@@ -24,10 +24,6 @@ export class OrderDetail {
 }
 
 export class OrderCreateReqVo {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ description: 'userId' })
-  userId: string;
 
   @IsArray()
   @IsNotEmpty()

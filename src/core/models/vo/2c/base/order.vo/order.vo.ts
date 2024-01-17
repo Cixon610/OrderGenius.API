@@ -5,9 +5,6 @@ export class OrderVo {
     Object.assign(this, init);
   }
 
-  @ApiProperty({ example: 'userCId', description: 'userCId' })
-  userCId: string;
-
   @ApiProperty({ example: 'totalValue', description: 'totalValue' })
   totalValue: number;
 
