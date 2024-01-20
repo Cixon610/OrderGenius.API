@@ -1,18 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('modification')
 export class Modification {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'business_id' })
+  @Column('uuid', { name: 'business_id' })
   businessId: string | null;
 
-  @Column({ name: 'name' })
+  @Column('text', { name: 'name' })
   name: string | null;
 
-  @Column({ name: 'content', type: 'json' })
-  content: object | null;
+  @Column('json', { name: 'options' })
+  options: Object | null;
+
+  @Column('integer', { name: 'max_choices' })
+  maxChoices?: number | null;
 
   @CreateDateColumn({
     name: 'created_at',
@@ -29,6 +39,6 @@ export class Modification {
   })
   updatedAt: Date | null;
 
-  @Column({ name: 'update_user_id', nullable: true })
+  @Column('uuid', { name: 'update_user_id', nullable: true })
   updateUserId: string | null;
 }

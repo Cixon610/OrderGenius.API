@@ -24,7 +24,8 @@ export class ModificationService {
         new ModificationDto({
           businessId: vo.businessId,
           name: vo.name,
-          content: vo.content,
+          options: vo.options,
+          maxChoices: vo.maxChoices,
         }),
       ),
     );

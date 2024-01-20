@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { Exclude } from 'class-transformer';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, isArray } from 'class-validator';
 export class ModificationVo {
   public constructor(init?: Partial<ModificationVo>) {
     Object.assign(this, init);
@@ -19,6 +20,21 @@ export class ModificationVo {
   name!: string;
 
   @IsOptional()
-  @ApiProperty({ example: 'content', description: 'content' })
-  content?: object;
+  @IsArray()
+  @ApiProperty({ example: '[{"option1":0,"option2":1 }]', description: 'options' })
+  options?: Map<string, number>;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @ApiProperty({ example: '1', description: 'maxChoices' })
+  maxChoices?: number;
+  
+  @Exclude()
+  createdAt: Date | null;
+
+  @Exclude()
+  updatedAt: Date | null;
+
+  @Exclude()
+  updateUserId: string | null;
 }

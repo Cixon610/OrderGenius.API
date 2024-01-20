@@ -12,7 +12,8 @@ import { ViewEntity, ViewColumn } from 'typeorm';
     mi.updated_at AS menu_item_updated_at,
     mf.id AS modification_id,
     mf.name AS modification_name,
-    mf.content AS modification_description,
+    mf.options AS modification_options,
+    mf.max_choices AS modification_max_choices,
     mf.created_at AS modification_created_at,
     mf.updated_at AS modification_updated_at
     FROM public.menu_item mi
