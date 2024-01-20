@@ -1,6 +1,4 @@
 import { ApiProperty } from "@nestjs/swagger";
-
-type Options = Record<string, string>;
 export class MenuItemModificationDto {
     @ApiProperty({ example: 0, description: 'id' })
     id: number;
@@ -8,11 +6,11 @@ export class MenuItemModificationDto {
     @ApiProperty({ example: 'name', description: 'name' })
     name: string;
 
-    @ApiProperty({ example: true, description: 'pricing' })
-    pricing: boolean;
+    // @ApiProperty({ example: true, description: 'pricing' })
+    // pricing: boolean;
 
-    @ApiProperty({ example: {'key': 'value'}, description: 'options' })
-    options?: Options;
+    @ApiProperty({ example: {'key': 'price'}, description: 'options' })
+    options?: Map<string, string>;
     
     @ApiProperty({ example: 1, description: 'max_choices' })
     max_choices: number;

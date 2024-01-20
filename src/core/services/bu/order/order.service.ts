@@ -47,7 +47,7 @@ export class OrderService {
 
       //計算總價
       let totalPrice = Number(item.price);
-      if (v.modification && v.modification.pricing) {
+      if (v.modification) {
         for (const value of Object.values(v.modification.options)) {
           totalPrice += Number(value);
         }
