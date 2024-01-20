@@ -7,7 +7,7 @@ import {
   BusinessUserResVo,
 } from 'src/core/models';
 import { BusinessUser } from 'src/infra/typeorm';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { SysConfigService } from 'src/infra/services';
 import { Role } from 'src/core/constants/enums/role.enum';
@@ -96,6 +96,11 @@ export class BusinessUserService {
   async get(id: string): Promise<BusinessUserResVo> {
     const result = await this.businessUserRepository.findOne({ where: { id } });
     return plainToInstance(BusinessUserResVo, result);
+  }
+
+  async getByIds(ids: string[]): Promise<BusinessUserResVo[]> {
+    const result = await this.businessUserRepository.find({ where: { id: In(ids) } });
+    return result.map((vo) => plainToInstance(BusinessUserResVo, vo));
   }
 
   async getByKey(key: string): Promise<BusinessUserResVo[]> {

@@ -6,7 +6,6 @@ import {
   BusinessDto,
   BusinessResVo,
   BusinessUpdateReqVo,
-  BusinessUserResVo,
 } from 'src/core/models';
 import { Business, BusinessUser } from 'src/infra/typeorm';
 import { In, Like, Repository } from 'typeorm';
@@ -30,7 +29,15 @@ export class BusinessService {
       }),
     );
     const result = await this.businessRepository.save(newbusiness);
-    return plainToInstance(BusinessResVo, result);
+    if(vo.userIds && vo.userIds.length > 0){
+      const users = await this.businessUserRepository.find({ where: { id: In(vo.userIds) } });
+      users.forEach((user) => {
+        //TODO: 之後支援多商家時，要改成加入商家mapping表
+        user.businessId = result.id;
+      });
+      await this.businessUserRepository.save(users);
+    }
+    return this.get(result.id);
   }
 
   async update(vo: BusinessUpdateReqVo): Promise<BusinessResVo> {
@@ -42,7 +49,7 @@ export class BusinessService {
     }
     const updatedBusiness = Object.assign(businessToUpdate, vo);
     const result = await this.businessRepository.save(updatedBusiness);
-    return plainToInstance(BusinessResVo, result);
+    return this.get(result.id);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -56,16 +63,35 @@ export class BusinessService {
   }
 
   async get(id: string): Promise<BusinessResVo> {
-    const result = await this.businessRepository.findOne({ where: { id } });
-    return plainToInstance(BusinessResVo, result);
+    const business = await this.businessRepository.findOne({ where: { id } });
+    if (!business) {
+      throw new Error(`Business with id ${id} not found`);
+    }
+
+    const businessUsers = await this.businessUserRepository.find({
+      where: { businessId: id },
+    });
+
+    var result = plainToInstance(BusinessResVo, business);
+    result.userIds = businessUsers.map((user) => user.id);
+    return result;
   }
 
   async getByKey(key: string): Promise<BusinessResVo[]> {
-    var vos = await this.businessRepository.find({
+    const vos = await this.businessRepository.find({
       where: { name: Like(`%${key}%`) },
       order: { updatedAt: 'DESC' },
     });
-    return vos.map((vo) => plainToInstance(BusinessResVo, vo));
+    let result = [];
+    for(const vo of vos){
+      const businessResVo = plainToInstance(BusinessResVo, vo);
+      const businessUsers = await this.businessUserRepository.find({
+        where: { businessId: vo.id },
+      });
+      businessResVo.userIds = businessUsers.map((user) => user.id);
+      result.push(businessResVo);
+    }
+    return result;
   }
 
   async updateBusinessUser(

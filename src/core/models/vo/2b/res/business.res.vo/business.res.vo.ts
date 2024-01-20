@@ -13,8 +13,8 @@ export class BusinessResVo extends PartialType(BusinessVo) {
   })
   id!: string;
   
-  @Exclude()
-  userIds?: string[];
+  // @Exclude()
+  // userIds?: string[];
   @Exclude()
   createdAt?: Date | null;
   @Exclude()
