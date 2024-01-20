@@ -7,6 +7,10 @@ import { ViewEntity, ViewColumn } from 'typeorm';
     mi.id AS menu_item_id,
     mi.name AS menu_item_name,
     mi.description AS menu_item_description,
+    mi.price AS menu_item_price,
+    mi.note AS menu_item_notes,
+    mi.enable AS menu_item_enable,
+    mi.promoted AS menu_item_promoted,
     mi.picture_url AS menu_item_picture_url,
     mi.created_at AS menu_item_created_at,
     mi.updated_at AS menu_item_updated_at,
@@ -33,6 +37,18 @@ export class ViewItemModification {
 
   @ViewColumn({ name: 'menu_item_description' })
   menuItemDescription: string;
+
+  @ViewColumn({ name: 'menu_item_price' })
+  menuItemPrice: string;
+
+  @ViewColumn({ name: 'menu_item_notes' })
+  menuItemNotes: string;
+
+  @ViewColumn({ name: 'menu_item_enable' })
+  menuItemEnable: string;
+
+  @ViewColumn({ name: 'menu_item_promoted' })
+  menuItemPromoted: string;
 
   @ViewColumn({ name: 'menu_item_picture_url' })
   menuItemPictureUrl: string;

@@ -150,6 +150,9 @@ export class MenuItemService {
           businessId: element[0].businessId,
           name: element[0].menuItemName,
           description: element[0].menuItemDescription,
+          note: element[0].menuItemNote,
+          enable: element[0].menuItemEnable,
+          promoted: element[0].menuItemPromoted,
           pictureUrl: element[0].menuItemPictureUrl,
           modificationIds: element
             .filter((modification) => !!modification.modificationId)
