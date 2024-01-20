@@ -1,5 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { MenuCategoryVo, MenuItemResVo } from 'src/core/models';
+import { Exclude } from 'class-transformer';
+import { MenuCategoryVo } from 'src/core/models';
 
 export class MenuCategoryResVo extends PartialType(MenuCategoryVo) {
   public constructor(init?: MenuCategoryResVo) {
@@ -11,4 +12,11 @@ export class MenuCategoryResVo extends PartialType(MenuCategoryVo) {
     description: 'Id',
   })
   id!: string;
+  
+  @Exclude()
+  createdAt?: Date | null;
+  @Exclude()
+  updatedAt?: Date | null;
+  @Exclude()
+  updateUserId?: string | null;
 }

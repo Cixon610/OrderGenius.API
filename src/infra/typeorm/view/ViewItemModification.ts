@@ -49,8 +49,11 @@ export class ViewItemModification {
   @ViewColumn({ name: 'modification_name' })
   modificationName: string;
 
-  @ViewColumn({ name: 'modification_description' })
-  modificationDescription: string;
+  @ViewColumn({ name: 'modification_options' })
+  modificationOptions: Map<string, number>;
+
+  @ViewColumn({ name: 'modification_max_choices' })
+  modificationMaxChoices: number;
 
   @ViewColumn({ name: 'modification_created_at' })
   modificationCreatedAt: Date | null;

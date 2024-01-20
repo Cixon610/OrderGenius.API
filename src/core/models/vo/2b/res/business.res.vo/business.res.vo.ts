@@ -1,4 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 import { BusinessVo } from 'src/core/models';
 
 export class BusinessResVo extends PartialType(BusinessVo) {
@@ -11,4 +12,13 @@ export class BusinessResVo extends PartialType(BusinessVo) {
     description: 'id',
   })
   id!: string;
+  
+  @Exclude()
+  userIds?: string[];
+  @Exclude()
+  createdAt?: Date | null;
+  @Exclude()
+  updatedAt?: Date | null;
+  @Exclude()
+  updateUserId?: string | null;
 }

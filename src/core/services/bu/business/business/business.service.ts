@@ -42,7 +42,7 @@ export class BusinessService {
     }
     const updatedBusiness = Object.assign(businessToUpdate, vo);
     const result = await this.businessRepository.save(updatedBusiness);
-    return plainToInstance(BusinessUserResVo, result);
+    return plainToInstance(BusinessResVo, result);
   }
 
   async delete(id: string): Promise<boolean> {

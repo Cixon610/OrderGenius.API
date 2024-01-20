@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, isArray } from 'class-validator';
 export class ModificationVo {
   public constructor(init?: Partial<ModificationVo>) {
@@ -28,13 +27,4 @@ export class ModificationVo {
   @IsNumber()
   @ApiProperty({ example: '1', description: 'maxChoices' })
   maxChoices?: number;
-  
-  @Exclude()
-  createdAt: Date | null;
-
-  @Exclude()
-  updatedAt: Date | null;
-
-  @Exclude()
-  updateUserId: string | null;
 }

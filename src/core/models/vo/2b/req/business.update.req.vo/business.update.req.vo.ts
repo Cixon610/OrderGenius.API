@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
 import { BusinessVo } from 'src/core/models';
 
 export class BusinessUpdateReqVo extends PartialType(BusinessVo) {

@@ -1,4 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 import { OrderDetailVo, OrderVo } from 'src/core/models';
 export class OrderResVo extends PartialType(OrderVo) {
   public constructor(init?: OrderResVo) {
@@ -21,4 +22,11 @@ export class OrderResVo extends PartialType(OrderVo) {
 
   @ApiProperty({ example: 'userName', description: 'userName' })
   userName: string;
+  
+  @Exclude()
+  createdAt?: Date | null;
+  @Exclude()
+  updatedAt?: Date | null;
+  @Exclude()
+  updateUserId?: string | null;
 }

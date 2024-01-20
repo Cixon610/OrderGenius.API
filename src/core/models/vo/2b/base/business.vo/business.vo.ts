@@ -4,7 +4,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  isArray,
 } from 'class-validator';
 
 export class BusinessVo {
