@@ -189,10 +189,9 @@ export class LineService {
   }
 
   async #clientLogin(profile: LineProfileVo): Promise<LineProfileVo> {
-    const user = await this.clientUserService.getByAccount(profile.userId);
-    let userId = this.sysConfigService.common.defaultBzId;
+    let user = await this.clientUserService.getByAccount(profile.userId);
     if (!user) {
-      const user = await this.clientUserService.add(
+      user = await this.clientUserService.add(
         new ClientUserVo({
           userName: profile.displayName,
           account: profile.userId,
@@ -202,12 +201,11 @@ export class LineService {
           address: '',
         }),
       );
-      userId = user.id;
     }
 
     //clientUser不須businessId
     profile.businessId = this.sysConfigService.common.defaultBzId;
-    profile.userId = userId;
+    profile.userId = user.id;
 
     return profile;
   }

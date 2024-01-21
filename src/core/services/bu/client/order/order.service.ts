@@ -46,11 +46,13 @@ export class OrderService {
       });
 
       //計算總價
-      let totalPrice = Number(item.price);
-      if (v.modification) {
-        for (const value of Object.values(v.modification.options)) {
-          totalPrice += Number(value);
-        }
+      let totalPrice = Number(item.price * v.count);
+      if (v.modifications) {
+        v.modifications.forEach((modification) => {
+          modification.options.forEach((value, key) => {
+            totalPrice += Number(value);
+          });
+        });
       }
 
       const orderDetailDto = new OrderDetailDto({
@@ -58,7 +60,7 @@ export class OrderService {
         itemId: v.itemId,
         itemPrice: item.price,
         totalPrice: totalPrice,
-        modification: v.modification as Object,
+        modification: v.modifications as Object,
         memo: v.memo,
       });
 

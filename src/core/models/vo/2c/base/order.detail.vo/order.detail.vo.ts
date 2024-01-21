@@ -17,13 +17,13 @@ export class OrderDetailVo {
   @ApiProperty({ example: 'itemDescription', description: 'itemDescription' })
   itemDescription: string;
 
-  @ApiProperty({ example: 'itemPrice', description: 'itemPrice' })
+  @ApiProperty({ example: 100, description: 'itemPrice' })
   itemPrice: Number;
 
   @ApiProperty({ example: 'itemPictureUrl', description: 'itemPictureUrl' })
   itemPictureUrl: string;
 
-  @ApiProperty({ example: 'totalPrice', description: 'totalPrice' })
+  @ApiProperty({ example: 100, description: 'totalPrice' })
   totalPrice: Number;
 
   @ApiProperty({ example: 'modification', description: 'modification' })

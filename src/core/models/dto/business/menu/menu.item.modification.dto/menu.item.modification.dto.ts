@@ -6,11 +6,8 @@ export class MenuItemModificationDto {
     @ApiProperty({ example: 'name', description: 'name' })
     name: string;
 
-    // @ApiProperty({ example: true, description: 'pricing' })
-    // pricing: boolean;
-
     @ApiProperty({ example: {'key': 'price'}, description: 'options' })
-    options?: Map<string, string>;
+    options?: Map<string, number>;
     
     @ApiProperty({ example: 1, description: 'max_choices' })
     max_choices: number;
