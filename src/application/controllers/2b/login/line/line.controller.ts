@@ -15,10 +15,7 @@ export class LineController {
   @ApiResponse({ status: 200, type: LineLoginResVo })
   @Get('login')
   async login(@Req() req, @Res() res) {
-    const origin =
-      req.headers.host == 'localhost:9000'
-        ? this.sysConfigService.infra.clientUrl2C
-        : req.headers.origin;
+    const origin = req.headers.origin;
     const loginUrl = await this.lineService.getLoginUrl(origin);
     res.json(new LineLoginResVo({ url: loginUrl }));
   }
@@ -26,10 +23,7 @@ export class LineController {
   @ApiResponse({ status: 200, type: LineCallbackResVo })
   @Get('callback')
   async callback(@Req() req, @Res() res) {
-    const origin =
-      req.headers.host == 'localhost:9000'
-        ? this.sysConfigService.infra.clientUrl2C
-        : req.headers.origin;
+    const origin = req.headers.origin;
     const { code } = req.query;
     const result = await this.lineService.login(code, origin);
     res.json(result);

@@ -88,7 +88,7 @@ export class LineService {
 
   //#region private
   #getProtalUrl(oringin: string): { type: string; protalUrl: string } {
-    oringin = oringin.replace('https://', '');
+    oringin = oringin.replace('https://', '').replace('http://', '');
     if (oringin == this.sysConfigService.infra.clientUrl2B)
       return { type: '2B', protalUrl: this.sysConfigService.infra.clientUrl2B };
     if (oringin == this.sysConfigService.infra.clientUrl2C)
@@ -206,7 +206,7 @@ export class LineService {
     }
 
     //clientUser不須businessId
-    profile.businessId = '';
+    profile.businessId = this.sysConfigService.common.defaultBzId;
     profile.userId = userId;
 
     return profile;
