@@ -1,8 +1,9 @@
 import OpenAI from 'openai';
 import { Injectable } from '@nestjs/common';
 import { SysConfigService } from 'src/infra/services';
-import { BusinessService, BusinessUserService } from 'src/core/services';
 import { delay } from 'rxjs';
+import { BusinessService } from '../../bu/business/business/business.service';
+import { BusinessUserService } from '../../bu/business/business.user/business.user.service';
 
 @Injectable()
 export class OpenaiService {
@@ -23,7 +24,9 @@ export class OpenaiService {
     const orderHistory = ['漢堡', '薯條', '可樂'];
     const assistantList = await this.openai.beta.assistants.list();
     //TODO: 改成ID
-    const businessAssistant = assistantList.data.filter(x=>x.name === `${business.name}_${user.userName}`);
+    const businessAssistant = assistantList.data.filter(
+      (x) => x.name === `${business.name}_${user.userName}`,
+    );
     const thread = await this.openai.beta.threads.create();
     if (businessAssistant.length > 0) {
       return {
@@ -114,7 +117,7 @@ export class OpenaiService {
     //   }
     // }
     let status = 'queued';
-    while(status !== 'completed'){
+    while (status !== 'completed') {
       const runStatus = await this.openai.beta.threads.runs.retrieve(
         threadId,
         run.id,

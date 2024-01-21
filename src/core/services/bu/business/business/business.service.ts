@@ -82,7 +82,7 @@ export class BusinessService {
       where: { name: Like(`%${key}%`) },
       order: { updatedAt: 'DESC' },
     });
-    let result = [];
+    let result:BusinessResVo[] = [];
     for(const vo of vos){
       const businessResVo = plainToInstance(BusinessResVo, vo);
       const businessUsers = await this.businessUserRepository.find({
