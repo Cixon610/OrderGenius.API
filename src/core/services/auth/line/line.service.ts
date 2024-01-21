@@ -16,7 +16,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SysConfigService } from 'src/infra/services';
 import { Role } from 'src/core/constants/enums/role.enum';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ClientUserService } from '../../bu/client.user/client.user.service';
+import { ClientUserService } from '../../bu/client/client.user/client.user.service';
 import { BusinessUserService } from '../../bu/business/business.user/business.user.service';
 
 @Injectable()
