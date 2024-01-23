@@ -36,6 +36,7 @@ p, costumer, /modification, read
 p, costumer, /order/:orderId, *
 p, costumer, /order/:userId
 p, costumer, /order, *
+p, costumer, /shopping-cart, *
 
 g, admin, business
 g, admin, costumer

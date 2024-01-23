@@ -12,11 +12,12 @@ import {
   MenuCategoryService,
   BusinessUserService,
   ModificationService,
+  ShoppingCartService,
 } from './index';
 import { Module } from '@nestjs/common';
 import * as typeorm from 'src/infra/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SysConfigService } from 'src/infra/services';
+import { RedisService, SysConfigService } from 'src/infra/services';
 import { JwtModule } from '@nestjs/jwt';
 import { InfraConfig } from 'src/infra/config';
 
@@ -35,6 +36,8 @@ const exportServices = [
   MenuCategoryService,
   BusinessUserService,
   ModificationService,
+  ShoppingCartService,
+  RedisService,
 ];
 const infraConfig = new InfraConfig();
 @Module({
@@ -47,7 +50,8 @@ const infraConfig = new InfraConfig();
         },
       }),
     }),
-    TypeOrmModule.forFeature([...entities])],
+    TypeOrmModule.forFeature([...entities]),
+  ],
   providers: [...exportServices, SysConfigService],
   exports: exportServices,
 })
