@@ -23,6 +23,10 @@ export class InfraConfig {
     return String(process.env.JWT_SECRET);
   }
 
+  get jwrExpire(): string {
+    return String(process.env.JWT_EXPIRE);
+  }
+
   get awsS3Region(): string {
     return String(process.env.AWS_S3_REGION);
   }

@@ -2,15 +2,21 @@ import { Module } from '@nestjs/common';
 import { SysConfigService } from 'src/infra/services';
 import { JwtMiddleware } from './index';
 import { JwtModule } from '@nestjs/jwt';
+import { InfraConfig } from 'src/infra/config';
 
 const exportServices = [
   JwtMiddleware
 ];
+const infraConfig = new InfraConfig();
 @Module({
   imports: [
-    JwtModule.register({
-      secret: 'secretKey',
-      signOptions: { expiresIn: '1d' },
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: infraConfig.jwtSecret,
+        signOptions: {
+          expiresIn: '1d',
+        },
+      }),
     }),
   ],
   providers: [...exportServices, SysConfigService],
