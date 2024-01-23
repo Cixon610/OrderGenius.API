@@ -112,4 +112,9 @@ export class ClientUserService {
     });
     return plainToInstance(ClientUserResVo, user);
   }
+
+  async getLineProfile(id: string): Promise<ClientUserResVo> {
+    const result = await this.clientUserRepository.findOne({ where: { id } });
+    return plainToInstance(ClientUserResVo, result);
+  }
 }

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { OrderCreateReqVo } from 'src/core/models';
 import { RedisService } from 'src/infra/services';
-import { JsonSerializer } from 'src/shared';
 
 @Injectable()
 export class ShoppingCartService {

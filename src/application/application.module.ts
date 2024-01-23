@@ -12,6 +12,7 @@ import {
   OrderController,
   ModificationController,
   ShoppingCartController,
+  ClientUserController,
 } from './index';
 import { ServicesModule } from 'src/core/services';
 import { JwtModule } from '@nestjs/jwt';
@@ -31,6 +32,7 @@ const exportControllers = [
   OrderController,
   ModificationController,
   ShoppingCartController,
+  ClientUserController,
 ];
 const infraConfig = new InfraConfig();
 @Module({
