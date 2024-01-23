@@ -50,6 +50,7 @@ export * from './vo/2c/req/client.user.update.req.vo/client.user.update.req.vo';
 //vo res
 export * from './vo/2c/res/order/order.res.vo/order.res.vo';
 export * from './vo/2c/res/client.user.res.vo/client.user.res.vo';
+export * from './vo/2c/res/client.user.profile.vo/client.user.profile.vo';
 //#endregion
 
 //#region inerface

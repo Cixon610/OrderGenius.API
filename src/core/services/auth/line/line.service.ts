@@ -1,5 +1,6 @@
 import {
   BusinessUserVo,
+  ClientUserProfileVo,
   ClientUserVo,
   IUserPayload,
   LineAccountDto,
@@ -18,6 +19,7 @@ import { Role } from 'src/core/constants/enums/role.enum';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ClientUserService } from '../../bu/client/client.user/client.user.service';
 import { BusinessUserService } from '../../bu/business/business.user/business.user.service';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class LineService {
@@ -82,8 +84,10 @@ export class LineService {
     });
   }
 
-  async findLineAccountByLineId(lineId: string): Promise<LineAccount> {
-    return this.lineAccountRepository.findOne({ where: { lineId } });
+  async findLineAccountByLineId(lineId: string): Promise<ClientUserProfileVo> {
+    //TODO:之後串其他登入要抽出共用的欄位在統一
+    const result = this.lineAccountRepository.findOne({ where: { lineId } });
+    return plainToInstance(ClientUserProfileVo, result);
   }
 
   //#region private
