@@ -38,6 +38,8 @@ p, costumer, /order/:userId
 p, costumer, /order, *
 p, costumer, /shopping-cart, *
 p, costumer, /clientUser, *
+p, costumer, /chat, *
+p, costumer, /chat/send, *
 
 g, admin, business
 g, admin, costumer

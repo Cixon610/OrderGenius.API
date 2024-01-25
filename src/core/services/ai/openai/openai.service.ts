@@ -3,7 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { SysConfigService } from 'src/infra/services';
 import { delay } from 'rxjs';
 import { BusinessService } from '../../bu/business/business/business.service';
-import { BusinessUserService } from '../../bu/business/business.user/business.user.service';
+import { ChatCreateResVo, ChatSendResVo } from 'src/core/models';
+import { ClientUserService } from '../../bu/client/client.user/client.user.service';
 
 @Injectable()
 export class OpenaiService {
@@ -11,7 +12,7 @@ export class OpenaiService {
   constructor(
     private readonly SysConfigService: SysConfigService,
     private readonly businessService: BusinessService,
-    private readonly userService: BusinessUserService,
+    private readonly clientUserService: ClientUserService,
   ) {
     this.openai = new OpenAI({
       apiKey: SysConfigService.thirdParty.opeanaiApiKey,
@@ -20,19 +21,20 @@ export class OpenaiService {
 
   async createChat(businessId: string, userId: string) {
     const business = await this.businessService.get(businessId);
-    const user = await this.userService.get(userId);
+    const user = await this.clientUserService.get(userId);
     const orderHistory = ['漢堡', '薯條', '可樂'];
     const assistantList = await this.openai.beta.assistants.list();
-    //TODO: 改成ID
+    //TODO: Assistant改成ID by business
     const businessAssistant = assistantList.data.filter(
       (x) => x.name === `${business.name}_${user.userName}`,
     );
+    //TODO: Thread才by user
     const thread = await this.openai.beta.threads.create();
     if (businessAssistant.length > 0) {
-      return {
+      return new ChatCreateResVo({
         threadId: thread.id,
         assistantId: businessAssistant[0].id,
-      };
+      });
     }
     //TODO: 餐單更新問題、客戶點餐歷史紀錄問題
     //客人資訊改道send再塞?
@@ -92,10 +94,10 @@ export class OpenaiService {
       model: 'gpt-4',
     });
 
-    return {
+    return new ChatCreateResVo({
       threadId: thread.id,
       assistantId: assistant.id,
-    };
+    });
   }
 
   async sendChat(assistantId: string, threadId: string, content: string) {
@@ -126,7 +128,7 @@ export class OpenaiService {
       delay(300);
     }
     const messages = await this.openai.beta.threads.messages.list(threadId);
-    return messages.data[0].content[0].text.value;
+    return new ChatSendResVo({ message: messages.data[0].content[0].text.value});
   }
 
   async assistantTest() {

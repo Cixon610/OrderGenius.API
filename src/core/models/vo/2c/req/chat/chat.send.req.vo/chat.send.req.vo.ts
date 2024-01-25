@@ -22,7 +22,7 @@ export class ChatSendReqVo {
   @IsString()
   @ApiProperty({
     example: 'content',
-    description: 'content',
+    description: 'I want bubble tea.',
   })
   content: string;
 }
