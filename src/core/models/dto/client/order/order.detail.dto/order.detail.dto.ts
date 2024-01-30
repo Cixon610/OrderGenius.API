@@ -10,5 +10,6 @@ export class OrderDetailDto {
   itemPrice: Number;
   totalPrice: Number | null;
   modification: object | null;
+  count: Number | null;
   memo: string | null;
 }

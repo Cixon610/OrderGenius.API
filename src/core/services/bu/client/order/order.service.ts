@@ -49,7 +49,7 @@ export class OrderService {
       let totalPrice = Number(item.price * v.count);
       if (v.modifications) {
         v.modifications.forEach((modification) => {
-          modification.options.forEach((value, key) => {
+          Object.values(modification.options[0]).forEach((value) => {
             totalPrice += Number(value);
           });
         });
@@ -58,9 +58,10 @@ export class OrderService {
       const orderDetailDto = new OrderDetailDto({
         orderId: orderId,
         itemId: v.itemId,
-        itemPrice: item.price,
-        totalPrice: totalPrice,
+        itemPrice: +item.price,
+        totalPrice: +totalPrice,
         modification: v.modifications as Object,
+        count: v.count,
         memo: v.memo,
       });
 
@@ -72,7 +73,7 @@ export class OrderService {
     );
 
     const totalValue = orderDetailList.reduce((a, b) => a + b.totalPrice, 0);
-    const totalCount = orderDetailList.length;
+    const totalCount = orderDetailList.reduce((a, b) => a + b.count, 0);
     const order = new OrderDto({
       id: orderId,
       userCId: userPayLoad.id,
@@ -203,6 +204,7 @@ export class OrderService {
       itemPrice: orderDetail.itemPrice,
       itemPictureUrl: item.pictureUrl,
       totalPrice: orderDetail.totalPrice,
+      count: orderDetail.count,
       modification: orderDetail.modification,
       memo: orderDetail.memo,
     });

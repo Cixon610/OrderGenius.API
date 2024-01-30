@@ -26,6 +26,9 @@ export class OrderDetailVo {
   @ApiProperty({ example: 100, description: 'totalPrice' })
   totalPrice: Number;
 
+  @ApiProperty({ example: 1, description: 'count' })
+  count: Number;
+
   @ApiProperty({ example: 'modification', description: 'modification' })
   modification: MenuItemModificationDto[] | Object | null;
 

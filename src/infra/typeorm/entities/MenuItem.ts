@@ -21,7 +21,7 @@ export class MenuItem {
   @Column('text', { name: 'description', nullable: true })
   description: string | null;
 
-  @Column('numeric', { name: 'price', nullable: true })
+  @Column('integer', { name: 'price', nullable: true })
   price: number | null;
 
   @Column('text', { name: 'note', nullable: true })

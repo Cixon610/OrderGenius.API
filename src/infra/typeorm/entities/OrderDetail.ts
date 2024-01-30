@@ -18,14 +18,17 @@ export class OrderDetail {
   @Column('uuid', { name: 'item_id', nullable: true })
   itemId: string | null;
 
-  @Column('numeric', { name: 'item_price', nullable: true })
-  itemPrice: Number | null;
+  @Column('integer', { name: 'item_price', nullable: true })
+  itemPrice: number | null;
 
-  @Column('numeric', { name: 'total_price', nullable: true })
-  totalPrice: Number | null;
+  @Column('integer', { name: 'total_price', nullable: true })
+  totalPrice: number | null;
 
   @Column('json', { name: 'modification', nullable: true })
   modification: object | null;
+
+  @Column('integer', { name: 'count' })
+  count: number | null;
 
   @Column('text', { name: 'memo', nullable: true })
   memo: string | null;
