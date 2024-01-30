@@ -5,7 +5,7 @@ import { RoleGuard } from 'src/core/guards/role/role.guard';
 import { LineProfileVo } from 'src/core/models';
 import { ClientUserService, LineService } from 'src/core/services';
 
-// @UseGuards(AuthGuard('jwt'), RoleGuard)
+@UseGuards(AuthGuard('jwt'), RoleGuard)
 @ApiTags('clientUser')
 @Controller('clientUser')
 export class ClientUserController {
@@ -15,7 +15,7 @@ export class ClientUserController {
   ) {}
 
   @Get()
-  // @ApiBearerAuth()
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: LineProfileVo })
   async Get(@Query('clientUserId') id: string, @Res() res) {
     //TODO: 如果id不是uuid return 400
