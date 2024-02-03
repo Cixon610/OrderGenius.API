@@ -144,6 +144,7 @@ export class MenuService {
           name: element[0].menuName,
           description: element[0].menuDescription,
           pictureUrl: element[0].menuPictureUrl,
+          active: element[0].menuActive,
           categoryIds: element
             .filter((category) => !!category.categoryId)
             .map((category) => category.categoryId),

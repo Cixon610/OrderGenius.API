@@ -8,7 +8,7 @@ export class MenuItemResVo extends PartialType(MenuItemVo) {
   }
   @ApiProperty({ example: '1', description: 'Id' })
   id: string;
-  
+
   @Exclude()
   createdAt?: Date | null;
   @Exclude()

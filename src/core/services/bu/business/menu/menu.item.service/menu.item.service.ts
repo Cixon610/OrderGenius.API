@@ -150,7 +150,7 @@ export class MenuItemService {
           businessId: element[0].businessId,
           name: element[0].menuItemName,
           description: element[0].menuItemDescription,
-          note: element[0].menuItemNote,
+          note: element[0].menuItemNotes,
           price: +element[0].menuItemPrice,
           enable: element[0].menuItemEnable,
           promoted: element[0].menuItemPromoted,
