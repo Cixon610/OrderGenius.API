@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
+  IsBoolean,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -37,6 +38,14 @@ export class MenuVo {
     description: 'pictureUrl',
   })
   pictureUrl?: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  @ApiProperty({
+    example: 'true',
+    description: 'active',
+  })
+  active?: boolean;
 
   @IsOptional()
   @IsArray()

@@ -28,7 +28,11 @@ export class OpenaiService {
   async createChat(businessId: string, userId: string) {
     const business = await this.businessService.get(businessId);
     const prompt = await this.#getSystemPrompt(userId, business.name);
-    const assistant = await this.#getAssistant(businessId, business.name, prompt);
+    const assistant = await this.#getAssistant(
+      businessId,
+      business.name,
+      prompt,
+    );
 
     //TODO: Thread才by user
     const thread = await this.openai.beta.threads.create();
@@ -51,8 +55,7 @@ export class OpenaiService {
       //TODO:存在則更新sysPrompt
       await this.openai.beta.assistants.modify();
       return businessAssistant;
-    }
-    else{
+    } else {
       //不存在則建立
       businessAssistant = await this.openai.beta.assistants.create({
         name: assistantName,
@@ -72,8 +75,8 @@ export class OpenaiService {
     const orders = await this.orderService.getByUserId(userId);
     //Get latest 10 ordered item names
     const orderHistory = orders
-      .slice(0, 10)
-      .flatMap((x) => x.detail.map((y) => y.itemName));
+      ?.slice(0, 10)
+      ?.flatMap((x) => x.detail.map((y) => y.itemName));
 
     const systemPrompt = `
     你是${businessName}店員，請根據下述的各項目執行你的工作
@@ -105,7 +108,7 @@ export class OpenaiService {
     1. 客人姓名: ${user.userName}
     2. 客人電話: ${user.phone}
     3. 客人地址: ${user.address}
-    4. 客人點餐歷史紀錄: ${orderHistory.join(', ')}`;
+    4. 客人點餐歷史紀錄: ${orderHistory?.join(', ')}`;
 
     //TODO:組出菜單資訊
     const menuPrompt = `

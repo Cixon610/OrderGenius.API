@@ -19,7 +19,7 @@ export class Modification {
   name: string | null;
 
   @Column('json', { name: 'options' })
-  options: Object | null;
+  options: Map<string, number> | null;
 
   @Column('integer', { name: 'max_choices' })
   maxChoices?: number | null;

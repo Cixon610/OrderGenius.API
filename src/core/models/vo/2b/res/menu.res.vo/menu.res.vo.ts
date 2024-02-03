@@ -12,7 +12,7 @@ export class MenuResVo extends PartialType(MenuVo) {
     description: 'Id',
   })
   id!: string;
-  
+
   @Exclude()
   createdAt?: Date | null;
   @Exclude()

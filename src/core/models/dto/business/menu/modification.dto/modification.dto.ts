@@ -3,7 +3,7 @@ export class ModificationDto {
   public constructor(init?: Partial<ModificationDto>) {
     Object.assign(this, init);
   }
-  
+
   id: string = randomUUID();
   businessId!: string;
   name!: string;

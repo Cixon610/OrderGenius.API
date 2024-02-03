@@ -24,6 +24,9 @@ export class Menu {
   @Column('text', { name: 'picture_url', nullable: true })
   pictureUrl: string | null;
 
+  @Column('boolean', { name: 'active', nullable: true })
+  active: boolean;
+
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',

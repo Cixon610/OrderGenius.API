@@ -72,7 +72,7 @@ export class ModificationService {
   }
 
   async getByBusinessId(businessId: string): Promise<ModificationResVo[]> {
-    var vos = await this.modificationRepository.find({
+    const vos = await this.modificationRepository.find({
       where: { businessId },
       order: { updatedAt: 'DESC' },
     });

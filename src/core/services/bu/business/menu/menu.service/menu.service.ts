@@ -89,7 +89,7 @@ export class MenuService {
   }
 
   async getByKey(key: string): Promise<MenuResVo[]> {
-    var vos = await this.viewMenuCategoryRepository.find({
+    const vos = await this.viewMenuCategoryRepository.find({
       where: { menuName: Like(`%${key}%`) },
       order: { menuUpdatedAt: 'DESC', categoryUpdatedAt: 'DESC' },
     });

@@ -9,6 +9,7 @@ export class MenuDto {
   name: string;
   description: string | null;
   pictureUrl: string | null;
+  active: boolean;
   updateUserId: string | null;
   categoryIds: string[];
 }
