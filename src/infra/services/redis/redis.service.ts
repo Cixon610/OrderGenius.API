@@ -31,14 +31,18 @@ export class RedisService {
     }
   }
 
-  
   async setT<T>(
     key: string,
     value: T,
     expireTime: number = this.sysConfigService.infra.redisExpire,
   ): Promise<boolean> {
     try {
-      const result = await this.redis.set(key, JSON.stringify(value), 'EX', expireTime);
+      const result = await this.redis.set(
+        key,
+        JSON.stringify(value),
+        'EX',
+        expireTime,
+      );
       return result === 'OK';
     } catch (error) {
       console.error(`Redis set error: ${error}`);

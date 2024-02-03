@@ -99,12 +99,14 @@ export class BusinessUserService {
   }
 
   async getByIds(ids: string[]): Promise<BusinessUserResVo[]> {
-    const result = await this.businessUserRepository.find({ where: { id: In(ids) } });
+    const result = await this.businessUserRepository.find({
+      where: { id: In(ids) },
+    });
     return result.map((vo) => plainToInstance(BusinessUserResVo, vo));
   }
 
   async getByKey(key: string): Promise<BusinessUserResVo[]> {
-    var vos = await this.businessUserRepository.find({
+    const vos = await this.businessUserRepository.find({
       where: { userName: Like(`%${key}%`) },
       order: { updatedAt: 'DESC' },
     });
@@ -119,7 +121,7 @@ export class BusinessUserService {
   }
 
   async getByBusinessId(businessId: string): Promise<BusinessUserResVo[]> {
-    var vos = await this.businessUserRepository.find({
+    const vos = await this.businessUserRepository.find({
       where: { businessId },
       order: { updatedAt: 'DESC' },
     });

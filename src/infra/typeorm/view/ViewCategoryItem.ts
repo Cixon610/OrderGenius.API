@@ -1,7 +1,4 @@
-import {
-  ViewEntity,
-  ViewColumn,
-} from 'typeorm';
+import { ViewEntity, ViewColumn } from 'typeorm';
 
 @ViewEntity({
   expression: `

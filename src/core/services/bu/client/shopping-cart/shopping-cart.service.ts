@@ -10,12 +10,12 @@ export class ShoppingCartService {
   async get(businessId: string, userId: string): Promise<OrderCreateReqVo> {
     const key = this.#getRedisKey(businessId, userId);
     let value = await this.redisService.getT(key, OrderCreateReqVo);
-    if(!value) {
-        const newValue = new OrderCreateReqVo();
-        await this.redisService.setT(key, newValue);
-        value = newValue;
+    if (!value) {
+      const newValue = new OrderCreateReqVo();
+      await this.redisService.setT(key, newValue);
+      value = newValue;
     }
-    
+
     return value;
   }
 

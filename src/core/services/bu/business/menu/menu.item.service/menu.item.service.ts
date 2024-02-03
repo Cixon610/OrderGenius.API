@@ -109,7 +109,7 @@ export class MenuItemService {
   }
 
   async getByBusinessId(businessId: string): Promise<MenuItemResVo[]> {
-    var vos = await this.viewItemModification.find({
+    const vos = await this.viewItemModification.find({
       where: { businessId },
       order: { menuItemUpdatedAt: 'DESC' },
     });

@@ -99,7 +99,7 @@ export class ClientUserService {
   }
 
   async getByKey(key: string): Promise<ClientUserResVo[]> {
-    var vos = await this.clientUserRepository.find({
+    const vos = await this.clientUserRepository.find({
       where: { userName: Like(`%${key}%`) },
       order: { updatedAt: 'DESC' },
     });

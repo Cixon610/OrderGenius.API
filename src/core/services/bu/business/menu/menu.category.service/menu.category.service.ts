@@ -100,7 +100,7 @@ export class MenuCategoryService {
   }
 
   async getByKey(key: string): Promise<MenuCategoryResVo[]> {
-    var vos = await this.viewCategoryItemRepository.find({
+    const vos = await this.viewCategoryItemRepository.find({
       where: { categoryName: Like(`%${key}%`) },
       order: { categoryCreatedAt: 'DESC', itemUpdatedAt: 'DESC' },
     });
@@ -108,7 +108,7 @@ export class MenuCategoryService {
   }
 
   async getByBusinessId(businessId: string): Promise<MenuCategoryResVo[]> {
-    var vos = await this.viewCategoryItemRepository.find({
+    const vos = await this.viewCategoryItemRepository.find({
       where: { businessId },
       order: { categoryCreatedAt: 'DESC', itemUpdatedAt: 'DESC' },
     });
