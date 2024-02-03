@@ -16,7 +16,11 @@ export class OrderDetail {
 
   @IsOptional()
   @IsArray()
-  @ApiProperty({ description: 'modifications', example: '[{"businessId":"7709e3c4-57bc-11ee-8c99-0242ac120002","name":"加料","options":[{"布丁":10,"椰果":10}],"maxChoices":1,"id":"1"}]'})
+  @ApiProperty({
+    description: 'modifications',
+    example:
+      '[{"businessId":"7709e3c4-57bc-11ee-8c99-0242ac120002","name":"加料","options":[{"布丁":10,"椰果":10}],"maxChoices":1,"id":"1"}]',
+  })
   modifications: [MenuItemModificationDto] | null;
 
   @IsNumber()
@@ -34,10 +38,10 @@ export class OrderCreateReqVo {
   @IsArray()
   @IsNotEmpty()
   @ApiProperty({ description: 'detail', type: [OrderDetail] })
-  detail: OrderDetail[];
+  detail: OrderDetail[] = [];
 
   @IsString()
   @IsOptional()
   @ApiProperty({ description: 'memo' })
-  memo: string | null;
+  memo: string | null = null;
 }

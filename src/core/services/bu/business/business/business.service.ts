@@ -29,8 +29,10 @@ export class BusinessService {
       }),
     );
     const result = await this.businessRepository.save(newbusiness);
-    if(vo.userIds && vo.userIds.length > 0){
-      const users = await this.businessUserRepository.find({ where: { id: In(vo.userIds) } });
+    if (vo.userIds && vo.userIds.length > 0) {
+      const users = await this.businessUserRepository.find({
+        where: { id: In(vo.userIds) },
+      });
       users.forEach((user) => {
         //TODO: 之後支援多商家時，要改成加入商家mapping表
         user.businessId = result.id;
@@ -72,7 +74,7 @@ export class BusinessService {
       where: { businessId: id },
     });
 
-    var result = plainToInstance(BusinessResVo, business);
+    const result = plainToInstance(BusinessResVo, business);
     result.userIds = businessUsers.map((user) => user.id);
     return result;
   }
@@ -82,8 +84,8 @@ export class BusinessService {
       where: { name: Like(`%${key}%`) },
       order: { updatedAt: 'DESC' },
     });
-    let result:BusinessResVo[] = [];
-    for(const vo of vos){
+    const result: BusinessResVo[] = [];
+    for (const vo of vos) {
       const businessResVo = plainToInstance(BusinessResVo, vo);
       const businessUsers = await this.businessUserRepository.find({
         where: { businessId: vo.id },
