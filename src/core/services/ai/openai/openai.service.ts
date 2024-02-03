@@ -53,8 +53,10 @@ export class OpenaiService {
     );
     if (businessAssistant.length > 0) {
       //TODO:存在則更新sysPrompt
-      await this.openai.beta.assistants.modify();
-      return businessAssistant;
+      await this.openai.beta.assistants.update(businessAssistant[0].id, {
+        instructions: systemPrompt,
+      });
+      return businessAssistant[0];
     } else {
       //不存在則建立
       businessAssistant = await this.openai.beta.assistants.create({
