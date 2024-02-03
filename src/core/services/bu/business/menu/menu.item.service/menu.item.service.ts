@@ -36,7 +36,7 @@ export class MenuItemService {
           price: vo.price,
           note: vo.note,
           enable: vo.enable,
-          promoted: vo.enable,
+          promoted: vo.promoted,
           pictureUrl: vo.pictureUrl,
         }),
       ),

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
 import {
   IUserPayload,
+  MenuItemModificationDto,
   OrderCreateReqVo,
   OrderDetailDto,
   OrderDetailVo,
@@ -39,7 +40,7 @@ export class OrderService {
       throw new Error(`User with id ${userPayLoad.id} not found`);
     }
 
-    let orderDetailList = [];
+    const orderDetailList = [];
     for (const v of vo.detail) {
       const item = await this.itemRepository.findOne({
         where: { id: v.itemId },
@@ -60,7 +61,7 @@ export class OrderService {
         itemId: v.itemId,
         itemPrice: +item.price,
         totalPrice: +totalPrice,
-        modification: v.modifications as Object,
+        modification: v.modifications as MenuItemModificationDto[],
         count: v.count,
         memo: v.memo,
       });
