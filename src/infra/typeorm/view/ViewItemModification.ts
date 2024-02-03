@@ -39,7 +39,7 @@ export class ViewItemModification {
   menuItemDescription: string;
 
   @ViewColumn({ name: 'menu_item_price' })
-  menuItemPrice: string;
+  menuItemPrice: number;
 
   @ViewColumn({ name: 'menu_item_notes' })
   menuItemNotes: string;

@@ -8,6 +8,7 @@ import { ViewEntity, ViewColumn } from 'typeorm';
       m.name AS menu_name,
       m.description AS menu_description,
       m.picture_url AS menu_picture_url,
+      m.active AS menu_active,
       m.created_at AS menu_created_at,
       m.updated_at AS menu_updated_at,
       mc.id AS category_id,
@@ -36,6 +37,9 @@ export class ViewMenuCategory {
 
   @ViewColumn({ name: 'menu_picture_url' })
   menuPictureUrl: string;
+
+  @ViewColumn({ name: 'menu_active' })
+  menuActive: boolean;
 
   @ViewColumn({ name: 'menu_created_at' })
   menuCreatedAt: Date | null;
