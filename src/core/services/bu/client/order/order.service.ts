@@ -150,7 +150,7 @@ export class OrderService {
     });
 
     if (orders?.length == 0) {
-      throw new Error(`Order with UserId ${userId} not found`);
+      return [];
     }
 
     const orderResVos = [];
