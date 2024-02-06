@@ -66,7 +66,7 @@ export class ViewItemModification {
   modificationName: string;
 
   @ViewColumn({ name: 'modification_options' })
-  modificationOptions: Map<string, number>;
+  modificationOptions: Record<string, number>;
 
   @ViewColumn({ name: 'modification_max_choices' })
   modificationMaxChoices: number;
