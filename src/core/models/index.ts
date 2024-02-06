@@ -1,4 +1,7 @@
-//#region 2b 
+//#region 2b
+
+import e from 'express';
+
 //dto
 export * from './dto/business/business.dto/business.dto';
 export * from './dto/business/business.user.dto/business.user.dto';
@@ -60,7 +63,7 @@ export * from './interface/payload';
 export * from './interface/option.model';
 //#endregion
 
-//#region auh 
+//#region auh
 //dto
 export * from './dto/auth/line.account.dto/line.account.dto';
 //vo base
@@ -72,3 +75,9 @@ export * from './vo/auth/login.res.vo/login.res.vo';
 export * from './vo/auth/line.login.res.vo/line.login.res.vo';
 export * from './vo/auth/line.callback.res.vo/line.callback.res.vo';
 //#endregion
+
+//#region prompt model
+export * from './vo/2b/prompt/prompt.category.vo/prompt.category.vo';
+export * from './vo/2b/prompt/prompt.item.vo/prompt.item.vo';
+export * from './vo/2b/prompt/prompt.menu.vo/prompt.menu.vo';
+export * from './vo/2b/prompt/prompt.modification.vo/prompt.modification.vo';

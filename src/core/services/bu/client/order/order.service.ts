@@ -137,7 +137,7 @@ export class OrderService {
     });
   }
 
-  async getByUserId(userId: string): Promise<OrderResVo[]> {
+  async getByUserId(userId: string, topN?: number): Promise<OrderResVo[]> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -145,9 +145,11 @@ export class OrderService {
       throw new Error(`User with id ${userId} not found`);
     }
 
+    const findCondition = topN ? { take: topN } : {};
     const orders = await this.orderRepository.find({
       where: { userCId: userId },
       order: { createdAt: 'DESC' },
+      ...findCondition,
     });
 
     if (orders?.length == 0) {

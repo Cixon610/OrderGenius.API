@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import {
   MenuCategory,
   MenuCategoryMapping,
@@ -110,6 +110,14 @@ export class MenuCategoryService {
   async getByBusinessId(businessId: string): Promise<MenuCategoryResVo[]> {
     const vos = await this.viewCategoryItemRepository.find({
       where: { businessId },
+      order: { categoryCreatedAt: 'DESC', itemUpdatedAt: 'DESC' },
+    });
+    return this.toVos(vos);
+  }
+
+  async getByCategoryIds(categoryIds: string[]): Promise<MenuCategoryResVo[]> {
+    const vos = await this.viewCategoryItemRepository.find({
+      where: { categoryId: In(categoryIds) },
       order: { categoryCreatedAt: 'DESC', itemUpdatedAt: 'DESC' },
     });
     return this.toVos(vos);

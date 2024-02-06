@@ -1,40 +1,41 @@
 import OpenAI from 'openai';
+import { delay } from 'rxjs';
 import { Injectable } from '@nestjs/common';
 import { SysConfigService } from 'src/infra/services';
-import { delay } from 'rxjs';
-import { BusinessService } from '../../bu/business/business/business.service';
-import {
-  ChatCreateResVo,
-  ChatSendResVo,
-  ClientUserResVo,
-} from 'src/core/models';
-import { ClientUserService } from '../../bu/client/client.user/client.user.service';
+import { ChatCreateResVo, ChatSendResVo } from 'src/core/models';
 import { OrderService } from '../../bu/client/order/order.service';
+import { BusinessService } from '../../bu/business/business/business.service';
+import { ClientUserService } from '../../bu/client/client.user/client.user.service';
+import { MenuPromptService } from './../../bu/business/menu/menu.prompt/menu.prompt.service';
 
 @Injectable()
 export class OpenaiService {
   private readonly openai;
   constructor(
-    private readonly SysConfigService: SysConfigService,
+    private readonly sysConfigService: SysConfigService,
     private readonly businessService: BusinessService,
     private readonly clientUserService: ClientUserService,
     private readonly orderService: OrderService,
+    private readonly menuPromptService: MenuPromptService,
   ) {
     this.openai = new OpenAI({
-      apiKey: SysConfigService.thirdParty.opeanaiApiKey,
+      apiKey: sysConfigService.thirdParty.opeanaiApiKey,
     });
   }
 
   async createChat(businessId: string, userId: string) {
     const business = await this.businessService.get(businessId);
-    const prompt = await this.#getSystemPrompt(userId, business.name);
+    const prompt = await this.#getSystemPrompt(
+      userId,
+      business.id,
+      business.name,
+    );
     const assistant = await this.#getAssistant(
       businessId,
       business.name,
       prompt,
     );
 
-    //TODO: Thread才by user
     const thread = await this.openai.beta.threads.create();
 
     return new ChatCreateResVo({
@@ -71,6 +72,7 @@ export class OpenaiService {
 
   async #getSystemPrompt(
     userId: string,
+    businessId: string,
     businessName: string,
   ): Promise<string> {
     const user = await this.clientUserService.get(userId);
@@ -112,24 +114,10 @@ export class OpenaiService {
     3. 客人地址: ${user.address}
     4. 客人點餐歷史紀錄: ${orderHistory?.join(', ')}`;
 
-    //TODO:組出菜單資訊
-    const menuPrompt = `
-    # ${businessName}菜單
-    找好茶	M	L
-    茉莉綠茶	$30	$35
-    阿薩姆紅茶	$30	$35
-    四季春青茶	$30	$35
-    黃金烏龍	$30	$35
-    檸檬綠	$45	$55
-    梅の綠	$45	$55
-    桔子綠	$45	$55
-    8冰綠	$45	$55
-    養樂多綠	$45	$55
-    冰淇淋紅茶	$45	$55
-    旺來紅季節限定	$45	$55
-    柚子紅	$45	$55
-    鮮柚綠	$55	$65
-    `;
+    const menuPrompt = await this.menuPromptService.getActive(
+      businessId,
+      businessName,
+    );
     return `${systemPrompt} ${costumerPrompt} ${menuPrompt}`;
   }
 

@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import {
   MenuVo,
-  MenuCategoryResVo,
   MenuDto,
   MenuMappingDto,
   MenuResVo,
@@ -105,6 +104,14 @@ export class MenuService {
     );
   }
 
+  async getActiveByBusinessId(businessId: string): Promise<MenuResVo[]> {
+    return this.toVos(
+      await this.viewMenuCategoryRepository.find({
+        where: { businessId, menuActive: true },
+        order: { menuUpdatedAt: 'DESC', categoryUpdatedAt: 'DESC' },
+      }),
+    );
+  }
   //#region private methods
 
   private toVo(Item: ViewMenuCategory[]): MenuResVo {

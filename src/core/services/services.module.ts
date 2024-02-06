@@ -13,6 +13,7 @@ import {
   BusinessUserService,
   ModificationService,
   ShoppingCartService,
+  MenuPromptService,
 } from './index';
 import { Module } from '@nestjs/common';
 import * as typeorm from 'src/infra/typeorm';
@@ -28,7 +29,6 @@ const exportServices = [
   JwtStrategy,
   FileService,
   OrderService,
-  OpenaiService,
   LocalStrategy,
   MenuItemService,
   BusinessService,
@@ -38,6 +38,8 @@ const exportServices = [
   ModificationService,
   ShoppingCartService,
   RedisService,
+  MenuPromptService,
+  OpenaiService,
 ];
 const infraConfig = new InfraConfig();
 @Module({

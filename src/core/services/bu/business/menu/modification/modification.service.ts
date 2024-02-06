@@ -8,7 +8,7 @@ import {
   ModificationVo,
 } from 'src/core/models';
 import { Modification } from 'src/infra/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Like, Repository, In } from 'typeorm';
 
 @Injectable()
 export class ModificationService {
@@ -61,6 +61,13 @@ export class ModificationService {
   async get(id: string): Promise<ModificationResVo> {
     const vo = await this.modificationRepository.findOne({ where: { id } });
     return plainToInstance(ModificationResVo, vo);
+  }
+
+  async getByIds(ids: string[]): Promise<ModificationResVo[]> {
+    const vos = await this.modificationRepository.find({
+      where: { id: In(ids) },
+    });
+    return vos.map((vo) => plainToInstance(ModificationResVo, vo));
   }
 
   async getByKey(key: string): Promise<ModificationResVo[]> {
