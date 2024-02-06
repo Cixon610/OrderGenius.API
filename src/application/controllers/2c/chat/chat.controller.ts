@@ -23,7 +23,11 @@ export class ChatController {
   @Post()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: ChatCreateResVo })
-  async Create(@Query('businessId')  businessId: string, @Req() req, @Res() res) {
+  async Create(
+    @Query('businessId') businessId: string,
+    @Req() req,
+    @Res() res,
+  ) {
     const result = await this.openaiService.createChat(businessId, req.user.id);
     res.json(result);
   }

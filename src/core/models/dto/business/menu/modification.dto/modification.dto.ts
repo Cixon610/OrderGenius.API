@@ -7,7 +7,7 @@ export class ModificationDto {
   id: string = randomUUID();
   businessId!: string;
   name!: string;
-  options?: Map<string, number>;
+  options?: Record<string, number>;
   maxChoices?: number;
   updateUserId?: string;
 }

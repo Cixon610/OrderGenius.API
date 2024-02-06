@@ -8,7 +8,7 @@ export class ModificationResVo extends PartialType(ModificationVo) {
   }
   @ApiProperty({ example: '1', description: 'Id' })
   id: string;
-  
+
   @Exclude()
   createdAt?: Date | null;
   @Exclude()
