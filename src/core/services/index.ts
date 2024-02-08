@@ -20,3 +20,4 @@ export * from './bu/business/menu/menu.prompt/menu.prompt.service';
 export * from './bu/client/client.user/client.user.service';
 export * from './bu/client/order/order.service';
 export * from './bu/client/shopping-cart/shopping-cart.service';
+export * from './bu/client/recommand/recommand.service';

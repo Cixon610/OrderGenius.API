@@ -40,6 +40,8 @@ p, costumer, /shopping-cart, *
 p, costumer, /clientUser, *
 p, costumer, /chat, *
 p, costumer, /chat/send, *
+p, costumer, /recommand, *
+p, costumer, /recommand/itemNames, *
 
 g, admin, business
 g, admin, costumer

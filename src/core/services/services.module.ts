@@ -14,6 +14,7 @@ import {
   ModificationService,
   ShoppingCartService,
   MenuPromptService,
+  RecommandService,
 } from './index';
 import { Module } from '@nestjs/common';
 import * as typeorm from 'src/infra/typeorm';
@@ -40,6 +41,7 @@ const exportServices = [
   RedisService,
   MenuPromptService,
   OpenaiService,
+  RecommandService,
 ];
 const infraConfig = new InfraConfig();
 @Module({

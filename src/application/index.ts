@@ -12,3 +12,4 @@ export * from './controllers/2c/chat/chat.controller';
 export * from './controllers/2c/order/order.controller';
 export * from './controllers/2c/shopping-cart/shopping-cart.controller';
 export * from './controllers/2c/client.user/client.user.controller';
+export * from './controllers/2c/recommand/recommand.controller';
