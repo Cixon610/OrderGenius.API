@@ -38,7 +38,7 @@ export class RecommandService {
     businessId: string,
     userId: string,
   ): Promise<MenuItemResVo[]> {
-    //TODO:移除重複的品項
+    //TODO:移除重複的品項，推薦機制要再想
     const order = await this.orderService.getByUserId(userId, 10);
     const orderItemIds: string[] = [];
     for (const o of order) {
@@ -52,8 +52,8 @@ export class RecommandService {
       businessId,
     );
 
-    promotedItems.concat(orderItems);
+    orderItems.concat(promotedItems);
 
-    return promotedItems.splice(0, 10);
+    return orderItems.splice(0, 10);
   }
 }
