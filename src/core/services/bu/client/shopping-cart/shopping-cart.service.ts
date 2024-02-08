@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { OrderCreateReqVo } from 'src/core/models';
+import { OrderCreateReqVo, OrderResVo } from 'src/core/models';
 import { RedisService } from 'src/infra/services';
 
 @Injectable()
 export class ShoppingCartService {
   constructor(private readonly redisService: RedisService) {}
 
-  async get(businessId: string, userId: string): Promise<OrderCreateReqVo> {
+  async get(businessId: string, userId: string): Promise<OrderResVo> {
     const key = this.#getRedisKey(businessId, userId);
-    let value = await this.redisService.getT(key, OrderCreateReqVo);
+    let value = await this.redisService.getT(key, OrderResVo);
     if (!value) {
-      const newValue = new OrderCreateReqVo();
+      const newValue = new OrderResVo();
       await this.redisService.setT(key, newValue);
       value = newValue;
     }
@@ -22,7 +22,7 @@ export class ShoppingCartService {
   async set(
     businessId: string,
     userId: string,
-    value: OrderCreateReqVo,
+    value: OrderResVo,
   ): Promise<boolean> {
     const key = this.#getRedisKey(businessId, userId);
     return await this.redisService.setT(key, value);

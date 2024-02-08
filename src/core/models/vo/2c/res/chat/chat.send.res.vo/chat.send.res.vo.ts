@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { OrderCreateReqVo } from 'src/core/models';
+import { OrderResVo } from 'src/core/models';
 
 export class ChatSendResVo {
   public constructor(init?: ChatSendResVo) {
@@ -12,8 +12,8 @@ export class ChatSendResVo {
   message: string;
 
   @ApiProperty({
-    example: 'email',
-    description: 'OrderCreateReqVo',
+    example: 'shoppingCart',
+    description: 'OrderResVo',
   })
-  shoppingCart: OrderCreateReqVo;
+  shoppingCart: OrderResVo;
 }

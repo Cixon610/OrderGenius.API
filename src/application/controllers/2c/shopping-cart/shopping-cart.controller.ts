@@ -11,7 +11,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
-import { OrderCreateReqVo } from 'src/core/models';
+import { OrderCreateReqVo, OrderResVo } from 'src/core/models';
 import { ShoppingCartService } from 'src/core/services';
 
 @UseGuards(AuthGuard('jwt'), RoleGuard)
@@ -22,7 +22,7 @@ export class ShoppingCartController {
 
   @Get()
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: OrderCreateReqVo })
+  @ApiResponse({ status: 200, type: OrderResVo })
   async get(@Query('businessId') businessId: string, @Req() req, @Res() res) {
     const vo = await this.shoppingCartService.get(businessId, req.user.id);
     res.json(vo);
@@ -30,10 +30,10 @@ export class ShoppingCartController {
 
   @Put()
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: OrderCreateReqVo })
+  @ApiResponse({ status: 200, type: OrderResVo })
   async update(
     @Query('businessId') businessId: string,
-    @Body() dto: OrderCreateReqVo,
+    @Body() dto: OrderResVo,
     @Req() req,
     @Res() res,
   ) {
