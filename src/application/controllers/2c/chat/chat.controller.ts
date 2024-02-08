@@ -35,11 +35,13 @@ export class ChatController {
   @Post('send')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: ChatSendResVo })
-  async Send(@Body() chatSendReqVo: ChatSendReqVo, @Res() res) {
+  async Send(@Req() req, @Body() chatSendReqVo: ChatSendReqVo, @Res() res) {
     const result = await this.openaiService.sendChat(
       chatSendReqVo.assistantId,
       chatSendReqVo.threadId,
       chatSendReqVo.content,
+      chatSendReqVo.businessId,
+      req.user.id,
     );
 
     res.json(result);

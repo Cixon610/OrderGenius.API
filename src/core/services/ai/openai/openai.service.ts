@@ -7,6 +7,7 @@ import { OrderService } from '../../bu/client/order/order.service';
 import { BusinessService } from '../../bu/business/business/business.service';
 import { ClientUserService } from '../../bu/client/client.user/client.user.service';
 import { MenuPromptService } from './../../bu/business/menu/menu.prompt/menu.prompt.service';
+import { ShoppingCartService } from '../../bu/client/shopping-cart/shopping-cart.service';
 
 @Injectable()
 export class OpenaiService {
@@ -17,6 +18,7 @@ export class OpenaiService {
     private readonly clientUserService: ClientUserService,
     private readonly orderService: OrderService,
     private readonly menuPromptService: MenuPromptService,
+    private readonly shoppingCartService: ShoppingCartService,
   ) {
     this.openai = new OpenAI({
       apiKey: sysConfigService.thirdParty.opeanaiApiKey,
@@ -121,7 +123,13 @@ export class OpenaiService {
     return `${systemPrompt} ${costumerPrompt} ${menuPrompt}`;
   }
 
-  async sendChat(assistantId: string, threadId: string, content: string) {
+  async sendChat(
+    assistantId: string,
+    threadId: string,
+    content: string,
+    businessId: string,
+    userId: string,
+  ): Promise<ChatSendResVo> {
     const message = await this.openai.beta.threads.messages.create(threadId, {
       role: 'user',
       content: content,
@@ -149,8 +157,10 @@ export class OpenaiService {
       delay(300);
     }
     const messages = await this.openai.beta.threads.messages.list(threadId);
+    const shoppingCart = await this.shoppingCartService.get(businessId, userId);
     return new ChatSendResVo({
       message: messages.data[0].content[0].text.value,
+      shoppingCart: shoppingCart,
     });
   }
 }

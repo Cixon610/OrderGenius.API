@@ -5,6 +5,14 @@ export class ChatSendReqVo {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
+    example: 'businessId',
+    description: 'businessId',
+  })
+  businessId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
     example: 'asst_iESCuPyBgLfZZuJxrYSEIfGk',
     description: 'assistantId',
   })
