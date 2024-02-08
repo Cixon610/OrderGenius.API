@@ -1,7 +1,7 @@
 import { Menu, MenuMapping, ViewMenuCategory } from 'src/infra/typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import {
   MenuVo,
   MenuDto,
@@ -30,6 +30,7 @@ export class MenuService {
           name: vo.name,
           description: vo.description,
           pictureUrl: vo.pictureUrl,
+          active: vo.active,
         }),
       ),
     );
@@ -38,6 +39,10 @@ export class MenuService {
       throw new Error(
         'MenuCategoryService.add: Failed to create new MenuCategory',
       );
+    }
+    //Update menu actives
+    if (newMenu.active) {
+      await this.#updateMenuActives(newMenu.id);
     }
 
     await this.addMapping(vo.categoryIds, newMenu.id);
@@ -61,6 +66,11 @@ export class MenuService {
 
     if (vo.categoryIds.length === 0) {
       return this.get(vo.id);
+    }
+
+    //Update menu actives
+    if (vo.active) {
+      await this.#updateMenuActives(vo.id);
     }
 
     await this.deleteMapping(vo.id);
@@ -191,6 +201,21 @@ export class MenuService {
     }
 
     this.menuMappingRepository.delete(mappings.map((mapping) => mapping.id));
+  }
+  async #updateMenuActives(activeMenuId: string): Promise<void> {
+    const activeMenu = await this.menuRepository.findOne({
+      where: { id: activeMenuId },
+    });
+
+    if (!activeMenu?.active) {
+      await this.menuRepository.save(activeMenu);
+    }
+
+    await this.menuRepository.query(`
+      UPDATE public.menu
+      SET active = false
+      WHERE id <> '${activeMenuId}'
+    `);
   }
   //#endregion
 }
