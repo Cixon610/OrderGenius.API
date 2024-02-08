@@ -45,10 +45,10 @@ export class ViewItemModification {
   menuItemNotes: string;
 
   @ViewColumn({ name: 'menu_item_enable' })
-  menuItemEnable: string;
+  menuItemEnable: boolean;
 
   @ViewColumn({ name: 'menu_item_promoted' })
-  menuItemPromoted: string;
+  menuItemPromoted: boolean;
 
   @ViewColumn({ name: 'menu_item_picture_url' })
   menuItemPictureUrl: string;

@@ -18,19 +18,19 @@ export class OrderDetailVo {
   itemDescription: string;
 
   @ApiProperty({ example: 100, description: 'itemPrice' })
-  itemPrice: Number;
+  itemPrice: number;
 
   @ApiProperty({ example: 'itemPictureUrl', description: 'itemPictureUrl' })
   itemPictureUrl: string;
 
   @ApiProperty({ example: 100, description: 'totalPrice' })
-  totalPrice: Number;
+  totalPrice: number;
 
   @ApiProperty({ example: 1, description: 'count' })
-  count: Number;
+  count: number;
 
   @ApiProperty({ example: 'modification', description: 'modification' })
-  modification: MenuItemModificationDto[] | Object | null;
+  modification: MenuItemModificationDto[] | object | null;
 
   @ApiProperty({ example: 'memo', description: 'memo' })
   memo: string;

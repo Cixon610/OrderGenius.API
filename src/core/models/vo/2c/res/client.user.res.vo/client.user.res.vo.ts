@@ -8,7 +8,7 @@ export class ClientUserResVo extends PartialType(ClientUserVo) {
   }
   @ApiProperty({ example: 'id', description: 'id' })
   id: string;
-  
+
   @Exclude()
   createdAt?: Date | null;
   @Exclude()

@@ -142,7 +142,7 @@ export class OrderService {
       where: { id: userId },
     });
     if (!user) {
-      throw new Error(`User with id ${userId} not found`);
+      return [];
     }
 
     const findCondition = topN ? { take: topN } : {};
@@ -187,7 +187,9 @@ export class OrderService {
       const item = await this.itemRepository.findOne({
         where: { id: v.itemId },
       });
-      orderDetailVos.push(await this.#orderDetailToVo(v, item));
+      if (item) {
+        orderDetailVos.push(await this.#orderDetailToVo(v, item));
+      }
     }
 
     return orderDetailVos;

@@ -124,6 +124,14 @@ export class MenuItemService {
     return this.toVos(vos);
   }
 
+  async getPromotedItems(businessId: string): Promise<MenuItemResVo[]> {
+    const vos = await this.viewItemModification.find({
+      where: { menuItemEnable: true, menuItemPromoted: true },
+      order: { menuItemUpdatedAt: 'DESC' },
+    });
+    return this.toVos(vos);
+  }
+
   //#region private methods
 
   private toVo(Item: ViewItemModification[]): MenuItemResVo {
