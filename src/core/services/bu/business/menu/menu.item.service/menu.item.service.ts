@@ -67,10 +67,6 @@ export class MenuItemService {
       throw new Error(`MenuItem with id ${vo.id} not updated`);
     }
 
-    if (vo.modificationIds.length === 0) {
-      return this.get(vo.id);
-    }
-
     await this.deleteMapping(vo.id);
     await this.addMapping(vo.modificationIds, vo.id);
 
