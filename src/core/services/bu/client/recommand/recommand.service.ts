@@ -23,9 +23,19 @@ export class RecommandService {
       }
     }
 
-    const promotedItems = await this.menuItemService.getPromotedItems(
+    let promotedItems = await this.menuItemService.getPromotedItems(
       businessId,
+      10,
     );
+
+    if (promotedItems.length < 10) {
+      const latest10Item = await this.menuItemService.getByBusinessId(
+        businessId,
+      );
+      promotedItems = promotedItems.concat(
+        latest10Item.splice(0, 10 - promotedItems.length),
+      );
+    }
 
     for (const item of promotedItems) {
       orderItemNames.push(item.name);
@@ -47,12 +57,23 @@ export class RecommandService {
       }
     }
 
-    const orderItems = await this.menuItemService.getByItemIds(orderItemIds);
-    const promotedItems = await this.menuItemService.getPromotedItems(
+    let orderItems = await this.menuItemService.getByItemIds(orderItemIds);
+    let promotedItems = await this.menuItemService.getPromotedItems(
       businessId,
+      10,
     );
 
-    orderItems.concat(promotedItems);
+    if (promotedItems.length < 10) {
+      const latest10Item = await this.menuItemService.getByBusinessId(
+        businessId,
+        10,
+      );
+      promotedItems = promotedItems.concat(
+        latest10Item.splice(0, 10 - promotedItems.length),
+      );
+    }
+
+    orderItems = orderItems.concat(promotedItems);
 
     return orderItems.splice(0, 10);
   }

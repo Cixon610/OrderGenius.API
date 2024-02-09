@@ -108,11 +108,25 @@ export class MenuItemService {
     return this.toVos(vos);
   }
 
-  async getByBusinessId(businessId: string): Promise<MenuItemResVo[]> {
+  async getByBusinessId(
+    businessId: string,
+    limit = 0,
+  ): Promise<MenuItemResVo[]> {
+    const take = limit == 0 ? {} : { take: limit };
+    const latestLimitPromotedItem = await this.menuItemRepository.find({
+      where: { businessId, enable: true },
+      order: { updatedAt: 'DESC' },
+      ...take,
+    });
+
     const vos = await this.viewItemModification.find({
-      where: { businessId },
+      where: {
+        businessId,
+        menuItemId: In(latestLimitPromotedItem.map((item) => item.id)),
+      },
       order: { menuItemUpdatedAt: 'DESC' },
     });
+
     return this.toVos(vos);
   }
 
@@ -124,9 +138,21 @@ export class MenuItemService {
     return this.toVos(vos);
   }
 
-  async getPromotedItems(businessId: string): Promise<MenuItemResVo[]> {
+  async getPromotedItems(
+    businessId: string,
+    limit = 0,
+  ): Promise<MenuItemResVo[]> {
+    const take = limit == 0 ? {} : { take: limit };
+    const latestLimitPromotedItem = await this.menuItemRepository.find({
+      where: { businessId, promoted: true, enable: true },
+      order: { updatedAt: 'DESC' },
+      ...take,
+    });
     const vos = await this.viewItemModification.find({
-      where: { menuItemEnable: true, menuItemPromoted: true },
+      where: {
+        businessId,
+        menuItemId: In(latestLimitPromotedItem.map((item) => item.id)),
+      },
       order: { menuItemUpdatedAt: 'DESC' },
     });
     return this.toVos(vos);
