@@ -1,4 +1,4 @@
-import { Role } from "src/core/constants/enums/role.enum";
+import { Role } from 'src/core/constants/enums/role.enum';
 
 export interface IUserPayload {
   id: string;

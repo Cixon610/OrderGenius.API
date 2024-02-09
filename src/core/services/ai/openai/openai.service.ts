@@ -129,6 +129,7 @@ export class OpenaiService {
     content: string,
     businessId: string,
     userId: string,
+    userName: string,
   ): Promise<ChatSendResVo> {
     const message = await this.openai.beta.threads.messages.create(threadId, {
       role: 'user',
@@ -157,7 +158,11 @@ export class OpenaiService {
       delay(300);
     }
     const messages = await this.openai.beta.threads.messages.list(threadId);
-    const shoppingCart = await this.shoppingCartService.get(businessId, userId);
+    const shoppingCart = await this.shoppingCartService.get(
+      businessId,
+      userId,
+      userName,
+    );
     return new ChatSendResVo({
       message: messages.data[0].content[0].text.value,
       shoppingCart: shoppingCart,

@@ -42,6 +42,7 @@ export class ChatController {
       chatSendReqVo.content,
       chatSendReqVo.businessId,
       req.user.id,
+      req.user.username,
     );
 
     res.json(result);

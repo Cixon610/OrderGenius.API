@@ -24,7 +24,11 @@ export class ShoppingCartController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: OrderResVo })
   async get(@Query('businessId') businessId: string, @Req() req, @Res() res) {
-    const vo = await this.shoppingCartService.get(businessId, req.user.id);
+    const vo = await this.shoppingCartService.get(
+      businessId,
+      req.user.id,
+      req.user.username,
+    );
     res.json(vo);
   }
 
