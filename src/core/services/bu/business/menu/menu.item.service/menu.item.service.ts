@@ -96,9 +96,9 @@ export class MenuItemService {
     );
   }
 
-  async getByKey(key: string): Promise<MenuItemResVo[]> {
+  async getByKey(businessId: string, key: string): Promise<MenuItemResVo[]> {
     const vos = await this.viewItemModification.find({
-      where: { menuItemName: Like(`%${key}%`) },
+      where: { businessId, menuItemName: Like(`%${key}%`) },
       order: { menuItemUpdatedAt: 'DESC' },
     });
     return this.toVos(vos);

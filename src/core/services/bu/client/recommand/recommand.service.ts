@@ -10,10 +10,7 @@ export class RecommandService {
     private readonly orderService: OrderService,
   ) {}
 
-  async getRecommandItemNames(
-    businessId: string,
-    userId: string,
-  ): Promise<string[]> {
+  async getItemNames(businessId: string, userId: string): Promise<string[]> {
     const order = await this.orderService.getByUserId(userId, 10);
     const orderItemNames: string[] = [];
 
@@ -44,10 +41,7 @@ export class RecommandService {
     return orderItemNames.splice(0, 10);
   }
 
-  async getRecommandItem(
-    businessId: string,
-    userId: string,
-  ): Promise<MenuItemResVo[]> {
+  async getItem(businessId: string, userId: string): Promise<MenuItemResVo[]> {
     //TODO:移除重複的品項，推薦機制要再想
     const order = await this.orderService.getByUserId(userId, 10);
     const orderItemIds: string[] = [];

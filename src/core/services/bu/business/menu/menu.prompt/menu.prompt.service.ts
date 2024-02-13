@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { Injectable } from '@nestjs/common';
 import {
   PromptCategoryVo,
@@ -9,6 +10,7 @@ import { ModificationService } from '../modification/modification.service';
 import { MenuCategoryService } from '../menu.category.service/menu.category.service';
 import { MenuService } from '../menu.service/menu.service';
 import { MenuItemService } from '../menu.item.service/menu.item.service';
+import { stringify } from 'querystring';
 
 @Injectable()
 export class MenuPromptService {
@@ -76,5 +78,14 @@ export class MenuPromptService {
     }
     const jsonString = JSON.stringify(promptMenus);
     return `# ${businessName}菜單Json如下: ${jsonString}`;
+  }
+
+  async getActiveCategory(businessId: string, businessName: string) {
+    const activeMenu = (await this.menuService.getByBusinessId(businessId))[0];
+    const categories = await this.menuCategoryService.getByCategoryIds(
+      activeMenu.categoryIds,
+    );
+    const categoryNames = categories.map((x) => x.name).join(', ');
+    return `# ${businessName} ${activeMenu.name}菜單分類如下: ${categoryNames}`;
   }
 }
