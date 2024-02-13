@@ -13,6 +13,7 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
 import { OrderCreateReqVo, OrderResVo } from 'src/core/models';
 import { ShoppingCartService } from 'src/core/services';
+import { Order } from 'src/infra/typeorm';
 
 @UseGuards(AuthGuard('jwt'), RoleGuard)
 @ApiTags('shopping-cart')
@@ -37,11 +38,16 @@ export class ShoppingCartController {
   @ApiResponse({ status: 200, type: OrderResVo })
   async update(
     @Query('businessId') businessId: string,
-    @Body() dto: OrderResVo,
+    @Body() dto: OrderCreateReqVo,
     @Req() req,
     @Res() res,
   ) {
-    const vo = await this.shoppingCartService.set(businessId, req.user.id, dto);
+    const vo = await this.shoppingCartService.set(
+      businessId,
+      req.user.id,
+      req.user.userName,
+      dto,
+    );
     res.json(vo);
   }
 }

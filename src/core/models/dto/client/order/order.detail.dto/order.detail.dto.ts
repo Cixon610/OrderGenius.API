@@ -7,9 +7,9 @@ export class OrderDetailDto {
   id: string = randomUUID();
   orderId: string;
   itemId: string;
-  itemPrice: Number;
-  totalPrice: Number | null;
+  itemPrice: number;
+  totalPrice: number | null;
   modification: object | null;
-  count: Number | null;
+  count: number | null;
   memo: string | null;
 }

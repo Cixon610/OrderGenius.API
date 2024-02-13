@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 import { OrderCreateReqVo, OrderResVo } from 'src/core/models';
 import { RedisService } from 'src/infra/services';
+import { OrderService } from '../order/order.service';
 
 @Injectable()
 export class ShoppingCartService {
-  constructor(private readonly redisService: RedisService) {}
+  constructor(
+    private readonly redisService: RedisService,
+    private readonly orderService: OrderService,
+  ) {}
 
   async get(
     businessId: string,
@@ -34,10 +37,16 @@ export class ShoppingCartService {
   async set(
     businessId: string,
     userId: string,
-    value: OrderResVo,
+    userName: string,
+    value: OrderCreateReqVo,
   ): Promise<boolean> {
     const key = this.#getRedisKey(businessId, userId);
-    return await this.redisService.setT(key, value);
+    const vo = await this.orderService.getCaculatedOrderVo(
+      value,
+      userId,
+      userName,
+    );
+    return await this.redisService.setT(key, vo);
   }
 
   #getRedisKey(businessId: string, userId: string): string {

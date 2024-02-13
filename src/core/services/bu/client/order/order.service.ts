@@ -40,61 +40,43 @@ export class OrderService {
       throw new Error(`User with id ${userPayLoad.id} not found`);
     }
 
-    const orderDetailList = [];
-    for (const v of vo.detail) {
-      const item = await this.itemRepository.findOne({
-        where: { id: v.itemId },
-      });
-
-      //計算總價
-      let totalPrice = Number(item.price * v.count);
-      if (v.modifications) {
-        v.modifications.forEach((modification) => {
-          Object.values(modification.options[0]).forEach((value) => {
-            totalPrice += Number(value);
-          });
-        });
-      }
-
-      const orderDetailDto = new OrderDetailDto({
+    const caculatedOrderVo = await this.getCaculatedOrderVo(
+      vo,
+      userPayLoad.id,
+      user.userName,
+    );
+    const detailDto = caculatedOrderVo.detail.map((v) => {
+      return new OrderDetailDto({
         orderId: orderId,
         itemId: v.itemId,
-        itemPrice: +item.price,
-        totalPrice: +totalPrice,
-        modification: v.modifications as MenuItemModificationDto[],
+        itemPrice: v.itemPrice,
+        totalPrice: v.totalPrice,
         count: v.count,
+        modification: v.modification,
         memo: v.memo,
       });
+    });
 
-      orderDetailList.push(orderDetailDto);
+    const orderDetailResult = await this.orderDetailRepository.save(detailDto);
+    if (!orderDetailResult) {
+      throw new Error('Order save failed');
     }
 
-    const orderDetailResult = await this.orderDetailRepository.save(
-      orderDetailList,
-    );
-
-    const totalValue = orderDetailList.reduce((a, b) => a + b.totalPrice, 0);
-    const totalCount = orderDetailList.reduce((a, b) => a + b.count, 0);
     const order = new OrderDto({
       id: orderId,
       userCId: userPayLoad.id,
-      totalValue,
-      totalCount,
+      totalValue: caculatedOrderVo.totalValue,
+      totalCount: caculatedOrderVo.totalCount,
       memo: vo.memo,
     });
 
     //存Order
     const orderResult = await this.orderRepository.save(order);
+    if (!orderResult) {
+      throw new Error('Order save failed');
+    }
 
-    return new OrderResVo({
-      id: orderResult.id,
-      detail: orderDetailResult,
-      totalValue: orderResult.totalValue,
-      totalCount: orderResult.totalCount,
-      memo: orderResult.memo,
-      userId: user.id,
-      userName: user.userName,
-    });
+    return this.get(orderId);
   }
 
   async get(id: string): Promise<OrderResVo> {
@@ -174,6 +156,56 @@ export class OrderService {
     }
 
     return orderResVos;
+  }
+
+  async getCaculatedOrderVo(
+    vo: OrderCreateReqVo,
+    userId: string,
+    userName: string,
+  ): Promise<OrderResVo> {
+    const orderDetailList: OrderDetailVo[] = [];
+    for (const v of vo.detail) {
+      const item = await this.itemRepository.findOne({
+        where: { id: v.itemId },
+      });
+
+      //計算總價
+      let totalPrice = Number(item.price * v.count);
+      if (v.modifications) {
+        v.modifications.forEach((modification) => {
+          Object.values(modification.options[0]).forEach((value) => {
+            totalPrice += Number(value);
+          });
+        });
+      }
+
+      const orderDetailDto = new OrderDetailVo({
+        itemId: v.itemId,
+        itemName: item.name,
+        itemDescription: item.description,
+        itemPrice: +item.price,
+        itemPictureUrl: item.pictureUrl,
+        totalPrice: +totalPrice,
+        count: v.count,
+        modification: v.modifications as MenuItemModificationDto[],
+        memo: v.memo,
+      });
+
+      orderDetailList.push(orderDetailDto);
+    }
+
+    const totalValue = orderDetailList.reduce((a, b) => a + b.totalPrice, 0);
+    const totalCount = orderDetailList.reduce((a, b) => a + b.count, 0);
+
+    return new OrderResVo({
+      id: '',
+      detail: orderDetailList,
+      totalValue: totalValue,
+      totalCount: totalCount,
+      memo: vo.memo,
+      userId: userId,
+      userName: userName,
+    });
   }
 
   async #getOrderDetail(Orderid: string): Promise<OrderDetailVo[]> {
