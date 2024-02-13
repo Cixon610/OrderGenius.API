@@ -20,7 +20,9 @@ export class ClientUserController {
   async Get(@Query('clientUserId') id: string, @Res() res) {
     //TODO: 如果id不是uuid return 400
     const clientUser = await this.clientUserService.get(id);
-    const vo = await this.lineService.findLineAccountByLineId(clientUser.account);
+    const vo = await this.lineService.findLineAccountByLineId(
+      clientUser.account,
+    );
     res.json(vo);
   }
 }
