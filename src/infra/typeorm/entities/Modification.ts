@@ -24,6 +24,9 @@ export class Modification {
   @Column('integer', { name: 'max_choices' })
   maxChoices?: number | null;
 
+  @Column('integer', { name: 'min_choices' })
+  minChoices?: number | null;
+
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',

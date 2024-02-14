@@ -17,6 +17,7 @@ import { ViewEntity, ViewColumn } from 'typeorm';
     mf.id AS modification_id,
     mf.name AS modification_name,
     mf.options AS modification_options,
+    mf.min_choices AS modification_min_choices,
     mf.max_choices AS modification_max_choices,
     mf.created_at AS modification_created_at,
     mf.updated_at AS modification_updated_at
@@ -67,6 +68,9 @@ export class ViewItemModification {
 
   @ViewColumn({ name: 'modification_options' })
   modificationOptions: Record<string, number>;
+
+  @ViewColumn({ name: 'modification_min_choices' })
+  modificationMinChoices: number;
 
   @ViewColumn({ name: 'modification_max_choices' })
   modificationMaxChoices: number;

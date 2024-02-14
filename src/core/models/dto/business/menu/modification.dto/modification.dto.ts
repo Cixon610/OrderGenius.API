@@ -9,5 +9,6 @@ export class ModificationDto {
   name!: string;
   options?: Record<string, number>;
   maxChoices?: number;
+  minChoices?: number;
   updateUserId?: string;
 }
