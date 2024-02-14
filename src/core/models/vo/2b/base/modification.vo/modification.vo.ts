@@ -38,4 +38,9 @@ export class ModificationVo {
   @IsNumber()
   @ApiProperty({ example: '1', description: 'maxChoices' })
   maxChoices?: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @ApiProperty({ example: '1', description: 'minChoices' })
+  minChoices?: number;
 }

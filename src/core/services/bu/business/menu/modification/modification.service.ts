@@ -26,6 +26,7 @@ export class ModificationService {
           name: vo.name,
           options: vo.options,
           maxChoices: vo.maxChoices,
+          minChoices: vo.minChoices,
         }),
       ),
     );
