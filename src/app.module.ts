@@ -9,7 +9,7 @@ import * as typeorm from './infra/typeorm';
 import { InfraConfig } from './infra/config';
 import { join } from 'path';
 import { RedisModule } from '@songkeys/nestjs-redis';
-import { JwtMiddleware } from './core/middlewares';
+import { JwtMiddleware, LoggerMiddleware } from './core/middlewares';
 import { JwtModule } from '@nestjs/jwt';
 
 const entities = Object.values(typeorm);
@@ -53,8 +53,7 @@ const infraConfig = new InfraConfig();
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(JwtMiddleware)
-      .forRoutes('*'); // apply the middleware to all routes
+    consumer.apply(JwtMiddleware).forRoutes('*'); // apply the middleware to all routes
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }

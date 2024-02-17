@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
 import { SysConfigService } from 'src/infra/services';
-import { JwtMiddleware } from './index';
+import { JwtMiddleware, LoggerMiddleware } from './index';
 import { JwtModule } from '@nestjs/jwt';
 import { InfraConfig } from 'src/infra/config';
 
-const exportServices = [
-  JwtMiddleware
-];
+const exportServices = [JwtMiddleware, LoggerMiddleware];
 const infraConfig = new InfraConfig();
 @Module({
   imports: [
