@@ -96,9 +96,9 @@ export class MenuItemService {
     );
   }
 
-  async getByKey(key: string): Promise<MenuItemResVo[]> {
+  async getByKey(businessId: string, key: string): Promise<MenuItemResVo[]> {
     const vos = await this.viewItemModification.find({
-      where: { menuItemName: Like(`%${key}%`) },
+      where: { businessId, menuItemName: Like(`%${key}%`) },
       order: { menuItemUpdatedAt: 'DESC' },
     });
     return this.toVos(vos);
@@ -154,6 +154,21 @@ export class MenuItemService {
     return this.toVos(vos);
   }
 
+  async getItemModificationsByKey(
+    businessId: string,
+    key: string,
+  ): Promise<MenuItemResVo[]> {
+    const vos = await this.viewItemModification.find({
+      where: {
+        businessId,
+        menuItemName: Like(`%${key}%`),
+        menuItemEnable: true,
+      },
+      order: { menuItemUpdatedAt: 'DESC' },
+    });
+    return this.toVosWithModifications(vos);
+  }
+
   //#region private methods
 
   private toVo(Item: ViewItemModification[]): MenuItemResVo {
@@ -197,6 +212,51 @@ export class MenuItemService {
             .filter((modification) => !!modification.modificationId)
             .map((modification) => modification.modificationId),
         });
+        res.push(vo);
+      }
+    }
+    return res;
+  }
+
+  private toVosWithModifications(Item: ViewItemModification[]) {
+    if (!Item) {
+      return null;
+    }
+
+    const grouped = Item.reduce((arr, view) => {
+      const key = view.menuItemId;
+      if (!arr[key]) {
+        arr[key] = [];
+      }
+      arr[key].push(view);
+      return arr;
+    }, {});
+
+    const res = [];
+    for (const key in grouped) {
+      if (Object.prototype.hasOwnProperty.call(grouped, key)) {
+        const element = grouped[key];
+        const vo = {
+          id: element[0].menuItemId,
+          // businessId: element[0].businessId,
+          name: element[0].menuItemName,
+          description: element[0].menuItemDescription,
+          note: element[0].menuItemNotes,
+          price: +element[0].menuItemPrice,
+          // enable: element[0].menuItemEnable,
+          // promoted: element[0].menuItemPromoted,
+          // pictureUrl: element[0].menuItemPictureUrl,
+          modifications: element
+            .filter((modification) => !!modification.modificationId)
+            .map((modification) => {
+              return {
+                name: modification.modificationName,
+                maxChoices: modification.modificationMaxChoices,
+                minChoices: modification.modificationMinChoices,
+                options: modification.modificationOptions,
+              };
+            }),
+        };
         res.push(vo);
       }
     }

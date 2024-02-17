@@ -72,8 +72,16 @@ export class MenuItemController {
   @Get('key')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: [MenuItemResVo] })
-  async GetByKey(@Query('key') key: string, @Res() res) {
-    const vos = await this.menuItemService.getByKey(key);
+  async GetByKey(
+    @Query('bussinessId') bussinessId: string,
+    @Query('key') key: string,
+    @Res() res,
+  ) {
+    // const vos = await this.menuItemService.getItemModificationsByKey(
+    //   bussinessId,
+    //   key,
+    // );
+    const vos = await this.menuItemService.getByKey(bussinessId, key);
     res.json(vos);
   }
 

@@ -15,10 +15,7 @@ export class RecommandController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: [MenuItemResVo] })
   async get(@Query('businessId') businessId: string, @Req() req, @Res() res) {
-    const vo = await this.recommandService.getRecommandItem(
-      businessId,
-      req.user.id,
-    );
+    const vo = await this.recommandService.getItem(businessId, req.user.id);
     res.json(vo);
   }
 
@@ -30,7 +27,7 @@ export class RecommandController {
     @Req() req,
     @Res() res,
   ) {
-    const vo = await this.recommandService.getRecommandItemNames(
+    const vo = await this.recommandService.getItemNames(
       businessId,
       req.user.id,
     );

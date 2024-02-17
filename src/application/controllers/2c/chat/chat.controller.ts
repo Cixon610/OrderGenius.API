@@ -47,4 +47,12 @@ export class ChatController {
 
     res.json(result);
   }
+
+  @Post('clearRuns')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: Boolean })
+  async ClearRuns(@Query('threadId') threadId: string, @Res() res) {
+    await this.openaiService.clearRuns(threadId);
+    res.json(true);
+  }
 }
