@@ -241,6 +241,7 @@ export class OpenaiService {
         case 'get_all_items':
           const allItems = await this.menuItemService.getByBusinessId(
             businessId,
+            args.count,
           );
           result = allItems.map((x) => x.name);
           break;
