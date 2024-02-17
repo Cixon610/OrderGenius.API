@@ -19,7 +19,7 @@ export class ClientUserController {
   @ApiResponse({ status: 200, type: UserProfileVo })
   async Get(@Query('clientUserId') id: string, @Req() req, @Res() res) {
     //取得clientUserId不是自己的資料則回傳401
-    if (req.user.userId !== id) {
+    if (req.user.id !== id) {
       res.status(401);
       return;
     }
