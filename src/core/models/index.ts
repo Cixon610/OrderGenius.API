@@ -68,6 +68,7 @@ export * from './interface/option.model';
 export * from './dto/auth/line.account.dto/line.account.dto';
 //vo base
 export * from './vo/auth/line.profile.vo/line.profile.vo';
+export * from './vo/auth/user.profile.vo/user.profile.vo';
 //vo req
 export * from './vo/auth/login.req.vo/login.req.vo';
 //vo res

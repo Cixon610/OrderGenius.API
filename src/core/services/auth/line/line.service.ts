@@ -6,6 +6,7 @@ import {
   LineAccountDto,
   LineCallbackResVo,
   LineProfileVo,
+  UserProfileVo,
 } from 'src/core/models';
 import axios from 'axios';
 import { stringify } from 'qs';
@@ -60,12 +61,12 @@ export class LineService {
     );
     let profile = await this.#getLineProfile(accessToken);
 
+    //檢查建立Line帳號
+    this.#checkLineAccount(profile);
+
     profile = Is2BProtal
       ? await this.#businessLogin(profile)
       : await this.#clientLogin(profile);
-
-    //檢查建立Line帳號
-    this.#checkLineAccount(profile);
 
     const accountWithoutBusiness =
       profile.businessId == this.sysConfigService.common.defaultBzId;
@@ -142,7 +143,7 @@ export class LineService {
     code: string,
     protalUrl: string,
     is2BProtal: boolean,
-  ) {
+  ): Promise<string> {
     const channelId = is2BProtal
       ? this.sysConfigService.thirdParty.lineChannelId2B
       : this.sysConfigService.thirdParty.lineChannelId2C;
@@ -168,11 +169,10 @@ export class LineService {
     }
   }
 
-  async #businessLogin(profile: LineProfileVo): Promise<LineProfileVo> {
-    const user = await this.businessUserService.getByAccount(profile.userId);
-    let userId = this.sysConfigService.common.defaultBzId;
+  async #businessLogin(profile: LineProfileVo): Promise<UserProfileVo> {
+    let user = await this.businessUserService.getByAccount(profile.userId);
     if (!user) {
-      const user = await this.businessUserService.add(
+      user = await this.businessUserService.add(
         new BusinessUserVo({
           userName: profile.displayName,
           account: profile.userId,
@@ -183,16 +183,18 @@ export class LineService {
           businessId: this.sysConfigService.common.defaultBzId,
         }),
       );
-      userId = user.id;
     }
 
-    profile.userId = userId;
-    profile.businessId = user.businessId;
-
-    return profile;
+    return new UserProfileVo({
+      userId: user.id,
+      displayName: user.userName,
+      pictureUrl: profile.pictureUrl,
+      statusMessage: profile.statusMessage,
+      businessId: user.businessId,
+    });
   }
 
-  async #clientLogin(profile: LineProfileVo): Promise<LineProfileVo> {
+  async #clientLogin(profile: LineProfileVo): Promise<UserProfileVo> {
     let user = await this.clientUserService.getByAccount(profile.userId);
     if (!user) {
       user = await this.clientUserService.add(
@@ -207,11 +209,14 @@ export class LineService {
       );
     }
 
-    //clientUser不須businessId
-    profile.businessId = this.sysConfigService.common.defaultBzId;
-    profile.userId = user.id;
-
-    return profile;
+    return new UserProfileVo({
+      userId: user.id,
+      displayName: user.userName,
+      pictureUrl: profile.pictureUrl,
+      statusMessage: profile.statusMessage,
+      //clientUser不須businessId
+      businessId: this.sysConfigService.common.defaultBzId,
+    });
   }
   //#endregion
 }
