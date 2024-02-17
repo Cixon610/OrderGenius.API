@@ -90,18 +90,18 @@ export const assistantsTools = [
                 },
                 modifications: {
                   type: 'array',
-                  description: '餐點客製化選項',
+                  description: '餐點客製化選單',
                   items: {
                     type: 'object',
                     properties: {
                       name: {
                         type: 'string',
-                        description: '客製化選項名稱',
+                        description: '客製化選單名稱',
                       },
                       options: {
                         type: 'object',
                         description:
-                          '客製化選項項目key-value，key為選項名稱，value為價格，此型別為Map<string, number>',
+                          '客製化選項項目已選取列表，此型別為Map<string, number>，表示已選項目名稱及價格，舉例:若該餐點的modifications名稱為甜度，options為[{"微糖": 0, "半糖": 0}]，客戶選擇半糖時此欄位請帶[{"半糖":0}]，若是複選則再將選項加進陣列中',
                         additionalProperties: {
                           type: 'number',
                         },
