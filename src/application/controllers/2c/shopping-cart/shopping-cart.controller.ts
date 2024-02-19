@@ -45,7 +45,7 @@ export class ShoppingCartController {
     const vo = await this.shoppingCartService.set(
       businessId,
       req.user.id,
-      req.user.userName,
+      req.user.username,
       dto,
     );
     res.json(vo);
