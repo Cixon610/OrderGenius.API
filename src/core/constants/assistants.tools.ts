@@ -22,7 +22,7 @@ export const assistantsTools = [
     type: 'function',
     function: {
       name: 'get_recommand',
-      description: '取得客戶餐點推薦名稱清單',
+      description: '取得客戶品項推薦名稱清單',
     },
   },
   //get_all_items
@@ -30,13 +30,13 @@ export const assistantsTools = [
     type: 'function',
     function: {
       name: 'get_all_items',
-      description: '取得店家所有餐點名稱清單',
+      description: '取得店家所有品項名稱清單',
       parameters: {
         type: 'object',
         properties: {
           count: {
             type: 'number',
-            description: '取最新幾項餐點資訊, 0為全部取得',
+            description: '取最新幾項品項資訊, 0為全部取得',
           },
         },
         required: ['count'],
@@ -48,7 +48,7 @@ export const assistantsTools = [
     type: 'function',
     function: {
       name: 'search_item_by_key',
-      description: '依提供的關鍵字查詢相關的餐點清單',
+      description: '依提供的關鍵字查詢相關的品項清單',
       parameters: {
         type: 'object',
         properties: {
@@ -66,7 +66,7 @@ export const assistantsTools = [
     type: 'function',
     function: {
       name: 'get_shopping_cart',
-      description: '取得購物車內餐點資訊',
+      description: '取得購物車內品項資訊',
     },
   },
   //modify_shopping_cart
@@ -74,59 +74,49 @@ export const assistantsTools = [
     type: 'function',
     function: {
       name: 'modify_shopping_cart',
-      description: '更新購物車內餐點資訊',
+      description: '更新購物車內品項資訊',
       parameters: {
         type: 'object',
         properties: {
           detail: {
             type: 'array',
-            description: '購物車餐點資訊',
+            description: '購物車品項資訊',
             items: {
               type: 'object',
               properties: {
                 itemId: {
                   type: 'string',
-                  description: '餐點編號',
+                  description: '品項編號',
                 },
                 modifications: {
                   type: 'array',
-                  description: '餐點客製化選單',
+                  description: '品項調整項目',
                   items: {
                     type: 'object',
                     properties: {
                       name: {
                         type: 'string',
-                        description: '客製化選單名稱',
+                        description: '調整項目名稱',
                       },
                       options: {
                         type: 'object',
                         description:
-                          '客製化選項項目已選取列表，此型別為Map<string, number>，表示已選項目名稱及價格，舉例:若該餐點的modifications名稱為甜度，options為[{"微糖": 0, "半糖": 0}]，客戶選擇半糖時此欄位請帶[{"半糖":0}]，若是複選則再將選項加進陣列中',
+                          '調整項目選擇，調整項目選擇，[{name:price,name:price...}]',
                         additionalProperties: {
                           type: 'number',
                         },
                       },
-                      maxChoices: {
-                        type: 'number',
-                        description: '最大選取數量',
-                      },
                     },
-                    required: [
-                      'businessId',
-                      'name',
-                      'options',
-                      'maxChoices',
-                      'id',
-                    ],
+                    required: ['businessId', 'name', 'options', 'id'],
                   },
                 },
                 count: {
                   type: 'number',
-                  description: '餐點數量',
+                  description: '品項數量',
                 },
                 memo: {
                   type: 'string',
-                  description: '餐點備註',
+                  description: '品項備註',
                 },
               },
               required: ['itemId', 'modifications', 'count', 'memo'],

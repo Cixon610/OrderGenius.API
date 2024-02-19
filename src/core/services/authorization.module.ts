@@ -1,4 +1,3 @@
-
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { newEnforcer } from 'casbin';
 import { AuthorizationService } from '.';
