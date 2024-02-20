@@ -39,14 +39,17 @@ export class ShoppingCartService {
     userId: string,
     userName: string,
     value: OrderCreateReqVo,
-  ): Promise<boolean> {
+  ): Promise<OrderResVo> {
     const key = this.#getRedisKey(businessId, userId);
     const vo = await this.orderService.getCaculatedOrderVo(
       value,
       userId,
       userName,
     );
-    return await this.redisService.setT(key, vo);
+    return (
+      (await this.redisService.setT(key, vo)) &&
+      (await this.redisService.getT(key, OrderResVo))
+    );
   }
 
   #getRedisKey(businessId: string, userId: string): string {

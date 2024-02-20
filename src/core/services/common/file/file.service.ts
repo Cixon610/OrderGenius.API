@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { SysConfigService } from 'src/infra/services';
 
 @Injectable()
@@ -22,10 +26,10 @@ export class FileService {
           Body: file.buffer,
           ACL: 'public-read',
           ContentType: file.mimetype,
-        })
+        }),
       );
 
-      if(!data) throw new Error('Error uploading file to S3');
+      if (!data) throw new Error('Error uploading file to S3');
 
       return `https://s3.${this.sysConfigService.infra.awsS3Region}.amazonaws.com/${this.sysConfigService.infra.awsS3BuketNameImg}/${file.originalname}`;
     } catch (err) {

@@ -5,10 +5,10 @@ export class OrderVo {
     Object.assign(this, init);
   }
 
-  @ApiProperty({ example: 'totalValue', description: 'totalValue' })
+  @ApiProperty({ example: 100, description: 'totalValue' })
   totalValue: number;
 
-  @ApiProperty({ example: 'totalCount', description: 'totalCount' })
+  @ApiProperty({ example: 2, description: 'totalCount' })
   totalCount: number;
 
   @ApiProperty({ example: 'memo', description: 'memo' })

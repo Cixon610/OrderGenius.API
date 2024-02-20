@@ -12,21 +12,24 @@ export class OrderResVo extends PartialType(OrderVo) {
 
   @ApiProperty({
     example:
-      '[{"itemId":"0212f053-7d09-46a4-8153-fe9013dcda10","itemName":"養樂多綠(M)","itemDescription":"","itemPrice":"45","itemPictureUrl":"","totalPrice":"145","modification":{"id":"430ff65f-fe32-4b0b-add0-35aa1f3cb516","businessId":"7709e3c4-57bc-11ee-8c99-0242ac120002","name":"加料","options":[{"布丁":10,"仙草":5}],"maxChoices":2},"memo":"string"}]',
+      '[{"itemId":"567440d3-dc92-4414-a5a0-5871f248c654","itemName":"梅の綠","itemDescription":"","itemPrice":50,"itemPictureUrl":"","totalPrice":65,"count":1,"modification":[{"name":"加料","options":[{"布丁":10,"仙草":5}]}],"memo":"memo"}]',
     description: 'detail',
   })
   detail: OrderDetailVo[] | null;
 
-  @ApiProperty({ example: 'userId', description: 'userId' })
+  @ApiProperty({
+    example: '77dce640-038e-4936-ac8b-501baf286ff2',
+    description: 'userId',
+  })
   userId: string;
 
-  @ApiProperty({ example: 'userName', description: 'userName' })
+  @ApiProperty({ example: 'Ryan', description: 'userName' })
   userName: string;
 
-  @Exclude()
-  createdAt?: Date | null;
-  @Exclude()
-  updatedAt?: Date | null;
-  @Exclude()
-  updateUserId?: string | null;
+  // @Exclude()
+  // createdAt?: Date | null;
+  // @Exclude()
+  // updatedAt?: Date | null;
+  // @Exclude()
+  // updateUserId?: string | null;
 }

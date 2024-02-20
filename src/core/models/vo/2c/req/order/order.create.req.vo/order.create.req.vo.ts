@@ -11,26 +11,28 @@ import { MenuItemModificationDto } from 'src/core/models';
 export class OrderDetail {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'itemId' })
+  @ApiProperty({
+    description: 'itemId',
+    example: '567440d3-dc92-4414-a5a0-5871f248c654',
+  })
   itemId: string;
 
   @IsOptional()
   @IsArray()
   @ApiProperty({
     description: 'modifications',
-    example:
-      '[{"businessId":"7709e3c4-57bc-11ee-8c99-0242ac120002","name":"加料","options":[{"布丁":10,"椰果":10}]}]',
+    example: '[{"name": "加料","options": [{"布丁": 10,"仙草": 5}]}]',
   })
   modifications: [MenuItemModificationDto] | null;
 
   @IsNumber()
   @IsNotEmpty()
-  @ApiProperty({ description: 'count' })
+  @ApiProperty({ description: 'count', example: 1 })
   count: number;
 
   @IsString()
   @IsOptional()
-  @ApiProperty({ description: 'memo' })
+  @ApiProperty({ description: 'memo', example: 'memo' })
   memo: string | null;
 }
 
@@ -42,6 +44,6 @@ export class OrderCreateReqVo {
 
   @IsString()
   @IsOptional()
-  @ApiProperty({ description: 'memo' })
+  @ApiProperty({ description: 'memo', example: 'memo' })
   memo: string | null = null;
 }

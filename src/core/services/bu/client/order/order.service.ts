@@ -173,7 +173,7 @@ export class OrderService {
       let totalPrice = Number(item.price * v.count);
       if (v.modifications) {
         v.modifications.forEach((modification) => {
-          Object.values(modification.options).forEach((value) => {
+          Object.values(modification.options[0]).forEach((value) => {
             totalPrice += Number(value);
           });
         });
