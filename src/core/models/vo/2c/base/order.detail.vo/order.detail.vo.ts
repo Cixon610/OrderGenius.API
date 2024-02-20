@@ -40,7 +40,7 @@ export class OrderDetailVo {
     example: '[{"name": "加料","options": [{"布丁": 10,"仙草": 5}]}]',
     description: 'modification',
   })
-  modification: MenuItemModificationDto[] | object | null;
+  modifications: MenuItemModificationDto[] | object | null;
 
   @ApiProperty({ example: 'memo', description: 'memo' })
   memo: string;

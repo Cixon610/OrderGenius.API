@@ -25,11 +25,4 @@ export class OrderResVo extends PartialType(OrderVo) {
 
   @ApiProperty({ example: 'Ryan', description: 'userName' })
   userName: string;
-
-  // @Exclude()
-  // createdAt?: Date | null;
-  // @Exclude()
-  // updatedAt?: Date | null;
-  // @Exclude()
-  // updateUserId?: string | null;
 }

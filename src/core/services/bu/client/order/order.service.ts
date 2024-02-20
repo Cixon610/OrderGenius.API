@@ -52,7 +52,7 @@ export class OrderService {
         itemPrice: v.itemPrice,
         totalPrice: v.totalPrice,
         count: v.count,
-        modification: v.modification,
+        modification: v.modifications,
         memo: v.memo,
       });
     });
@@ -187,7 +187,7 @@ export class OrderService {
         itemPictureUrl: item.pictureUrl,
         totalPrice: +totalPrice,
         count: v.count,
-        modification: v.modifications as MenuItemModificationDto[],
+        modifications: v.modifications as MenuItemModificationDto[],
         memo: v.memo,
       });
 
@@ -242,7 +242,7 @@ export class OrderService {
       itemPictureUrl: item.pictureUrl,
       totalPrice: orderDetail.totalPrice,
       count: orderDetail.count,
-      modification: orderDetail.modification,
+      modifications: orderDetail.modification,
       memo: orderDetail.memo,
     });
   }
