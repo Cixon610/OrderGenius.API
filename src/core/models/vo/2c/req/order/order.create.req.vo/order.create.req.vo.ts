@@ -37,6 +37,11 @@ export class OrderDetail {
 }
 
 export class OrderCreateReqVo {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ description: 'businessId', type: String })
+  businessId: string;
+
   @IsArray()
   @IsNotEmpty()
   @ApiProperty({ description: 'detail', type: [OrderDetail] })

@@ -1,13 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { OrderCreateReqVo, OrderResVo } from 'src/core/models';
+import { InjectRepository } from '@nestjs/typeorm';
+import {
+  MenuItemModificationDto,
+  OrderCreateReqVo,
+  OrderDetailVo,
+  OrderResVo,
+} from 'src/core/models';
 import { RedisService } from 'src/infra/services';
-import { OrderService } from '../order/order.service';
+import { MenuItem } from 'src/infra/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ShoppingCartService {
   constructor(
+    @InjectRepository(MenuItem)
+    private readonly itemRepository: Repository<MenuItem>,
     private readonly redisService: RedisService,
-    private readonly orderService: OrderService,
   ) {}
 
   async get(
@@ -41,15 +49,65 @@ export class ShoppingCartService {
     value: OrderCreateReqVo,
   ): Promise<OrderResVo> {
     const key = this.#getRedisKey(businessId, userId);
-    const vo = await this.orderService.getCaculatedOrderVo(
-      value,
-      userId,
-      userName,
-    );
+    const vo = await this.getCaculatedOrderVo(value, userId, userName);
     return (
       (await this.redisService.setT(key, vo)) &&
       (await this.redisService.getT(key, OrderResVo))
     );
+  }
+
+  async clear(businessId: string, userId: string): Promise<boolean> {
+    return this.redisService.delete(this.#getRedisKey(businessId, userId));
+  }
+
+  async getCaculatedOrderVo(
+    vo: OrderCreateReqVo,
+    userId: string,
+    userName: string,
+  ): Promise<OrderResVo> {
+    const orderDetailList: OrderDetailVo[] = [];
+    for (const v of vo.detail) {
+      const item = await this.itemRepository.findOne({
+        where: { id: v.itemId },
+      });
+
+      //計算總價
+      let totalPrice = Number(item.price * v.count);
+      if (v.modifications) {
+        v.modifications.forEach((modification) => {
+          Object.values(modification.options[0]).forEach((value) => {
+            totalPrice += Number(value);
+          });
+        });
+      }
+
+      const orderDetailDto = new OrderDetailVo({
+        itemId: v.itemId,
+        itemName: item.name,
+        itemDescription: item.description,
+        itemPrice: +item.price,
+        itemPictureUrl: item.pictureUrl,
+        totalPrice: +totalPrice,
+        count: v.count,
+        modifications: v.modifications as MenuItemModificationDto[],
+        memo: v.memo,
+      });
+
+      orderDetailList.push(orderDetailDto);
+    }
+
+    const totalValue = orderDetailList.reduce((a, b) => a + b.totalPrice, 0);
+    const totalCount = orderDetailList.reduce((a, b) => a + b.count, 0);
+
+    return new OrderResVo({
+      id: '',
+      detail: orderDetailList,
+      totalValue: totalValue,
+      totalCount: totalCount,
+      memo: vo.memo,
+      userId: userId,
+      userName: userName,
+    });
   }
 
   #getRedisKey(businessId: string, userId: string): string {
