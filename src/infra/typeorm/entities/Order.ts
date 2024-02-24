@@ -41,4 +41,7 @@ export class Order {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updatedAt: Date | null;
+
+  @Column('text', { name: 'business_id', nullable: true })
+  businessId: string | null;
 }

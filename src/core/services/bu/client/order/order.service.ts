@@ -70,6 +70,7 @@ export class OrderService {
       totalValue: caculatedOrderVo.totalValue,
       totalCount: caculatedOrderVo.totalCount,
       memo: vo.memo,
+      businessId: vo.businessId,
     });
 
     //存Order
@@ -121,6 +122,7 @@ export class OrderService {
       memo: order.memo,
       userId: user.id,
       userName: user.userName,
+      businessId: order.businessId,
     });
   }
 
@@ -156,6 +158,7 @@ export class OrderService {
           memo: order.memo,
           userId: user.id,
           userName: user.userName,
+          businessId: order.businessId,
         }),
       );
     }

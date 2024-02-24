@@ -10,4 +10,5 @@ export class OrderDto {
   totalValue: number;
   totalCount: number;
   memo: string | null;
+  businessId: string | null;
 }
