@@ -142,7 +142,7 @@ export class OpenaiService {
       (x) => x.name === assistantName,
     );
     if (businessAssistant.length > 0) {
-      //TODO:存在則更新sysPrompt
+      //存在則更新sysPrompt
       await this.openai.beta.assistants.update(businessAssistant[0].id, {
         instructions: systemPrompt,
         tools: assistantsTools,
@@ -154,7 +154,8 @@ export class OpenaiService {
         name: assistantName,
         instructions: systemPrompt,
         tools: assistantsTools,
-        model: 'gpt-4-1106-preview',
+        // model: 'gpt-4-1106-preview',
+        model: 'gpt-4',
       });
     }
     return businessAssistant;
@@ -222,66 +223,80 @@ export class OpenaiService {
     const toolOutputs = [];
 
     for (const toolCall of toolCalls) {
-      const functionName = toolCall.function.name;
+      try {
+        const functionName = toolCall.function.name;
 
-      const args = JSON.parse(toolCall.function.arguments);
+        const args = JSON.parse(toolCall.function.arguments);
 
-      console.log(
-        `Function Calling: ${functionName}, Args: ${JSON.stringify(args)}`,
-      );
-      // const argsArray = Object.keys(args).map((key) => args[key]);
+        console.log(
+          `Function Calling: ${functionName}, Args: ${JSON.stringify(args)}`,
+        );
+        // const argsArray = Object.keys(args).map((key) => args[key]);
 
-      // // Dynamically call the function with arguments
-      // const output = await global[functionName].apply(null, [args]);
-      let result = null;
-      switch (functionName) {
-        case 'get_recommand':
-          result = await this.recommandService.getItemNames(businessId, userId);
-          break;
-        case 'get_order_history':
-          result = await this.orderService.getByUserId(userId, args.count);
-          break;
-        case 'get_all_items':
-          const allItems = await this.menuItemService.getByBusinessId(
-            businessId,
-            args.count,
-          );
-          result = allItems.map((x) => x.name);
-          break;
-        case 'search_item_by_key':
-          result = await this.menuItemService.getItemModificationsByKey(
-            businessId,
-            args.key,
-          );
-          break;
-        case 'get_shopping_cart':
-          result = await this.shoppingCartService.get(
-            businessId,
-            userId,
-            userName,
-          );
-          break;
-        case 'modify_shopping_cart':
-          result = await this.shoppingCartService.set(
-            businessId,
-            userId,
-            userName,
-            args,
-          );
-          break;
+        // // Dynamically call the function with arguments
+        // const output = await global[functionName].apply(null, [args]);
+        let result = null;
 
-        default:
-          break;
+        switch (functionName) {
+          case 'get_recommand':
+            result = await this.recommandService.getItemNames(
+              businessId,
+              userId,
+            );
+            break;
+          case 'get_order_history':
+            result = await this.orderService.getByUserId(userId, args.count);
+            break;
+          case 'get_all_items':
+            const allItems = await this.menuItemService.getByBusinessId(
+              businessId,
+              args.count,
+            );
+            result = allItems.map((x) => x.name);
+            break;
+          case 'search_item_by_key':
+            result = await this.menuItemService.getItemModificationsByKey(
+              businessId,
+              args.key,
+            );
+            break;
+          case 'get_shopping_cart':
+            result = await this.shoppingCartService.get(
+              businessId,
+              userId,
+              userName,
+            );
+            break;
+          case 'modify_shopping_cart':
+            result = await this.shoppingCartService.set(
+              businessId,
+              userId,
+              userName,
+              args,
+            );
+            break;
+
+          default:
+            break;
+        }
+
+        toolOutputs.push({
+          tool_call_id: toolCall.id,
+          output: JSON.stringify(result),
+        });
+
+        console.log(
+          `Function Called: ${functionName}, Result: ${JSON.stringify(result)}`,
+        );
+      } catch (error) {
+        console.error(`Tool call error: ${error}`);
+        toolOutputs.push({
+          tool_call_id: toolCall.id,
+          output: 'Tool call error. please try again later.',
+        });
       }
 
-      toolOutputs.push({
-        tool_call_id: toolCall.id,
-        output: JSON.stringify(result),
-      });
-      console.log(
-        `Function Called: ${functionName}, Result: ${JSON.stringify(result)}`,
-      );
+      return toolOutputs;
     }
-    return toolOutputs;
   }
 }
