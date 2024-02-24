@@ -14,8 +14,12 @@ export class ThirdPartyConfig {
   get lineChannelSecret2C(): string {
     return process.env.LINE_CHANNEL_SECRET_2C;
   }
-  
+
   get opeanaiApiKey(): string {
     return process.env.OPENAI_API_KEY;
+  }
+
+  get openaiModelId(): string {
+    return process.env.OPENAI_MODEL_ID;
   }
 }
