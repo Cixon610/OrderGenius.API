@@ -8,7 +8,6 @@ import { ClientUserService } from '../../bu/client/client.user/client.user.servi
 import { MenuPromptService } from './../../bu/business/menu/menu.prompt/menu.prompt.service';
 import { ShoppingCartService } from '../../bu/client/shopping-cart/shopping-cart.service';
 import { AssistantsRunStatus } from 'src/core/constants/enums/assistants.run.status.enum';
-import { assistantsTools } from 'src/core/constants/assistants.tools';
 import { MenuItemService } from '../../bu/business/menu/menu.item.service/menu.item.service';
 import { RecommandService } from '../../bu/client/recommand/recommand.service';
 
