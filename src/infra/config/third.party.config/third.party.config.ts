@@ -22,4 +22,8 @@ export class ThirdPartyConfig {
   get openaiModelId(): string {
     return process.env.OPENAI_MODEL_ID;
   }
+
+  get githubToken(): string {
+    return process.env.GITHUB_TOKEN;
+  }
 }

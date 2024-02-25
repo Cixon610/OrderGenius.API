@@ -19,7 +19,11 @@ import {
 import { Module } from '@nestjs/common';
 import * as typeorm from 'src/infra/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RedisService, SysConfigService } from 'src/infra/services';
+import {
+  GithubService,
+  RedisService,
+  SysConfigService,
+} from 'src/infra/services';
 import { JwtModule } from '@nestjs/jwt';
 import { InfraConfig } from 'src/infra/config';
 
@@ -42,6 +46,8 @@ const exportServices = [
   MenuPromptService,
   OpenaiService,
   RecommandService,
+  GithubService,
+  SysConfigService,
 ];
 const infraConfig = new InfraConfig();
 @Module({
@@ -56,7 +62,7 @@ const infraConfig = new InfraConfig();
     }),
     TypeOrmModule.forFeature([...entities]),
   ],
-  providers: [...exportServices, SysConfigService],
+  providers: [...exportServices],
   exports: exportServices,
 })
 export class ServicesModule {}

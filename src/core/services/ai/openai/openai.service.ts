@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
-import { delay } from 'rxjs';
 import { Injectable } from '@nestjs/common';
-import { SysConfigService } from 'src/infra/services';
+import { GithubService, SysConfigService } from 'src/infra/services';
 import { ChatCreateResVo, ChatSendResVo } from 'src/core/models';
 import { OrderService } from '../../bu/client/order/order.service';
 import { BusinessService } from '../../bu/business/business/business.service';
@@ -25,6 +24,7 @@ export class OpenaiService {
     private readonly shoppingCartService: ShoppingCartService,
     private readonly menuItemService: MenuItemService,
     private readonly recommandService: RecommandService,
+    private readonly githubService: GithubService,
   ) {
     this.openai = new OpenAI({
       apiKey: sysConfigService.thirdParty.opeanaiApiKey,
@@ -60,6 +60,7 @@ export class OpenaiService {
     userId: string,
     userName: string,
   ): Promise<ChatSendResVo> {
+    this.clearRuns(threadId);
     const message = await this.openai.beta.threads.messages.create(threadId, {
       role: 'user',
       content: content,
@@ -86,28 +87,33 @@ export class OpenaiService {
           isProcessing = false;
           break;
         case AssistantsRunStatus.REQUIRES_ACTION:
-          const toolOutputs = await this.#toolCalls(
-            runStatus,
-            businessId,
-            userId,
-            userName,
-          );
-
-          // Submit tool outputs
-          await this.openai.beta.threads.runs.submitToolOutputs(
-            threadId,
-            run.id,
-            { tool_outputs: toolOutputs },
-          );
+          try {
+            const toolOutputs = await this.#toolCalls(
+              runStatus,
+              businessId,
+              userId,
+              userName,
+            );
+            // Submit tool outputs
+            await this.openai.beta.threads.runs.submitToolOutputs(
+              threadId,
+              run.id,
+              { tool_outputs: toolOutputs },
+            );
+          } catch (error) {
+            console.error(`Tool call error: ${error}`);
+            await this.openai.beta.threads.runs.cancel(threadId, run.id);
+          }
           break;
         case AssistantsRunStatus.EXPIRED:
         case AssistantsRunStatus.FAILED:
-          throw new Error('Assistant run failed or expired.');
-          break;
+        case AssistantsRunStatus.CANCELLED:
+          await this.openai.beta.threads.runs.cancel(threadId, run.id);
+          console.log('Assistant run failed or expired.');
+          isProcessing = false;
         case AssistantsRunStatus.IN_PROGRESS:
         case AssistantsRunStatus.QUEUED:
         case AssistantsRunStatus.CANCELLING:
-        case AssistantsRunStatus.CANCELLED:
         default:
           break;
       }
@@ -128,7 +134,14 @@ export class OpenaiService {
   async clearRuns(threadId: string) {
     const runs = await this.openai.beta.threads.runs.list(threadId);
     for (const run of runs.data) {
-      if (run.status !== AssistantsRunStatus.COMPLETED)
+      if (
+        [
+          AssistantsRunStatus.QUEUED,
+          AssistantsRunStatus.IN_PROGRESS,
+          AssistantsRunStatus.REQUIRES_ACTION,
+          AssistantsRunStatus.CANCELLING,
+        ].includes(run.status)
+      )
         await this.openai.beta.threads.runs.cancel(threadId, run.id);
     }
   }
@@ -138,6 +151,9 @@ export class OpenaiService {
   async #getAssistant(businessId: string, name: string, systemPrompt: string) {
     const assistantList = await this.openai.beta.assistants.list();
     const assistantName = `${name}_${businessId}`;
+    const functionCallingSConfig = JSON.parse(
+      await this.githubService.getFunctionCallings(),
+    );
     let businessAssistant = assistantList.data.filter(
       (x) => x.name === assistantName,
     );
@@ -145,7 +161,7 @@ export class OpenaiService {
       //存在則更新sysPrompt
       await this.openai.beta.assistants.update(businessAssistant[0].id, {
         instructions: systemPrompt,
-        tools: assistantsTools,
+        tools: functionCallingSConfig,
       });
       return businessAssistant[0];
     } else {
@@ -153,7 +169,7 @@ export class OpenaiService {
       businessAssistant = await this.openai.beta.assistants.create({
         name: assistantName,
         instructions: systemPrompt,
-        tools: assistantsTools,
+        tools: functionCallingSConfig,
         // model: 'gpt-4-1106-preview',
         model: this.sysConfigService.thirdParty.openaiModelId,
       });
@@ -172,33 +188,8 @@ export class OpenaiService {
     const orderHistory = Array.from(
       new Set(orders?.flatMap((x) => x.detail.map((y) => y.itemName))),
     )?.slice(0, 10);
-
-    const systemPrompt = `你是${businessName}店員，請根據下述的各項目執行你的工作
-# 目標
-* 引導客戶點餐
-* 若依目前資訊無法回答客戶，請呼叫對應API取得資訊
-* 品項的modification.options.minChoices為必選數量，若minChoices>0必須要求客戶選擇
-* 當品項名稱、數量及客製化的選項都收集其後即可加進購物車
-* 當你判斷需要呼叫modify_shopping_cart function時，必須與客戶確認你目前即將要加進購物車的資訊，如: 品項名稱、數量及品項調整項目選擇，待客戶回覆同意後，才可呼叫
-* 購物車家完後請告知用戶是否再加點或是確認完成點餐
-
-# 準則
-* 因客戶僅能透過你點餐，若回答錯誤或是使客戶混淆會導致你我都失業，請確實完成工作
-* 僅能為客戶點選系統中存在的品項
-* 僅能依品項描述為客戶介紹，不可加油添醋
-* 每次對答請盡量限制在30字內
-
-# 語氣
-* 不可與客戶吵架或說髒話
-* 根據客戶的語氣回覆對應的語調，但不可粗魯或帶有惡意
-
-# 例外處裡
-* API如回覆錯誤請回覆客戶"系統錯誤，請稍後再試"
-
-# API相關
-* modification.options為Map<string, number>，代表選項名稱:價格
-`;
-
+    const prompt = await this.githubService.getSysPrompt();
+    const systemPrompt = prompt.replace('${businessName}', businessName);
     const costumerPrompt = `
     # 客人資訊
     1. 客人姓名: ${user.userName}
@@ -239,10 +230,13 @@ export class OpenaiService {
 
         switch (functionName) {
           case 'get_recommand':
-            result = await this.recommandService.getItemNames(
+            const recommandItems = await this.recommandService.getItem(
               businessId,
               userId,
             );
+            result = recommandItems.map((x) => {
+              return { id: x.id, name: x.name };
+            });
             break;
           case 'get_order_history':
             result = await this.orderService.getByUserId(userId, args.count);
@@ -252,13 +246,22 @@ export class OpenaiService {
               businessId,
               args.count,
             );
-            result = allItems.map((x) => x.name);
+            result = allItems.map((x) => {
+              return { id: x.id, name: x.name };
+            });
             break;
           case 'search_item_by_key':
-            result = await this.menuItemService.getItemModificationsByKey(
-              businessId,
-              args.key,
-            );
+            const matchedItem =
+              await this.menuItemService.getItemModificationsByKey(
+                businessId,
+                args.key,
+              );
+            result = matchedItem.map((x) => {
+              return { id: x.id, name: x.name };
+            });
+            break;
+          case 'get_item_by_item_ids':
+            result = await this.menuItemService.getByItemIds(args.ids);
             break;
           case 'get_shopping_cart':
             result = await this.shoppingCartService.get(
