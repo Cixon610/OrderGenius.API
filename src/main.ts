@@ -30,7 +30,7 @@ async function bootstrap() {
     .build();
 
   //#region global register
-  app.useGlobalFilters(new HttpExceptionFilter());
+  // app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
   //#endregion
 

@@ -11,6 +11,9 @@ import { join } from 'path';
 import { RedisModule } from '@songkeys/nestjs-redis';
 import { JwtMiddleware, LoggerMiddleware } from './core/middlewares';
 import { JwtModule } from '@nestjs/jwt';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './core/filters';
+import { LoggerService } from './infra/services/logger/logger.service';
 
 const entities = Object.values(typeorm);
 const infraConfig = new InfraConfig();
@@ -48,7 +51,14 @@ const infraConfig = new InfraConfig();
     ApplicationModule,
     InfraModule,
   ],
-  providers: [JwtMiddleware],
+  providers: [
+    JwtMiddleware,
+    {
+      provide: APP_FILTER,
+      useFactory: (logger: LoggerService) => new HttpExceptionFilter(logger),
+      inject: [LoggerService],
+    },
+  ],
   exports: [JwtMiddleware],
 })
 export class AppModule implements NestModule {

@@ -5,10 +5,11 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { ValidationError } from 'class-validator';
+import { LoggerService } from 'src/infra/services/logger/logger.service';
 
 @Catch(Error)
-export class HttpExceptionFilter<T> implements ExceptionFilter {
+export class HttpExceptionFilter implements ExceptionFilter {
+  constructor(private readonly logger: LoggerService) {}
   catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx?.getResponse();
@@ -27,6 +28,7 @@ export class HttpExceptionFilter<T> implements ExceptionFilter {
     }
 
     console.error(exception);
+    this.logger.Error(exception.message, exception);
     response.status(statusCode).json({
       statusCode,
       message,
