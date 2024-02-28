@@ -32,7 +32,6 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.8",
     "@nestjs/typeorm": "^10.0.0",
-    "@octokit/core": "^5.1.0",
     "@songkeys/nestjs-redis": "^10.0.0",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.1",
