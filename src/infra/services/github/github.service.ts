@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Octokit } from '@octokit/core';
+// import { Octokit } from '@octokit/core';
 import { SysConfigService } from '../config/sys.config.service';
 import axios from 'axios';
 
 @Injectable()
 export class GithubService {
-  private octokit: Octokit;
+  // private octokit: Octokit;
   constructor(private readonly sysConfigService: SysConfigService) {
-    this.octokit = new Octokit({
-      auth: this.sysConfigService.thirdParty.githubToken,
-    });
+    // this.octokit = new Octokit({
+    //   auth: this.sysConfigService.thirdParty.githubToken,
+    // });
   }
 
   async getSysPrompt() {
