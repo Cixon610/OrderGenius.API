@@ -10,6 +10,7 @@ import { ShoppingCartService } from '../../bu/client/shopping-cart/shopping-cart
 import { AssistantsRunStatus } from 'src/core/constants/enums/assistants.run.status.enum';
 import { MenuItemService } from '../../bu/business/menu/menu.item.service/menu.item.service';
 import { RecommandService } from '../../bu/client/recommand/recommand.service';
+import { ModificationService } from '../../bu/business/menu/modification/modification.service';
 
 @Injectable()
 export class OpenaiService {
@@ -24,6 +25,7 @@ export class OpenaiService {
     private readonly menuItemService: MenuItemService,
     private readonly recommandService: RecommandService,
     private readonly githubService: GithubService,
+    private readonly modificationService: ModificationService,
   ) {
     this.openai = new OpenAI({
       apiKey: sysConfigService.thirdParty.opeanaiApiKey,
@@ -101,7 +103,7 @@ export class OpenaiService {
             );
           } catch (error) {
             console.error(`Tool call error: ${error}`);
-            await this.openai.beta.threads.runs.cancel(threadId, run.id);
+            this.#cancelRun(threadId, run.id, runStatus.status);
           }
           break;
         case AssistantsRunStatus.EXPIRED:
@@ -133,16 +135,20 @@ export class OpenaiService {
   async clearRuns(threadId: string) {
     const runs = await this.openai.beta.threads.runs.list(threadId);
     for (const run of runs.data) {
-      if (
-        [
-          AssistantsRunStatus.QUEUED,
-          AssistantsRunStatus.IN_PROGRESS,
-          AssistantsRunStatus.REQUIRES_ACTION,
-          AssistantsRunStatus.CANCELLING,
-        ].includes(run.status)
-      )
-        await this.openai.beta.threads.runs.cancel(threadId, run.id);
+      await this.#cancelRun(threadId, run.id, run.status);
     }
+  }
+
+  async #cancelRun(threadId: string, runId: string, status: string) {
+    if (
+      [
+        AssistantsRunStatus.QUEUED.toString(),
+        AssistantsRunStatus.IN_PROGRESS.toString(),
+        AssistantsRunStatus.REQUIRES_ACTION.toString(),
+        AssistantsRunStatus.CANCELLING.toString(),
+      ].includes(status)
+    )
+      await this.openai.beta.threads.runs.cancel(threadId, runId);
   }
 
   //目前assistant api message role只支援user，暫時不能以system身分再疊加systemPrompt，先改用一個business_user一個Assistant的方式實作
@@ -276,6 +282,9 @@ export class OpenaiService {
               userName,
               args,
             );
+            break;
+          case 'get_modification_by_id':
+            result = await this.modificationService.get(args.id);
             break;
 
           default:
