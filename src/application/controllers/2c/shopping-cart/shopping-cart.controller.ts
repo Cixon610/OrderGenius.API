@@ -36,14 +36,9 @@ export class ShoppingCartController {
   @Put()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: OrderResVo })
-  async update(
-    @Query('businessId') businessId: string,
-    @Body() dto: OrderCreateReqVo,
-    @Req() req,
-    @Res() res,
-  ) {
+  async update(@Body() dto: OrderCreateReqVo, @Req() req, @Res() res) {
     const vo = await this.shoppingCartService.set(
-      businessId,
+      req.businessId,
       req.user.id,
       req.user.username,
       dto,

@@ -76,9 +76,12 @@ export class ShoppingCartService {
       let totalPrice = Number(item.price * v.count);
       if (v.modifications) {
         v.modifications.forEach((modification) => {
-          Object.values(modification.options[0]).forEach((value) => {
-            totalPrice += Number(value);
+          modification.options.forEach((option) => {
+            totalPrice += Number(option.price);
           });
+          // Object.values(modification.options[0]).forEach((value) => {
+          //   totalPrice += Number(value);
+          // });
         });
       }
 

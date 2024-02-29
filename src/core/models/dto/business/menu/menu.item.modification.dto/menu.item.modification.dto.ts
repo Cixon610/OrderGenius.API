@@ -4,8 +4,15 @@ export class MenuItemModificationDto {
   name: string;
 
   @ApiProperty({
-    example: "[{ '布丁': 10, '仙草': 20 }]",
+    example: "[{ 'name': '布丁', 'price': 10},{ 'name': '仙草', 'price': 5}]",
     description: 'options',
   })
-  options?: Record<string, number>;
+  options?: [optionDto];
+}
+export class optionDto {
+  @ApiProperty({ example: '布丁', description: 'name' })
+  name: string;
+
+  @ApiProperty({ example: 10, description: 'price' })
+  price: number;
 }
