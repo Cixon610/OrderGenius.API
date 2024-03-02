@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 // import { Octokit } from '@octokit/core';
 import { SysConfigService } from '../config/sys.config.service';
 import axios from 'axios';
+import * as fs from 'node:fs/promises';
 
 @Injectable()
 export class GithubService {
@@ -23,6 +24,13 @@ export class GithubService {
   //get content from github with axios
   async #getPromptContent(fileName: string) {
     try {
+      if (this.sysConfigService.common.environment === 'local') {
+        return await fs.readFile(
+          `${this.sysConfigService.common.localPromptPath}/${fileName}`,
+          'utf8',
+        );
+      }
+
       const response = await axios.get(
         `https://api.github.com/repos/OrderGPT/Prompts/contents/${fileName}`,
         {
