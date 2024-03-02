@@ -310,8 +310,8 @@ export class OpenaiService {
                 const modifications = x.modifications.map((y) => {
                   return {
                     name: y.name,
-                    minChoice: y.minChoice,
-                    maxChoice: y.maxChoice,
+                    minChoices: y.minChoices,
+                    maxChoices: y.maxChoices,
                   };
                 });
 
@@ -321,7 +321,7 @@ export class OpenaiService {
                   description: x.description,
                   price: x.price,
                   note: x.note,
-                  modification: modifications,
+                  modifications: modifications,
                 };
               });
             }
