@@ -23,6 +23,10 @@ export class ThirdPartyConfig {
     return process.env.OPENAI_MODEL_ID;
   }
 
+  get openaiLoopLimit(): number {
+    return +process.env.OPENAI_LOOP_LIMIT;
+  }
+
   get githubToken(): string {
     return process.env.GITHUB_TOKEN;
   }

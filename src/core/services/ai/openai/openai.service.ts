@@ -79,12 +79,17 @@ export class OpenaiService {
     //   }
     // }
     let isProcessing = true;
-    while (isProcessing) {
+    let loopCount = 0;
+    while (
+      isProcessing &&
+      loopCount < this.sysConfigService.thirdParty.openaiLoopLimit
+    ) {
       const runStatus = await this.openai.beta.threads.runs.retrieve(
         threadId,
         run.id,
       );
       console.log(`Run status: ${runStatus.status}`);
+      loopCount++;
       switch (runStatus.status) {
         case AssistantsRunStatus.COMPLETED:
           isProcessing = false;
@@ -113,7 +118,6 @@ export class OpenaiService {
         case AssistantsRunStatus.FAILED:
         case AssistantsRunStatus.CANCELLING:
         case AssistantsRunStatus.CANCELLED:
-          await this.openai.beta.threads.runs.cancel(threadId, run.id);
           console.log('Assistant run failed or expired.');
           isProcessing = false;
         case AssistantsRunStatus.IN_PROGRESS:
@@ -123,12 +127,21 @@ export class OpenaiService {
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
-    const messages = await this.openai.beta.threads.messages.list(threadId);
     const shoppingCart = await this.shoppingCartService.get(
       businessId,
       userId,
       userName,
     );
+    if (loopCount >= this.sysConfigService.thirdParty.openaiLoopLimit) {
+      console.error('OpenAI loop limit reached.');
+      await this.clearRuns(threadId);
+      return new ChatSendResVo({
+        message: '我頭有點暈，請稍後再試一次。',
+        shoppingCart: shoppingCart,
+      });
+    }
+
+    const messages = await this.openai.beta.threads.messages.list(threadId);
     return new ChatSendResVo({
       message: messages.data[0].content[0].text.value,
       shoppingCart: shoppingCart,
