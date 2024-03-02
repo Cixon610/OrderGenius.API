@@ -1,3 +1,4 @@
+import { Modification } from './../../../../infra/typeorm/entities/Modification';
 import OpenAI from 'openai';
 import { Injectable } from '@nestjs/common';
 import { GithubService, SysConfigService } from 'src/infra/services';
@@ -83,6 +84,7 @@ export class OpenaiService {
         threadId,
         run.id,
       );
+      console.log(`Run status: ${runStatus.status}`);
       switch (runStatus.status) {
         case AssistantsRunStatus.COMPLETED:
           isProcessing = false;
@@ -104,6 +106,7 @@ export class OpenaiService {
           } catch (error) {
             console.error(`Tool call error: ${error}`);
             this.#cancelRun(threadId, run.id, runStatus.status);
+            isProcessing = false;
           }
           break;
         case AssistantsRunStatus.EXPIRED:
@@ -145,7 +148,6 @@ export class OpenaiService {
         AssistantsRunStatus.QUEUED.toString(),
         AssistantsRunStatus.IN_PROGRESS.toString(),
         AssistantsRunStatus.REQUIRES_ACTION.toString(),
-        AssistantsRunStatus.CANCELLING.toString(),
       ].includes(status)
     )
       await this.openai.beta.threads.runs.cancel(threadId, runId);
@@ -239,21 +241,36 @@ export class OpenaiService {
               businessId,
               userId,
             );
-            result = recommandItems.map((x) => {
-              return { id: x.id, name: x.name };
-            });
+
+            if (recommandItems) {
+              result = recommandItems.map((x) => {
+                return { id: x.id, name: x.name };
+              });
+            }
             break;
           case 'get_order_history':
-            result = await this.orderService.getByUserId(userId, args.count);
+            const history = await this.orderService.getByUserId(
+              userId,
+              args.count,
+            );
+
+            if (history) {
+              result = history.map((x) => {
+                return { itemNames: x.detail.map((y) => y.itemName) };
+              });
+            }
             break;
           case 'get_all_items':
             const allItems = await this.menuItemService.getByBusinessId(
               businessId,
               args.count,
             );
-            result = allItems.map((x) => {
-              return { id: x.id, name: x.name };
-            });
+
+            if (allItems) {
+              result = allItems.map((x) => {
+                return { id: x.id, name: x.name };
+              });
+            }
             break;
           case 'search_item_by_key':
             const matchedItem =
@@ -261,19 +278,51 @@ export class OpenaiService {
                 businessId,
                 args.key,
               );
-            result = matchedItem.map((x) => {
-              return { id: x.id, name: x.name };
-            });
+
+            if (matchedItem) {
+              result = matchedItem.map((x) => {
+                return { id: x.id, name: x.name };
+              });
+            }
             break;
           case 'get_item_by_item_ids':
-            result = await this.menuItemService.getByItemIds(args.ids);
+            const items =
+              await this.menuItemService.getItemModificationsByItemIds(
+                businessId,
+                args.ids,
+              );
+
+            if (items) {
+              result = items.map((x) => {
+                const modifications = x.modifications.map((y) => {
+                  return {
+                    name: y.name,
+                    minChoice: y.minChoice,
+                    maxChoice: y.maxChoice,
+                  };
+                });
+
+                return {
+                  id: x.id,
+                  name: x.name,
+                  description: x.description,
+                  price: x.price,
+                  note: x.note,
+                  modification: modifications,
+                };
+              });
+            }
             break;
           case 'get_shopping_cart':
-            result = await this.shoppingCartService.get(
+            const shoppingCart = await this.shoppingCartService.get(
               businessId,
               userId,
               userName,
             );
+
+            if (shoppingCart) {
+              result = shoppingCart;
+            }
             break;
           case 'modify_shopping_cart':
             result = await this.shoppingCartService.set(
@@ -283,8 +332,23 @@ export class OpenaiService {
               args,
             );
             break;
-          case 'get_modification_by_id':
-            result = await this.modificationService.get(args.id);
+          case 'get_modification_by_item_id':
+            const item =
+              await this.menuItemService.getItemModificationsByItemIds(
+                businessId,
+                [args.id],
+              );
+
+            result = item[0].modifications.map((x) => {
+              return {
+                name: x.name,
+                minChoice: x.minChoice,
+                maxChoice: x.maxChoice,
+                options: x.options.map((y) => {
+                  return { name: y.name, price: y.price };
+                }),
+              };
+            });
             break;
 
           default:

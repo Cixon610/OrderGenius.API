@@ -169,6 +169,21 @@ export class MenuItemService {
     return this.toVosWithModifications(vos);
   }
 
+  async getItemModificationsByItemIds(
+    businessId: string,
+    ids: string[],
+  ): Promise<any[]> {
+    const vos = await this.viewItemModification.find({
+      where: {
+        businessId: businessId,
+        menuItemId: In(ids),
+        menuItemEnable: true,
+      },
+      order: { menuItemUpdatedAt: 'DESC' },
+    });
+    return this.toVosWithModifications(vos);
+  }
+
   //#region private methods
 
   private toVo(Item: ViewItemModification[]): MenuItemResVo {

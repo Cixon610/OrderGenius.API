@@ -21,7 +21,8 @@ export class OrderDetail {
   @IsArray()
   @ApiProperty({
     description: 'modifications',
-    example: '[{"name": "加料","options": [{"布丁": 10,"仙草": 5}]}]',
+    example:
+      '[{"name": "加料","options": [{ "name": "布丁", "price": 10},{ "name": "仙草", "price": 5}]}]',
   })
   modifications: [MenuItemModificationDto] | null;
 
