@@ -111,13 +111,13 @@ export class OpenaiService {
           break;
         case AssistantsRunStatus.EXPIRED:
         case AssistantsRunStatus.FAILED:
+        case AssistantsRunStatus.CANCELLING:
         case AssistantsRunStatus.CANCELLED:
           await this.openai.beta.threads.runs.cancel(threadId, run.id);
           console.log('Assistant run failed or expired.');
           isProcessing = false;
         case AssistantsRunStatus.IN_PROGRESS:
         case AssistantsRunStatus.QUEUED:
-        case AssistantsRunStatus.CANCELLING:
         default:
           break;
       }
