@@ -345,9 +345,10 @@ export class OpenaiService {
               userName,
             );
             //將既有購物車資料與新資料合併
-            if (currentShoppingCart?.detail.length > 0)
-              args.detail.push(currentShoppingCart.detail);
-            
+            if (currentShoppingCart?.detail.length > 0) {
+              args.detail = args.detail.concat(currentShoppingCart.detail);
+            }
+
             result = await this.shoppingCartService.set(
               businessId,
               userId,
