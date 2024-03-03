@@ -344,9 +344,21 @@ export class OpenaiService {
               userId,
               userName,
             );
+            //移除字串，AI給的錯誤資料
+            args.detail = args.detail.filter((x) => typeof x !== 'string');
+
             //將既有購物車資料與新資料合併
             if (currentShoppingCart?.detail.length > 0) {
-              args.detail = args.detail.concat(currentShoppingCart.detail);
+              args.detail = args.detail.concat(
+                currentShoppingCart.detail.map((x) => {
+                  return {
+                    itemId: x.itemId,
+                    count: x.count,
+                    modifications: x.modifications,
+                    memo: x.memo,
+                  };
+                }),
+              );
             }
 
             result = await this.shoppingCartService.set(
