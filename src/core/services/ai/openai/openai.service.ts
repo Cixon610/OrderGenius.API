@@ -120,7 +120,14 @@ export class OpenaiService {
         case AssistantsRunStatus.CANCELLED:
           console.log('Assistant run failed or expired.');
           isProcessing = false;
-        //TODO:需要壓訊息避免迴船user原話
+          return new ChatSendResVo({
+            message: '抱歉剛恍神了，請稍後再試一次。',
+            shoppingCart: await this.shoppingCartService.get(
+              businessId,
+              userId,
+              userName,
+            ),
+          });
         case AssistantsRunStatus.IN_PROGRESS:
         case AssistantsRunStatus.QUEUED:
         default:
@@ -128,11 +135,13 @@ export class OpenaiService {
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
+
     const shoppingCart = await this.shoppingCartService.get(
       businessId,
       userId,
       userName,
     );
+
     if (loopCount >= this.sysConfigService.thirdParty.openaiLoopLimit) {
       console.error('OpenAI loop limit reached.');
       await this.clearRuns(threadId);
@@ -404,8 +413,7 @@ export class OpenaiService {
           output: 'Tool call error. please try again later.',
         });
       }
-
-      return toolOutputs;
     }
+    return toolOutputs;
   }
 }
