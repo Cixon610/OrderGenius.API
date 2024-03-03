@@ -338,6 +338,13 @@ export class OpenaiService {
             }
             break;
           case 'modify_shopping_cart':
+            const currentShoppingCart = await this.shoppingCartService.get(
+              businessId,
+              userId,
+              userName,
+            );
+            //將既有購物車資料與新資料合併
+            args.detail = args.detail.push(currentShoppingCart.detail);
             result = await this.shoppingCartService.set(
               businessId,
               userId,
