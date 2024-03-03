@@ -120,6 +120,7 @@ export class OpenaiService {
         case AssistantsRunStatus.CANCELLED:
           console.log('Assistant run failed or expired.');
           isProcessing = false;
+        //TODO:需要壓訊息避免迴船user原話
         case AssistantsRunStatus.IN_PROGRESS:
         case AssistantsRunStatus.QUEUED:
         default:
@@ -344,7 +345,7 @@ export class OpenaiService {
               userName,
             );
             //將既有購物車資料與新資料合併
-            args.detail = args.detail.push(currentShoppingCart.detail);
+            args.detail.push(currentShoppingCart.detail);
             result = await this.shoppingCartService.set(
               businessId,
               userId,
