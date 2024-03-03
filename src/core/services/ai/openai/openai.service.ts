@@ -355,11 +355,9 @@ export class OpenaiService {
             result = item[0].modifications.map((x) => {
               return {
                 name: x.name,
-                minChoice: x.minChoice,
-                maxChoice: x.maxChoice,
-                options: x.options.map((y) => {
-                  return { name: y.name, price: y.price };
-                }),
+                minChoices: x.minChoices,
+                maxChoices: x.maxChoices,
+                options: x.options,
               };
             });
             break;
