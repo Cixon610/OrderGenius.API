@@ -38,7 +38,7 @@ export class ShoppingCartController {
   @ApiResponse({ status: 200, type: OrderResVo })
   async update(@Body() dto: OrderCreateReqVo, @Req() req, @Res() res) {
     const vo = await this.shoppingCartService.set(
-      req.businessId,
+      dto.businessId,
       req.user.id,
       req.user.username,
       dto,
