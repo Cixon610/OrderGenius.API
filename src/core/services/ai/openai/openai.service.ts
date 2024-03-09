@@ -1,4 +1,3 @@
-import { Modification } from './../../../../infra/typeorm/entities/Modification';
 import OpenAI from 'openai';
 import { Injectable } from '@nestjs/common';
 import { GithubService, SysConfigService } from 'src/infra/services';
@@ -12,6 +11,7 @@ import { AssistantsRunStatus } from 'src/core/constants/enums/assistants.run.sta
 import { MenuItemService } from '../../bu/business/menu/menu.item.service/menu.item.service';
 import { RecommandService } from '../../bu/client/recommand/recommand.service';
 import { ModificationService } from '../../bu/business/menu/modification/modification.service';
+import { jsonrepair } from 'jsonrepair';
 
 @Injectable()
 export class OpenaiService {
@@ -248,8 +248,8 @@ export class OpenaiService {
     for (const toolCall of toolCalls) {
       try {
         const functionName = toolCall.function.name;
-
-        const args = JSON.parse(toolCall.function.arguments);
+        const repairedJson = jsonrepair(toolCall.function.arguments);
+        const args = JSON.parse(repairedJson);
 
         console.log(
           `Function Calling: ${functionName}, Args: ${JSON.stringify(args)}`,
