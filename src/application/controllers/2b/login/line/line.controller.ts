@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res } from '@nestjs/common';
+import { Controller, Get, Query, Req, Res } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LineCallbackResVo, LineLoginResVo } from 'src/core/models';
 import { LineService } from 'src/core/services';
@@ -14,9 +14,9 @@ export class LineController {
 
   @ApiResponse({ status: 200, type: LineLoginResVo })
   @Get('login')
-  async login(@Req() req, @Res() res) {
+  async login(@Query('businessId') businessId: string, @Req() req, @Res() res) {
     const origin = req.headers.origin;
-    const loginUrl = await this.lineService.getLoginUrl(origin);
+    const loginUrl = await this.lineService.getLoginUrl(origin, businessId);
     res.json(new LineLoginResVo({ url: loginUrl }));
   }
 
@@ -24,8 +24,8 @@ export class LineController {
   @Get('callback')
   async callback(@Req() req, @Res() res) {
     const origin = req.headers.origin;
-    const { code } = req.query;
-    const result = await this.lineService.login(code, origin);
+    const { code, businessId } = req.query;
+    const result = await this.lineService.login(code, origin, businessId);
     res.json(result);
   }
 }
