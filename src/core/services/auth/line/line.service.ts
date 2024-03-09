@@ -33,7 +33,7 @@ export class LineService {
     private readonly businessUserService: BusinessUserService,
   ) {}
 
-  async getLoginUrl(oringin: string): Promise<string> {
+  async getLoginUrl(oringin: string, businessId: string): Promise<string> {
     const { type, protalUrl } = this.#getProtalUrl(oringin);
     const queryParams = stringify({
       response_type: 'code',
@@ -41,7 +41,7 @@ export class LineService {
         type == '2B'
           ? this.sysConfigService.thirdParty.lineChannelId2B
           : this.sysConfigService.thirdParty.lineChannelId2C,
-      redirect_uri: `https://${protalUrl}`,
+      redirect_uri: `https://${protalUrl}?businessId=${businessId}`,
       scope: 'openid profile',
       state: randomBytes(16).toString('hex'),
       nonce: randomBytes(16).toString('hex'),
@@ -51,13 +51,18 @@ export class LineService {
     return Promise.resolve(loginUrl);
   }
 
-  async login(code: string, oringin: string): Promise<LineCallbackResVo> {
+  async login(
+    code: string,
+    oringin: string,
+    businessId: string,
+  ): Promise<LineCallbackResVo> {
     const { type, protalUrl } = this.#getProtalUrl(oringin);
     const Is2BProtal = type == '2B';
     const accessToken = await this.#getLineAccessToken(
       code,
       protalUrl,
       Is2BProtal,
+      businessId,
     );
     let profile = await this.#getLineProfile(accessToken);
 
@@ -143,6 +148,7 @@ export class LineService {
     code: string,
     protalUrl: string,
     is2BProtal: boolean,
+    businessId: string,
   ): Promise<string> {
     const channelId = is2BProtal
       ? this.sysConfigService.thirdParty.lineChannelId2B
@@ -159,7 +165,8 @@ export class LineService {
           code,
           client_id: channelId,
           client_secret: channelSecret,
-          redirect_uri: `https://${protalUrl}`,
+          //TODO:redirect帶businessId讓轉導時帶入
+          redirect_uri: `https://${protalUrl}?businessId=${businessId}`,
         },
         { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
       );
