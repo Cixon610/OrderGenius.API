@@ -89,7 +89,9 @@ export class OpenaiService {
         run.id,
       );
       console.log(`Run status: ${runStatus.status}`);
-      loopCount++;
+      loopCount +=
+        runStatus.status == AssistantsRunStatus.REQUIRES_ACTION ? 0 : 1;
+
       switch (runStatus.status) {
         case AssistantsRunStatus.COMPLETED:
           isProcessing = false;
