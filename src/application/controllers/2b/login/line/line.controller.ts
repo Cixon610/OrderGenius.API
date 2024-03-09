@@ -22,9 +22,13 @@ export class LineController {
 
   @ApiResponse({ status: 200, type: LineCallbackResVo })
   @Get('callback')
-  async callback(@Req() req, @Res() res) {
+  async callback(
+    @Query('businessId') businessId: string,
+    @Req() req,
+    @Res() res,
+  ) {
     const origin = req.headers.origin;
-    const { code, businessId } = req.query;
+    const { code } = req.query;
     const result = await this.lineService.login(code, origin, businessId);
     res.json(result);
   }
