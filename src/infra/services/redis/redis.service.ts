@@ -80,26 +80,6 @@ export class RedisService {
       return false;
     }
   }
-  
-  async addToList(key: string, value: any): Promise<boolean> {
-    try {
-      await this.redis.rpush(key, value);
-      return true;
-    } catch (error) {
-      console.error(`Redis addToList error: ${error}`);
-      return false;
-    }
-  }
-
-  async getList(key: string): Promise<any[] | null> {
-    try {
-      const result = await this.redis.lrange(key, 0, -1);
-      return result;
-    } catch (error) {
-      console.error(`Redis getList error: ${error}`);
-      return null;
-    }
-  }
 
   // async create<T>(data: T): Promise<boolean> {
   //   try {

@@ -41,8 +41,6 @@ p, costumer, /clientUser, *
 p, costumer, /chat, *
 p, costumer, /chat/send, *
 p, costumer, /chat/clearRuns, *
-p, costumer, /chat/v2, *
-p, costumer, /chat/v2/send/sse, *
 p, costumer, /recommand, *
 p, costumer, /recommand/itemNames, *
 

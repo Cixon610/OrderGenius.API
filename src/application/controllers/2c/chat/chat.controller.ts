@@ -6,31 +6,20 @@ import {
   Query,
   Req,
   Res,
-  Sse,
   UseGuards,
-  MessageEvent,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Observable, Subject, from, interval, map, mergeMap, of } from 'rxjs';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
-import {
-  ChatCreateResVo,
-  ChatSendReqVo,
-  ChatSendResVo,
-  ChatSendV2ReqVo,
-} from 'src/core/models';
-import { ChatService, OpenaiAgentService } from 'src/core/services';
+import { ChatCreateResVo, ChatSendReqVo, ChatSendResVo } from 'src/core/models';
+import { OpenaiService } from 'src/core/services';
 
 @UseGuards(AuthGuard('jwt'), RoleGuard)
 @ApiTags('chat')
 @Controller('chat')
 export class ChatController {
-  constructor(
-    private readonly OpenaiAgentService: OpenaiAgentService,
-    private readonly chatService: ChatService,
-  ) {}
-  //#region V1 Asisstant api
+  constructor(private readonly openaiService: OpenaiService) {}
+
   @Post()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: ChatCreateResVo })
@@ -39,10 +28,7 @@ export class ChatController {
     @Req() req,
     @Res() res,
   ) {
-    const result = await this.OpenaiAgentService.createChat(
-      businessId,
-      req.user.id,
-    );
+    const result = await this.openaiService.createChat(businessId, req.user.id);
     res.json(result);
   }
 
@@ -51,7 +37,7 @@ export class ChatController {
   @ApiResponse({ status: 200, type: ChatSendResVo })
   async Send(@Req() req, @Body() chatSendReqVo: ChatSendReqVo, @Res() res) {
     console.debug('chatSendReqVo', chatSendReqVo);
-    const result = await this.OpenaiAgentService.sendChat(
+    const result = await this.openaiService.sendChat(
       chatSendReqVo.assistantId,
       chatSendReqVo.threadId,
       chatSendReqVo.content,
@@ -68,39 +54,7 @@ export class ChatController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: Boolean })
   async ClearRuns(@Query('threadId') threadId: string, @Res() res) {
-    await this.OpenaiAgentService.clearRuns(threadId);
+    await this.openaiService.clearRuns(threadId);
     res.json(true);
   }
-  //#endregion
-
-  //#region V2 SSE
-  @Get('/v2')
-  @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: String, description: 'sessionId' })
-  async CreateV2(
-    @Query('businessId') businessId: string,
-    @Req() req,
-    @Res() res,
-  ) {
-    const result = await this.chatService.create();
-    res.json(result);
-  }
-
-  @Sse('/v2/send/sse')
-  @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: Observable<MessageEvent> })
-  async SendSSE(
-    @Req() req,
-    @Body() chatSendReqVo: ChatSendV2ReqVo,
-  ): Promise<Observable<MessageEvent>> {
-    const stream = await this.chatService.call(
-      chatSendReqVo.businessId,
-      req.user.id,
-      chatSendReqVo.sessionId,
-      chatSendReqVo.content,
-    );
-
-    return from(stream).pipe(map((data) => ({ data })));
-  }
-  //#endregion
 }
