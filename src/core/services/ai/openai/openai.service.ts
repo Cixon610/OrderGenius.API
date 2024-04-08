@@ -56,7 +56,6 @@ export class OpenaiService extends LLMBaseServiceService {
     const chunks = [];
     for await (const chunk of stream) {
       chunks.push(chunk.content);
-      console.log(`${chunk.content}`);
       yield `${chunk.content}`;
     }
     this.redisService.addToList(

@@ -10,6 +10,7 @@ import { GithubService, SysConfigService } from 'src/infra/services';
 import { ChainValues } from '@langchain/core/utils/types';
 import { IterableReadableStream } from '@langchain/core/utils/stream';
 import { ConversationChain } from 'langchain/chains';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ChatService {
@@ -26,8 +27,11 @@ export class ChatService {
     private readonly openaiService: OpenaiService,
   ) {}
 
-  create(): string {
-    return new Date().getTime().toString();
+  create(businessId:string): any {
+    return {
+      businessId,
+      sessionId: randomUUID(),
+    };
   }
 
   async *call(

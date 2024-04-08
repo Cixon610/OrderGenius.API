@@ -19,6 +19,7 @@ import {
   ChatSendReqVo,
   ChatSendResVo,
   ChatSendV2ReqVo,
+  ChatSendV2ResVo,
 } from 'src/core/models';
 import { ChatService, OpenaiAgentService } from 'src/core/services';
 
@@ -76,13 +77,13 @@ export class ChatController {
   //#region V2 SSE
   @Get('/v2')
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: String, description: 'sessionId' })
+  @ApiResponse({ status: 200, type: ChatSendV2ResVo, description: 'sessionId' })
   async CreateV2(
     @Query('businessId') businessId: string,
     @Req() req,
     @Res() res,
   ) {
-    const result = await this.chatService.create();
+    const result = await this.chatService.create(businessId);
     res.json(result);
   }
 
