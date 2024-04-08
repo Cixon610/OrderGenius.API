@@ -2,6 +2,7 @@ export * from 'src/core/services/services.module';
 
 export * from './common/file/file.service';
 
+export * from './ai/openai.agent/openai.agent.service';
 export * from './ai/openai/openai.service';
 
 export * from './auth/line/line.service';
@@ -21,3 +22,4 @@ export * from './bu/client/client.user/client.user.service';
 export * from './bu/client/order/order.service';
 export * from './bu/client/shopping-cart/shopping-cart.service';
 export * from './bu/client/recommand/recommand.service';
+export * from './bu/client/chat/chat.service';
