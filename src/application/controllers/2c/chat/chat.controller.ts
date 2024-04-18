@@ -87,7 +87,8 @@ export class ChatController {
     res.json(result);
   }
 
-  @Sse('/v2/send/sse')
+  @Post('/v2/send/sse')
+  @Sse()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: Observable<MessageEvent> })
   async SendSSE(
