@@ -83,7 +83,7 @@ export class ChatController {
     @Req() req,
     @Res() res,
   ) {
-    const result = await this.chatService.create(businessId);
+    const result = await this.chatService.create(businessId, req.user.id);
     res.json(result);
   }
 
@@ -96,7 +96,6 @@ export class ChatController {
     @Body() chatSendReqVo: ChatSendV2ReqVo,
   ): Promise<Observable<MessageEvent>> {
     const stream = await this.chatService.call(
-      chatSendReqVo.businessId,
       req.user.id,
       chatSendReqVo.sessionId,
       chatSendReqVo.content,

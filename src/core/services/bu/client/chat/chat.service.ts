@@ -27,19 +27,8 @@ export class ChatService {
     private readonly openaiService: OpenaiService,
   ) {}
 
-  create(businessId:string): any {
-    return {
-      businessId,
-      sessionId: randomUUID(),
-    };
-  }
-
-  async *call(
-    businessId: string,
-    userId: string,
-    sessionId: string,
-    content: string,
-  ): AsyncGenerator<string> {
+  async create(businessId: string, userId: string): Promise<any> {
+    const sessionId = randomUUID();
     const redisKey = `chat:${userId}:${sessionId}`;
     const business = await this.businessService.get(businessId);
     const systemPrompt = await this.#getSystemPrompt(
@@ -47,12 +36,26 @@ export class ChatService {
       business.id,
       business.name,
     );
+
+    this.openaiService.create(redisKey, systemPrompt);
+
+    return {
+      businessId,
+      sessionId,
+    };
+  }
+
+  async *call(
+    userId: string,
+    sessionId: string,
+    content: string,
+  ): AsyncGenerator<string> {
+    const redisKey = `chat:${userId}:${sessionId}`;
     const functionCallingSConfig =
       await this.githubService.getFunctionCallings();
 
     yield* await this.openaiService.call(
       redisKey,
-      systemPrompt,
       content,
       functionCallingSConfig,
     );

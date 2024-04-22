@@ -12,10 +12,16 @@ export class OpenaiService extends LLMBaseServiceService {
   ) {
     super(sysConfigService);
   }
+  async create(sessionId: string, systemPrompt: string) {
+    
+    this.redisService.addToList(
+      sessionId,
+      JSON.stringify({ role: 'system', content: systemPrompt, timestamp: new Date() }),
+    );
+  }
 
   async *call(
     sessionId: string,
-    systemPrompt: string,
     content: string,
     functionSchema: string = null,
   ): AsyncGenerator<string> {
@@ -34,7 +40,6 @@ export class OpenaiService extends LLMBaseServiceService {
       //   ],
     });
 
-    content = !!content ? content : systemPrompt;
     this.redisService.addToList(
       sessionId,
       JSON.stringify({ role: 'human', content, timestamp: new Date() }),

@@ -80,10 +80,15 @@ export class RedisService {
       return false;
     }
   }
-  
-  async addToList(key: string, value: any): Promise<boolean> {
+
+  async addToList(
+    key: string,
+    value: any,
+    expireTime: number = this.sysConfigService.infra.redisExpire,
+  ): Promise<boolean> {
     try {
       await this.redis.rpush(key, value);
+      await this.redis.expire(key, expireTime);
       return true;
     } catch (error) {
       console.error(`Redis addToList error: ${error}`);
