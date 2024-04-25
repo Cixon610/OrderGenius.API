@@ -4,6 +4,7 @@ export * from './common/file/file.service';
 
 export * from './ai/openai.agent/openai.agent.service';
 export * from './ai/openai/openai.service';
+export * from './ai/tool.calls/tool.calls.service';
 
 export * from './auth/line/line.service';
 export * from './auth/strategy/local.strategy/local.strategy';

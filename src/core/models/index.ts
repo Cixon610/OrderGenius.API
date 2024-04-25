@@ -38,6 +38,7 @@ export * from './vo/2b/res/modification.res.vo/modification.res.vo';
 export * from './dto/client/order/order.dto/order.dto';
 export * from './dto/client/order/order.detail.dto/order.detail.dto';
 export * from './dto/client/client.user.dto/client.user.dto';
+export * from './dto/client/chat.send.dto/chat.send.dto';
 //vo base
 export * from './vo/2c/base/order.vo/order.vo';
 export * from './vo/2c/base/order.detail.vo/order.detail.vo';

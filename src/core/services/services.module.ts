@@ -17,6 +17,7 @@ import {
   MenuPromptService,
   RecommandService,
   ChatService,
+  ToolCallsService,
 } from './index';
 import { Module } from '@nestjs/common';
 import * as typeorm from 'src/infra/typeorm';
@@ -52,6 +53,7 @@ const exportServices = [
   GithubService,
   SysConfigService,
   ChatService,
+  ToolCallsService,
 ];
 const infraConfig = new InfraConfig();
 @Module({

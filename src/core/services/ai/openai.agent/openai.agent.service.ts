@@ -160,6 +160,128 @@ export class OpenaiAgentService {
     });
   }
 
+  // async *sendChatAsStream(
+  //   assistantId: string,
+  //   threadId: string,
+  //   content: string,
+  //   businessId: string,
+  //   userId: string,
+  //   userName: string,
+  // ) {
+  //   this.clearRuns(threadId);
+  //   await this.openai.beta.threads.messages.create(threadId, {
+  //     role: 'user',
+  //     content: content,
+  //   });
+  //   const run = await this.openai.beta.threads.runs
+  //     .stream(threadId, {
+  //       assistant_id: assistantId,
+  //     })
+  //     .on('textCreated', (text) => process.stdout.write('\nassistant > '))
+  //     .on('textDelta', (textDelta, snapshot) =>
+  //       process.stdout.write(textDelta.value),
+  //     )
+  //     .on('toolCallCreated', (toolCall) =>
+  //       process.stdout.write(`\nassistant > ${toolCall.type}\n\n`),
+  //     )
+  //     .on('toolCallDelta', (toolCallDelta, snapshot) => {
+  //       if (toolCallDelta.type === 'code_interpreter') {
+  //         if (toolCallDelta.code_interpreter.input) {
+  //           process.stdout.write(toolCallDelta.code_interpreter.input);
+  //         }
+  //         if (toolCallDelta.code_interpreter.outputs) {
+  //           process.stdout.write('\noutput >\n');
+  //           toolCallDelta.code_interpreter.outputs.forEach((output) => {
+  //             if (output.type === 'logs') {
+  //               process.stdout.write(`\n${output.logs}\n`);
+  //             }
+  //           });
+  //         }
+  //       }
+  //     });
+
+  //   let isProcessing = true;
+  //   let loopCount = 0;
+  //   while (
+  //     isProcessing &&
+  //     loopCount < this.sysConfigService.thirdParty.openaiLoopLimit
+  //   ) {
+  //     const runStatus = await this.openai.beta.threads.runs.retrieve(
+  //       threadId,
+  //       run.id,
+  //     );
+  //     console.log(`Run status: ${runStatus.status}`);
+  //     loopCount +=
+  //       runStatus.status == AssistantsRunStatus.REQUIRES_ACTION ? 0 : 1;
+
+  //     switch (runStatus.status) {
+  //       case AssistantsRunStatus.COMPLETED:
+  //         isProcessing = false;
+  //         break;
+  //       case AssistantsRunStatus.REQUIRES_ACTION:
+  //         try {
+  //           const toolOutputs = await this.#toolCalls(
+  //             runStatus,
+  //             businessId,
+  //             userId,
+  //             userName,
+  //           );
+  //           // Submit tool outputs
+  //           await this.openai.beta.threads.runs.submitToolOutputs(
+  //             threadId,
+  //             run.id,
+  //             { tool_outputs: toolOutputs },
+  //           );
+  //         } catch (error) {
+  //           console.error(`Tool call error: ${error}`);
+  //           this.#cancelRun(threadId, run.id, runStatus.status);
+  //           isProcessing = false;
+  //         }
+  //         break;
+  //       case AssistantsRunStatus.EXPIRED:
+  //       case AssistantsRunStatus.FAILED:
+  //       case AssistantsRunStatus.CANCELLING:
+  //       case AssistantsRunStatus.CANCELLED:
+  //         console.log('Assistant run failed or expired.');
+  //         isProcessing = false;
+  //         return new ChatSendResVo({
+  //           message: '抱歉剛恍神了，請稍後再試一次。',
+  //           shoppingCart: await this.shoppingCartService.get(
+  //             businessId,
+  //             userId,
+  //             userName,
+  //           ),
+  //         });
+  //       case AssistantsRunStatus.IN_PROGRESS:
+  //       case AssistantsRunStatus.QUEUED:
+  //       default:
+  //         break;
+  //     }
+  //     await new Promise((resolve) => setTimeout(resolve, 1000));
+  //   }
+
+  //   const shoppingCart = await this.shoppingCartService.get(
+  //     businessId,
+  //     userId,
+  //     userName,
+  //   );
+
+  //   if (loopCount >= this.sysConfigService.thirdParty.openaiLoopLimit) {
+  //     console.error('OpenAI loop limit reached.');
+  //     await this.clearRuns(threadId);
+  //     return new ChatSendResVo({
+  //       message: '我頭有點暈，請稍後再試一次。',
+  //       shoppingCart: shoppingCart,
+  //     });
+  //   }
+
+  //   const messages = await this.openai.beta.threads.messages.list(threadId);
+  //   return new ChatSendResVo({
+  //     message: messages.data[0].content[0].text.value,
+  //     shoppingCart: shoppingCart,
+  //   });
+  // }
+
   async clearRuns(threadId: string) {
     const runs = await this.openai.beta.threads.runs.list(threadId);
     for (const run of runs.data) {

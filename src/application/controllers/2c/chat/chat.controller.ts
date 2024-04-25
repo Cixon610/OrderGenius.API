@@ -96,7 +96,9 @@ export class ChatController {
     @Body() chatSendReqVo: ChatSendV2ReqVo,
   ): Promise<Observable<MessageEvent>> {
     const stream = await this.chatService.call(
+      chatSendReqVo.businessId,
       req.user.id,
+      req.user.username,
       chatSendReqVo.sessionId,
       chatSendReqVo.content,
     );

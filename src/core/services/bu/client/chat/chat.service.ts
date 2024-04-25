@@ -7,9 +7,6 @@ import {
   OrderService,
 } from 'src/core/services';
 import { GithubService, SysConfigService } from 'src/infra/services';
-import { ChainValues } from '@langchain/core/utils/types';
-import { IterableReadableStream } from '@langchain/core/utils/stream';
-import { ConversationChain } from 'langchain/chains';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -37,7 +34,9 @@ export class ChatService {
       business.name,
     );
 
-    this.openaiService.create(redisKey, systemPrompt);
+    //TEST
+    // const systemPrompt = "你是AI小助手，根據用戶的需求呼叫對應API並回答問題"
+    this.openaiService.createChat(redisKey, systemPrompt);
 
     return {
       businessId,
@@ -46,19 +45,76 @@ export class ChatService {
   }
 
   async *call(
+    businessId: string,
     userId: string,
+    userName: string,
     sessionId: string,
     content: string,
   ): AsyncGenerator<string> {
     const redisKey = `chat:${userId}:${sessionId}`;
+    let continueChat = true;
     const functionCallingSConfig =
-      await this.githubService.getFunctionCallings();
+      JSON.parse(await this.githubService.getFunctionCallings());
+    
+    //TEST
+    // const functionCallingSConfig = [
+    //   {
+    //     type: 'function',
+    //     function: {
+    //       name: 'get_weather',
+    //       description: '取得現在天氣資訊',
+    //       parameters: {
+    //         type: 'object',
+    //         properties: {
+    //           place: {
+    //             type: 'string',
+    //             description: '地點',
+    //           },
+    //         },
+    //         required: ['place'],
+    //       },
+    //     },
+    //   },
+    //   {
+    //     type: 'function',
+    //     function: {
+    //       name: 'get_time',
+    //       description: '取得現在時間資訊',
+    //       parameters: {
+    //         type: 'object',
+    //         properties: {
+    //           UTC: {
+    //             type: 'integer',
+    //             description: 'UTC 時區',
+    //           },
+    //         },
+    //         required: ['UTC'],
+    //       },
+    //     },
+    //   },
+    // ];
 
-    yield* await this.openaiService.call(
-      redisKey,
-      content,
-      functionCallingSConfig,
-    );
+    while (continueChat) {
+      for await (const dto of this.openaiService.sendChat(
+        businessId,
+        userId,
+        userName,
+        redisKey,
+        content,
+        functionCallingSConfig,
+      )) {
+        if (dto.type === 'message') {
+          yield dto.content;
+          continueChat = false;
+        }
+        else if (dto.type === 'tool_call') {
+          //tool call重打一次，因已將tool call的結果存入redis，所以清空content
+          content = '';
+          continue;
+        }
+      }
+    }
+    
   }
 
   async #getSystemPrompt(
