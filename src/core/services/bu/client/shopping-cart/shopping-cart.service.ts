@@ -116,6 +116,6 @@ export class ShoppingCartService {
   }
 
   #getRedisKey(businessId: string, userId: string): string {
-    return `shopping-cart-${businessId}-${userId}`;
+    return `shopping-cart:${businessId}:${userId}`;
   }
 }
