@@ -56,6 +56,7 @@ export * from './vo/2c/res/client.user.profile.vo/client.user.profile.vo';
 export * from './vo/2c/res/chat/chat.create.res.vo/chat.create.res.vo';
 export * from './vo/2c/res/chat/chat.send.res.vo/chat.send.res.vo';
 export * from './vo/2c/res/chat/chat.send.v2.res.vo/chat.send.v2.res.vo';
+export * from './vo/2c/res/chat/chat.stream.res.vo/chat.stream.res.vo';
 //#endregion
 
 //#region inerface

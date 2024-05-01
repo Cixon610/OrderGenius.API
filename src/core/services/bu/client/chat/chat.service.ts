@@ -3,11 +3,16 @@ import {
   BusinessService,
   ClientUserService,
   MenuPromptService,
+  OpenaiAgentService,
   OpenaiService,
   OrderService,
+  ShoppingCartService,
 } from 'src/core/services';
 import { GithubService, SysConfigService } from 'src/infra/services';
-import { randomUUID } from 'crypto';
+import { ChatStreamRes } from 'src/core/constants/enums/chat.stream.res.enum';
+import { ChatCreateResVo, ChatStreamResVo } from 'src/core/models';
+import { ChatProviderEnum } from 'src/core/constants/enums/chat.provider.enum';
+import { ChatTypeEnum } from 'src/core/constants/enums/chat.type.enum';
 
 @Injectable()
 export class ChatService {
@@ -17,31 +22,45 @@ export class ChatService {
     private readonly clientUserService: ClientUserService,
     private readonly orderService: OrderService,
     private readonly menuPromptService: MenuPromptService,
-    // private readonly shoppingCartService: ShoppingCartService,
-    // private readonly menuItemService: MenuItemService,
-    // private readonly recommandService: RecommandService,
+    private readonly shoppingCartService: ShoppingCartService,
     private readonly githubService: GithubService,
     private readonly openaiService: OpenaiService,
+    private readonly openaiAgentService: OpenaiAgentService,
   ) {}
 
-  async create(businessId: string, userId: string): Promise<any> {
-    const sessionId = randomUUID();
-    const redisKey = `chat:${userId}:${sessionId}`;
+  async create(
+    provider: ChatProviderEnum,
+    type: ChatTypeEnum,
+    businessId: string,
+    userId: string,
+  ): Promise<ChatCreateResVo> {
     const business = await this.businessService.get(businessId);
     const systemPrompt = await this.#getSystemPrompt(
       userId,
       business.id,
       business.name,
     );
-
-    //TEST
-    // const systemPrompt = "你是AI小助手，根據用戶的需求呼叫對應API並回答問題"
-    this.openaiService.createChat(redisKey, systemPrompt);
-
-    return {
-      businessId,
-      sessionId,
-    };
+    
+    switch (provider) {
+      case ChatProviderEnum.OPENAI:
+        switch (type) {
+          case ChatTypeEnum.ASSISTANT:
+            return await this.openaiAgentService.createChat(
+              business.id,
+              userId,
+            );
+          case ChatTypeEnum.LLM:
+            return await this.openaiService.createChat(
+              business.id,
+              userId,
+              systemPrompt,
+            );
+          default:
+            throw new Error('Chat provider not supported');
+        }
+      default:
+        throw new Error('Chat provider not supported');
+    }
   }
 
   async *call(
@@ -50,71 +69,53 @@ export class ChatService {
     userName: string,
     sessionId: string,
     content: string,
-  ): AsyncGenerator<string> {
-    const redisKey = `chat:${userId}:${sessionId}`;
+  ): AsyncGenerator<ChatStreamResVo> {
     let continueChat = true;
-    const functionCallingSConfig =
-      JSON.parse(await this.githubService.getFunctionCallings());
-    
-    //TEST
-    // const functionCallingSConfig = [
-    //   {
-    //     type: 'function',
-    //     function: {
-    //       name: 'get_weather',
-    //       description: '取得現在天氣資訊',
-    //       parameters: {
-    //         type: 'object',
-    //         properties: {
-    //           place: {
-    //             type: 'string',
-    //             description: '地點',
-    //           },
-    //         },
-    //         required: ['place'],
-    //       },
-    //     },
-    //   },
-    //   {
-    //     type: 'function',
-    //     function: {
-    //       name: 'get_time',
-    //       description: '取得現在時間資訊',
-    //       parameters: {
-    //         type: 'object',
-    //         properties: {
-    //           UTC: {
-    //             type: 'integer',
-    //             description: 'UTC 時區',
-    //           },
-    //         },
-    //         required: ['UTC'],
-    //       },
-    //     },
-    //   },
-    // ];
+    const functionCallingSConfig = JSON.parse(
+      await this.githubService.getFunctionCallings(),
+    );
 
     while (continueChat) {
       for await (const dto of this.openaiService.sendChat(
         businessId,
         userId,
         userName,
-        redisKey,
+        sessionId,
         content,
         functionCallingSConfig,
       )) {
-        if (dto.type === 'message') {
-          yield dto.content;
-          continueChat = false;
-        }
-        else if (dto.type === 'tool_call') {
-          //tool call重打一次，因已將tool call的結果存入redis，所以清空content
-          content = '';
-          continue;
+        //看要不要回圈3次後就跳出，避免LLM一直tool call導致使用者一直等待
+        switch (dto.type) {
+          case 'message':
+            yield new ChatStreamResVo({
+              type: ChatStreamRes.MESSAGE,
+              content: dto.content,
+            });
+
+            continueChat = false;
+            
+            const shoppingCart = await this.shoppingCartService.get(
+              businessId,
+              userId,
+              userName,
+            );
+
+            if (shoppingCart) {
+              yield new ChatStreamResVo({
+                type: ChatStreamRes.SHOPPINGCART,
+                content: shoppingCart,
+              });
+            }
+            break;
+          case 'tool_call':
+            //tool call重打一次，因已將tool call的結果存入redis，所以清空content
+            content = '';
+            continue;
+          default:
+            break;
         }
       }
     }
-    
   }
 
   async #getSystemPrompt(

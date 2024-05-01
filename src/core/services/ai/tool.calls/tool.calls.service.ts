@@ -12,6 +12,42 @@ export class ToolCallsService {
     private readonly menuItemService: MenuItemService,
     private readonly shoppingCartService: ShoppingCartService,
   ) {}
+
+  public async processToolCall(
+    toolCallInfo: any,
+    businessId: string,
+    userId: string,
+    userName: string,
+  ) {
+    const args = toolCallInfo.function.arguments;
+    switch (toolCallInfo.function.name) {
+      case 'get_recommand':
+        return await this.getRecommand(businessId, userId);
+      case 'get_order_history':
+        return await this.getOrderHistory(userId, args?.count);
+      case 'get_all_items':
+        return await this.getAllItems(businessId, args?.count);
+      case 'search_item_by_key':
+        return await this.searchItemByKey(businessId, args?.key);
+      case 'get_item_by_item_ids':
+        return await this.getItemByItemIds(businessId, args?.ids);
+      case 'get_shopping_cart':
+        return await this.getShoppingCart(businessId, userId, userName);
+      case 'modify_shopping_cart':
+        return await this.modifyShoppingCart(
+          businessId,
+          userId,
+          userName,
+          args,
+        );
+      case 'get_modification_by_item_id':
+        return await this.getModificationByItemId(businessId, args?.id);
+      default:
+        return null;
+    }
+  }
+
+  //#region Tool Calls
   async getRecommand(businessId: string, userId: string) {
     const recommandItems = await this.recommandService.getItem(
       businessId,
@@ -151,4 +187,5 @@ export class ToolCallsService {
       };
     });
   }
+  //#endregion
 }

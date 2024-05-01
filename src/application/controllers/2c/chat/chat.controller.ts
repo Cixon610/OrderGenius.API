@@ -9,10 +9,13 @@ import {
   Sse,
   UseGuards,
   MessageEvent,
+  Param,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Observable, Subject, from, interval, map, mergeMap, of } from 'rxjs';
+import { Observable, catchError, from, map, of } from 'rxjs';
+import { ChatProviderEnum } from 'src/core/constants/enums/chat.provider.enum';
+import { ChatTypeEnum } from 'src/core/constants/enums/chat.type.enum';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
 import {
   ChatCreateResVo,
@@ -31,79 +34,108 @@ export class ChatController {
     private readonly OpenaiAgentService: OpenaiAgentService,
     private readonly chatService: ChatService,
   ) {}
-  //#region V1 Asisstant api
-  @Post()
+  //#region Asisstant api
+  // @Post(':provider/:type')
+  // @ApiBearerAuth()
+  // @ApiResponse({ status: 200, type: ChatCreateResVo })
+  // async Create(
+  //   @Param('provider') provider: ChatProviderEnum,
+  //   @Param('type') type: ChatTypeEnum,
+  //   @Query('businessId') businessId: string,
+  //   @Req() req,
+  //   @Res() res,
+  // ) {
+  //   const result = await this.OpenaiAgentService.createChat(
+  //     businessId,
+  //     req.user.id,
+  //   );
+  //   res.json(result);
+  // }
+
+  // @Post(':provider/:type/send')
+  // @ApiBearerAuth()
+  // @ApiResponse({ status: 200, type: ChatSendResVo })
+  // async Send(
+  //   @Param('provider') provider: ChatProviderEnum,
+  //   @Param('type') type: ChatTypeEnum,
+  //   @Body() chatSendReqVo: ChatSendReqVo,
+  //   @Req() req,
+  //   @Res() res,
+  // ) {
+  //   console.debug('chatSendReqVo', chatSendReqVo);
+  //   const result = await this.OpenaiAgentService.sendChat(
+  //     chatSendReqVo.assistantId,
+  //     chatSendReqVo.threadId,
+  //     chatSendReqVo.content,
+  //     chatSendReqVo.businessId,
+  //     req.user.id,
+  //     req.user.username,
+  //   );
+
+  //   console.debug('result', result);
+  //   res.json(result);
+  // }
+
+  @Post(':provider/:type/clear-runs')
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: ChatCreateResVo })
-  async Create(
+  @ApiResponse({ status: 200, type: Boolean })
+  async ClearRuns(
+    @Param('provider') provider: ChatProviderEnum,
+    @Param('type') type: ChatTypeEnum,
+    @Query('threadId') threadId: string,
+    @Res() res,
+  ) {
+    await this.OpenaiAgentService.clearRuns(threadId);
+    res.json(true);
+  }
+  //#endregion
+
+  //#region OpenAI api
+  @Get(':provider/:type')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: ChatSendV2ResVo, description: 'sessionId' })
+  async CreateV2(
+    @Param('provider') provider: ChatProviderEnum,
+    @Param('type') type: ChatTypeEnum,
     @Query('businessId') businessId: string,
     @Req() req,
     @Res() res,
   ) {
-    const result = await this.OpenaiAgentService.createChat(
+    const result = await this.chatService.create(
+      provider,
+      type,
       businessId,
       req.user.id,
     );
     res.json(result);
   }
 
-  @Post('send')
-  @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: ChatSendResVo })
-  async Send(@Req() req, @Body() chatSendReqVo: ChatSendReqVo, @Res() res) {
-    console.debug('chatSendReqVo', chatSendReqVo);
-    const result = await this.OpenaiAgentService.sendChat(
-      chatSendReqVo.assistantId,
-      chatSendReqVo.threadId,
-      chatSendReqVo.content,
-      chatSendReqVo.businessId,
-      req.user.id,
-      req.user.username,
-    );
-
-    console.debug('result', result);
-    res.json(result);
-  }
-
-  @Post('clearRuns')
-  @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: Boolean })
-  async ClearRuns(@Query('threadId') threadId: string, @Res() res) {
-    await this.OpenaiAgentService.clearRuns(threadId);
-    res.json(true);
-  }
-  //#endregion
-
-  //#region V2 SSE
-  @Get('/v2')
-  @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: ChatSendV2ResVo, description: 'sessionId' })
-  async CreateV2(
-    @Query('businessId') businessId: string,
-    @Req() req,
-    @Res() res,
-  ) {
-    const result = await this.chatService.create(businessId, req.user.id);
-    res.json(result);
-  }
-
-  @Post('/v2/send/sse')
+  @Post(':provider/:type/send')
   @Sse()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: Observable<MessageEvent> })
   async SendSSE(
+    @Param('provider') provider: ChatProviderEnum,
+    @Param('type') type: ChatTypeEnum,
     @Req() req,
     @Body() chatSendReqVo: ChatSendV2ReqVo,
   ): Promise<Observable<MessageEvent>> {
-    const stream = await this.chatService.call(
-      chatSendReqVo.businessId,
-      req.user.id,
-      req.user.username,
-      chatSendReqVo.sessionId,
-      chatSendReqVo.content,
-    );
+    try {
+      const stream = await this.chatService.call(
+        chatSendReqVo.businessId,
+        req.user.id,
+        req.user.username,
+        chatSendReqVo.sessionId,
+        chatSendReqVo.content,
+      );
 
-    return from(stream).pipe(map((data) => ({ data })));
+      return from(stream).pipe(
+        map((data) => ({ data })),
+        catchError((error) => of({ data: `Error: ${error.message}` })),
+      );
+    } catch (error) {
+      return of({ data: `Error: ${error.message}` });
+    }
   }
   //#endregion
 }

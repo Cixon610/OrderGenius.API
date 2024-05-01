@@ -30,4 +30,8 @@ export class ThirdPartyConfig {
   get githubToken(): string {
     return process.env.GITHUB_TOKEN;
   }
+
+  get githubBranchName(): string {
+    return process.env.GITHUB_BRANCHNAME;
+  }
 }

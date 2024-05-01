@@ -14,15 +14,21 @@ export class GithubService {
   }
 
   async getSysPrompt() {
-    return await this.#getPromptContent('prompt.md');
+    return await this.#getPromptContent(
+      'prompt.md',
+      this.sysConfigService.thirdParty.githubBranchName,
+    );
   }
 
   async getFunctionCallings() {
-    return await this.#getPromptContent('function.calling.json');
+    return await this.#getPromptContent(
+      'function.calling.json',
+      this.sysConfigService.thirdParty.githubBranchName,
+    );
   }
 
   //get content from github with axios
-  async #getPromptContent(fileName: string) {
+  async #getPromptContent(fileName: string, branch: string) {
     try {
       if (this.sysConfigService.common.environment === 'local') {
         return await fs.readFile(
@@ -32,7 +38,7 @@ export class GithubService {
       }
 
       const response = await axios.get(
-        `https://api.github.com/repos/OrderGPT/Prompts/contents/${fileName}`,
+        `https://api.github.com/repos/OrderGPT/Prompts/contents/${fileName}?ref=${branch}`,
         {
           headers: {
             Authorization: `Bearer ${this.sysConfigService.thirdParty.githubToken}`,

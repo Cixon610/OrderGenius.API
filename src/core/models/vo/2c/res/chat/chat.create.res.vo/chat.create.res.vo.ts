@@ -5,7 +5,10 @@ export class ChatCreateResVo {
       Object.assign(this, init);
     }
     @ApiProperty()
-    assistantId: string;
+    businessId: string;
+
+    @ApiProperty()
+    assistantId?: string;
     
     @ApiProperty()
     threadId: string;
