@@ -45,6 +45,8 @@ p, costumer, /chat/v2, *
 p, costumer, /chat/v2/send/sse, *
 p, costumer, /recommand, *
 p, costumer, /recommand/itemNames, *
+p, costumer, /chat/:provider/:type, *
+p, costumer, /chat/:provider/:type/send, *
 
 g, admin, business
 g, admin, costumer

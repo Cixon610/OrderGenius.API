@@ -12,19 +12,13 @@ import {
   Param,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Observable, catchError, from, map, of } from 'rxjs';
-import { ChatProviderEnum } from 'src/core/constants/enums/chat.provider.enum';
-import { ChatTypeEnum } from 'src/core/constants/enums/chat.type.enum';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
-import {
-  ChatCreateResVo,
-  ChatSendReqVo,
-  ChatSendResVo,
-  ChatSendV2ReqVo,
-  ChatSendV2ResVo,
-} from 'src/core/models';
+import { Observable, catchError, from, map, of } from 'rxjs';
+import { ChatSendReqVo, ChatSendV2ResVo } from 'src/core/models';
 import { ChatService, OpenaiAgentService } from 'src/core/services';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ChatTypeEnum } from 'src/core/constants/enums/chat.type.enum';
+import { ChatProviderEnum } from 'src/core/constants/enums/chat.provider.enum';
 
 @UseGuards(AuthGuard('jwt'), RoleGuard)
 @ApiTags('chat')
@@ -34,63 +28,7 @@ export class ChatController {
     private readonly OpenaiAgentService: OpenaiAgentService,
     private readonly chatService: ChatService,
   ) {}
-  //#region Asisstant api
-  // @Post(':provider/:type')
-  // @ApiBearerAuth()
-  // @ApiResponse({ status: 200, type: ChatCreateResVo })
-  // async Create(
-  //   @Param('provider') provider: ChatProviderEnum,
-  //   @Param('type') type: ChatTypeEnum,
-  //   @Query('businessId') businessId: string,
-  //   @Req() req,
-  //   @Res() res,
-  // ) {
-  //   const result = await this.OpenaiAgentService.createChat(
-  //     businessId,
-  //     req.user.id,
-  //   );
-  //   res.json(result);
-  // }
 
-  // @Post(':provider/:type/send')
-  // @ApiBearerAuth()
-  // @ApiResponse({ status: 200, type: ChatSendResVo })
-  // async Send(
-  //   @Param('provider') provider: ChatProviderEnum,
-  //   @Param('type') type: ChatTypeEnum,
-  //   @Body() chatSendReqVo: ChatSendReqVo,
-  //   @Req() req,
-  //   @Res() res,
-  // ) {
-  //   console.debug('chatSendReqVo', chatSendReqVo);
-  //   const result = await this.OpenaiAgentService.sendChat(
-  //     chatSendReqVo.assistantId,
-  //     chatSendReqVo.threadId,
-  //     chatSendReqVo.content,
-  //     chatSendReqVo.businessId,
-  //     req.user.id,
-  //     req.user.username,
-  //   );
-
-  //   console.debug('result', result);
-  //   res.json(result);
-  // }
-
-  @Post(':provider/:type/clear-runs')
-  @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: Boolean })
-  async ClearRuns(
-    @Param('provider') provider: ChatProviderEnum,
-    @Param('type') type: ChatTypeEnum,
-    @Query('threadId') threadId: string,
-    @Res() res,
-  ) {
-    await this.OpenaiAgentService.clearRuns(threadId);
-    res.json(true);
-  }
-  //#endregion
-
-  //#region OpenAI api
   @Get(':provider/:type')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: ChatSendV2ResVo, description: 'sessionId' })
@@ -118,14 +56,16 @@ export class ChatController {
     @Param('provider') provider: ChatProviderEnum,
     @Param('type') type: ChatTypeEnum,
     @Req() req,
-    @Body() chatSendReqVo: ChatSendV2ReqVo,
+    @Body() chatSendReqVo: ChatSendReqVo,
   ): Promise<Observable<MessageEvent>> {
     try {
       const stream = await this.chatService.call(
+        provider,
+        type,
         chatSendReqVo.businessId,
         req.user.id,
         req.user.username,
-        chatSendReqVo.sessionId,
+        chatSendReqVo.threadId,
         chatSendReqVo.content,
       );
 
@@ -137,5 +77,17 @@ export class ChatController {
       return of({ data: `Error: ${error.message}` });
     }
   }
-  //#endregion
+
+  @Post(':provider/:type/clear-runs')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: Boolean })
+  async ClearRuns(
+    @Param('provider') provider: ChatProviderEnum,
+    @Param('type') type: ChatTypeEnum,
+    @Query('threadId') threadId: string,
+    @Res() res,
+  ) {
+    await this.OpenaiAgentService.clearRuns(threadId);
+    res.json(true);
+  }
 }

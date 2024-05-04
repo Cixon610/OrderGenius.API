@@ -1,26 +1,25 @@
 import OpenAI from 'openai';
 import { Injectable } from '@nestjs/common';
-import { LLMBaseServiceService } from '../llm.base.service/llm.base.service.service';
 import { RedisService, SysConfigService } from 'src/infra/services';
 import { ChatCreateResVo, ChatSendDto } from 'src/core/models';
 import { ToolCallsService } from '../tool.calls/tool.calls.service';
 import { jsonrepair } from 'jsonrepair';
 import { randomUUID } from 'crypto';
+import { ILLMService } from 'src/core/models/interface/llm.service.interface';
 
 @Injectable()
-//   implements ILLMService
-export class OpenaiService extends LLMBaseServiceService {
-  private readonly openai: OpenAI;
+export class OpenaiLlmService implements ILLMService {
+  protected openai: OpenAI;
   constructor(
     protected readonly sysConfigService: SysConfigService,
     protected readonly toolCallsService: ToolCallsService,
     private readonly redisService: RedisService,
   ) {
-    super(sysConfigService);
     this.openai = new OpenAI({
       apiKey: this.sysConfigService.thirdParty.opeanaiApiKey,
     });
   }
+
   async createChat(
     businessId: string,
     userId: string,
@@ -47,6 +46,7 @@ export class OpenaiService extends LLMBaseServiceService {
     businessId: string,
     userId: string,
     userName: string,
+    assistantId: string,
     sessionId: string,
     content: string,
     functionSchema: any[] = null,

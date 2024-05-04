@@ -3,7 +3,7 @@ export * from 'src/core/services/services.module';
 export * from './common/file/file.service';
 
 export * from './ai/openai.agent/openai.agent.service';
-export * from './ai/openai/openai.service';
+export * from './ai/openai.llm/openai.llm.service';
 export * from './ai/tool.calls/tool.calls.service';
 
 export * from './auth/line/line.service';

@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { Injectable } from '@nestjs/common';
 import { GithubService, SysConfigService } from 'src/infra/services';
-import { ChatCreateResVo, ChatSendResVo } from 'src/core/models';
+import { ChatCreateResVo, ChatSendDto, ChatSendResVo } from 'src/core/models';
 import { OrderService } from '../../bu/client/order/order.service';
 import { BusinessService } from '../../bu/business/business/business.service';
 import { ClientUserService } from '../../bu/client/client.user/client.user.service';
@@ -11,9 +11,10 @@ import { AssistantsRunStatus } from 'src/core/constants/enums/assistants.run.sta
 import { MenuItemService } from '../../bu/business/menu/menu.item.service/menu.item.service';
 import { RecommandService } from '../../bu/client/recommand/recommand.service';
 import { jsonrepair } from 'jsonrepair';
+import { ILLMService } from 'src/core/models/interface/llm.service.interface';
 
 @Injectable()
-export class OpenaiAgentService {
+export class OpenaiAgentService implements ILLMService {
   private readonly openai: OpenAI;
   constructor(
     private readonly sysConfigService: SysConfigService,
@@ -31,7 +32,10 @@ export class OpenaiAgentService {
     });
   }
 
-  async createChat(businessId: string, userId: string) : Promise<ChatCreateResVo>{
+  async createChat(
+    businessId: string,
+    userId: string,
+  ): Promise<ChatCreateResVo> {
     const business = await this.businessService.get(businessId);
     const prompt = await this.#getSystemPrompt(
       userId,
@@ -53,120 +57,121 @@ export class OpenaiAgentService {
     });
   }
 
-  async sendChat(
-    assistantId: string,
-    threadId: string,
-    content: string,
+  // async sendChat(
+  //   assistantId: string,
+  //   threadId: string,
+  //   content: string,
+  //   businessId: string,
+  //   userId: string,
+  //   userName: string,
+  // ): Promise<ChatSendResVo> {
+  //   this.clearRuns(threadId);
+  //   const message = await this.openai.beta.threads.messages.create(threadId, {
+  //     role: 'user',
+  //     content: content,
+  //   });
+  //   const run = await this.openai.beta.threads.runs.create(threadId, {
+  //     assistant_id: assistantId,
+  //   });
+  //   // for await (const runStatus of this.openai.beta.threads.runs.list(
+  //   //   threadId,
+  //   // )) {
+  //   //   if (runStatus.status === 'completed') {
+  //   //     const messages = await this.openai.beta.threads.messages.list(threadId);
+  //   //     return messages;
+  //   //   }
+  //   // }
+  //   let isProcessing = true;
+  //   let loopCount = 0;
+  //   while (
+  //     isProcessing &&
+  //     loopCount < this.sysConfigService.thirdParty.openaiLoopLimit
+  //   ) {
+  //     const runStatus = await this.openai.beta.threads.runs.retrieve(
+  //       threadId,
+  //       run.id,
+  //     );
+  //     console.log(`Run status: ${runStatus.status}`);
+  //     loopCount +=
+  //       runStatus.status == AssistantsRunStatus.REQUIRES_ACTION ? 0 : 1;
+
+  //     switch (runStatus.status) {
+  //       case AssistantsRunStatus.COMPLETED:
+  //         isProcessing = false;
+  //         break;
+  //       case AssistantsRunStatus.REQUIRES_ACTION:
+  //         try {
+  //           const toolOutputs = await this.#toolCalls(
+  //             runStatus,
+  //             businessId,
+  //             userId,
+  //             userName,
+  //           );
+  //           // Submit tool outputs
+  //           await this.openai.beta.threads.runs.submitToolOutputs(
+  //             threadId,
+  //             run.id,
+  //             { tool_outputs: toolOutputs },
+  //           );
+  //         } catch (error) {
+  //           console.error(`Tool call error: ${error}`);
+  //           this.#cancelRun(threadId, run.id, runStatus.status);
+  //           isProcessing = false;
+  //         }
+  //         break;
+  //       case AssistantsRunStatus.EXPIRED:
+  //       case AssistantsRunStatus.FAILED:
+  //       case AssistantsRunStatus.CANCELLING:
+  //       case AssistantsRunStatus.CANCELLED:
+  //         console.log('Assistant run failed or expired.');
+  //         isProcessing = false;
+  //         return new ChatSendResVo({
+  //           message: '抱歉剛恍神了，請稍後再試一次。',
+  //           shoppingCart: await this.shoppingCartService.get(
+  //             businessId,
+  //             userId,
+  //             userName,
+  //           ),
+  //         });
+  //       case AssistantsRunStatus.IN_PROGRESS:
+  //       case AssistantsRunStatus.QUEUED:
+  //       default:
+  //         break;
+  //     }
+  //     await new Promise((resolve) => setTimeout(resolve, 1000));
+  //   }
+
+  //   const shoppingCart = await this.shoppingCartService.get(
+  //     businessId,
+  //     userId,
+  //     userName,
+  //   );
+
+  //   if (loopCount >= this.sysConfigService.thirdParty.openaiLoopLimit) {
+  //     console.error('OpenAI loop limit reached.');
+  //     await this.clearRuns(threadId);
+  //     return new ChatSendResVo({
+  //       message: '我頭有點暈，請稍後再試一次。',
+  //       shoppingCart: shoppingCart,
+  //     });
+  //   }
+
+  //   const messages = await this.openai.beta.threads.messages.list(threadId);
+  //   return new ChatSendResVo({
+  //     message: '', //messages.data[0].content[0].text.value,
+  //     shoppingCart: shoppingCart,
+  //   });
+  // }
+
+  async *sendChat(
     businessId: string,
     userId: string,
     userName: string,
-  ): Promise<ChatSendResVo> {
-    this.clearRuns(threadId);
-    const message = await this.openai.beta.threads.messages.create(threadId, {
-      role: 'user',
-      content: content,
-    });
-    const run = await this.openai.beta.threads.runs.create(threadId, {
-      assistant_id: assistantId,
-    });
-    // for await (const runStatus of this.openai.beta.threads.runs.list(
-    //   threadId,
-    // )) {
-    //   if (runStatus.status === 'completed') {
-    //     const messages = await this.openai.beta.threads.messages.list(threadId);
-    //     return messages;
-    //   }
-    // }
-    let isProcessing = true;
-    let loopCount = 0;
-    while (
-      isProcessing &&
-      loopCount < this.sysConfigService.thirdParty.openaiLoopLimit
-    ) {
-      const runStatus = await this.openai.beta.threads.runs.retrieve(
-        threadId,
-        run.id,
-      );
-      console.log(`Run status: ${runStatus.status}`);
-      loopCount +=
-        runStatus.status == AssistantsRunStatus.REQUIRES_ACTION ? 0 : 1;
-
-      switch (runStatus.status) {
-        case AssistantsRunStatus.COMPLETED:
-          isProcessing = false;
-          break;
-        case AssistantsRunStatus.REQUIRES_ACTION:
-          try {
-            const toolOutputs = await this.#toolCalls(
-              runStatus,
-              businessId,
-              userId,
-              userName,
-            );
-            // Submit tool outputs
-            await this.openai.beta.threads.runs.submitToolOutputs(
-              threadId,
-              run.id,
-              { tool_outputs: toolOutputs },
-            );
-          } catch (error) {
-            console.error(`Tool call error: ${error}`);
-            this.#cancelRun(threadId, run.id, runStatus.status);
-            isProcessing = false;
-          }
-          break;
-        case AssistantsRunStatus.EXPIRED:
-        case AssistantsRunStatus.FAILED:
-        case AssistantsRunStatus.CANCELLING:
-        case AssistantsRunStatus.CANCELLED:
-          console.log('Assistant run failed or expired.');
-          isProcessing = false;
-          return new ChatSendResVo({
-            message: '抱歉剛恍神了，請稍後再試一次。',
-            shoppingCart: await this.shoppingCartService.get(
-              businessId,
-              userId,
-              userName,
-            ),
-          });
-        case AssistantsRunStatus.IN_PROGRESS:
-        case AssistantsRunStatus.QUEUED:
-        default:
-          break;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-
-    const shoppingCart = await this.shoppingCartService.get(
-      businessId,
-      userId,
-      userName,
-    );
-
-    if (loopCount >= this.sysConfigService.thirdParty.openaiLoopLimit) {
-      console.error('OpenAI loop limit reached.');
-      await this.clearRuns(threadId);
-      return new ChatSendResVo({
-        message: '我頭有點暈，請稍後再試一次。',
-        shoppingCart: shoppingCart,
-      });
-    }
-
-    const messages = await this.openai.beta.threads.messages.list(threadId);
-    return new ChatSendResVo({
-      message: '',//messages.data[0].content[0].text.value,
-      shoppingCart: shoppingCart,
-    });
-  }
-
-  async *sendChatAsStream(
     assistantId: string,
     threadId: string,
     content: string,
-    businessId: string,
-    userId: string,
-    userName: string,
-  ) {
+    functionSchema: any[],
+  ): AsyncGenerator<ChatSendDto> {
     this.clearRuns(threadId);
     await this.openai.beta.threads.messages.create(threadId, {
       role: 'user',

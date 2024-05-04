@@ -4,7 +4,7 @@ import {
   ClientUserService,
   MenuPromptService,
   OpenaiAgentService,
-  OpenaiService,
+  OpenaiLlmService,
   OrderService,
   ShoppingCartService,
 } from 'src/core/services';
@@ -24,7 +24,7 @@ export class ChatService {
     private readonly menuPromptService: MenuPromptService,
     private readonly shoppingCartService: ShoppingCartService,
     private readonly githubService: GithubService,
-    private readonly openaiService: OpenaiService,
+    private readonly openaiLlmService: OpenaiLlmService,
     private readonly openaiAgentService: OpenaiAgentService,
   ) {}
 
@@ -40,7 +40,7 @@ export class ChatService {
       business.id,
       business.name,
     );
-    
+
     switch (provider) {
       case ChatProviderEnum.OPENAI:
         switch (type) {
@@ -50,7 +50,7 @@ export class ChatService {
               userId,
             );
           case ChatTypeEnum.LLM:
-            return await this.openaiService.createChat(
+            return await this.openaiLlmService.createChat(
               business.id,
               userId,
               systemPrompt,
@@ -64,6 +64,8 @@ export class ChatService {
   }
 
   async *call(
+    provider: ChatProviderEnum,
+    type: ChatTypeEnum,
     businessId: string,
     userId: string,
     userName: string,
@@ -76,10 +78,11 @@ export class ChatService {
     );
 
     while (continueChat) {
-      for await (const dto of this.openaiService.sendChat(
+      for await (const dto of this.openaiLlmService.sendChat(
         businessId,
         userId,
         userName,
+        '',
         sessionId,
         content,
         functionCallingSConfig,
@@ -93,19 +96,6 @@ export class ChatService {
             });
 
             continueChat = false;
-            
-            const shoppingCart = await this.shoppingCartService.get(
-              businessId,
-              userId,
-              userName,
-            );
-
-            if (shoppingCart) {
-              yield new ChatStreamResVo({
-                type: ChatStreamRes.SHOPPINGCART,
-                content: shoppingCart,
-              });
-            }
             break;
           case 'tool_call':
             //tool call重打一次，因已將tool call的結果存入redis，所以清空content
@@ -115,6 +105,19 @@ export class ChatService {
             break;
         }
       }
+    }
+
+    const shoppingCart = await this.shoppingCartService.get(
+      businessId,
+      userId,
+      userName,
+    );
+
+    if (shoppingCart) {
+      yield new ChatStreamResVo({
+        type: ChatStreamRes.SHOPPINGCART,
+        content: shoppingCart,
+      });
     }
   }
 
