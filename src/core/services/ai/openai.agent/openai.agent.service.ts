@@ -1,7 +1,12 @@
 import OpenAI from 'openai';
 import { Injectable } from '@nestjs/common';
 import { GithubService, SysConfigService } from 'src/infra/services';
-import { ChatCreateResVo, ChatSendDto, ChatSendResVo } from 'src/core/models';
+import {
+  ChatCreateResVo,
+  ChatSendDto,
+  ChatSendResVo,
+  LlmChatSendDto,
+} from 'src/core/models';
 import { OrderService } from '../../bu/client/order/order.service';
 import { BusinessService } from '../../bu/business/business/business.service';
 import { ClientUserService } from '../../bu/client/client.user/client.user.service';
@@ -163,27 +168,19 @@ export class OpenaiAgentService implements ILLMService {
   //   });
   // }
 
-  async *sendChat(
-    businessId: string,
-    userId: string,
-    userName: string,
-    assistantId: string,
-    threadId: string,
-    content: string,
-    functionSchema: any[],
-  ): AsyncGenerator<ChatSendDto> {
-    this.clearRuns(threadId);
-    await this.openai.beta.threads.messages.create(threadId, {
+  async *sendChat(dto: LlmChatSendDto): AsyncGenerator<ChatSendDto> {
+    this.clearRuns(dto.threadId);
+    await this.openai.beta.threads.messages.create(dto.threadId, {
       role: 'user',
-      content: content,
+      content: dto.content,
     });
     const messages = [];
     let resolve;
     let promise = new Promise((r) => (resolve = r));
 
     const run = await this.openai.beta.threads.runs
-      .stream(threadId, {
-        assistant_id: assistantId,
+      .stream(dto.threadId, {
+        assistant_id: dto.assistantId,
       })
       .on('textCreated', (text) => {
         messages.push('\nassistant > ');

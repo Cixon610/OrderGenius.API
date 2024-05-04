@@ -14,11 +14,16 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
 import { Observable, catchError, from, map, of } from 'rxjs';
-import { ChatSendReqVo, ChatSendV2ResVo } from 'src/core/models';
+import {
+  ChatSendReqVo,
+  ChatSendV2ResVo,
+  LlmChatCreateDto,
+  LlmChatSendDto,
+} from 'src/core/models';
 import { ChatService, OpenaiAgentService } from 'src/core/services';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ChatTypeEnum } from 'src/core/constants/enums/chat.type.enum';
-import { ChatProviderEnum } from 'src/core/constants/enums/chat.provider.enum';
+import { LlmProviderEnum } from 'src/core/constants/enums/llm.provider.enum';
+import { LlmTypeEnum } from 'src/core/constants/enums/llm.type.enum';
 
 @UseGuards(AuthGuard('jwt'), RoleGuard)
 @ApiTags('chat')
@@ -33,17 +38,19 @@ export class ChatController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: ChatSendV2ResVo, description: 'sessionId' })
   async CreateV2(
-    @Param('provider') provider: ChatProviderEnum,
-    @Param('type') type: ChatTypeEnum,
+    @Param('provider') provider: LlmProviderEnum,
+    @Param('type') type: LlmTypeEnum,
     @Query('businessId') businessId: string,
     @Req() req,
     @Res() res,
   ) {
     const result = await this.chatService.create(
-      provider,
-      type,
-      businessId,
-      req.user.id,
+      new LlmChatCreateDto({
+        provider,
+        type,
+        businessId,
+        userId: req.user.id,
+      }),
     );
     res.json(result);
   }
@@ -53,20 +60,22 @@ export class ChatController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: Observable<MessageEvent> })
   async SendSSE(
-    @Param('provider') provider: ChatProviderEnum,
-    @Param('type') type: ChatTypeEnum,
+    @Param('provider') provider: LlmProviderEnum,
+    @Param('type') type: LlmTypeEnum,
     @Req() req,
     @Body() chatSendReqVo: ChatSendReqVo,
   ): Promise<Observable<MessageEvent>> {
     try {
-      const stream = await this.chatService.call(
-        provider,
-        type,
-        chatSendReqVo.businessId,
-        req.user.id,
-        req.user.username,
-        chatSendReqVo.threadId,
-        chatSendReqVo.content,
+      const stream = await this.chatService.send(
+        new LlmChatSendDto({
+          provider,
+          type,
+          businessId: chatSendReqVo.businessId,
+          userId: req.user.id,
+          userName: req.user.username,
+          threadId: chatSendReqVo.threadId,
+          content: chatSendReqVo.content,
+        }),
       );
 
       return from(stream).pipe(
@@ -82,8 +91,8 @@ export class ChatController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: Boolean })
   async ClearRuns(
-    @Param('provider') provider: ChatProviderEnum,
-    @Param('type') type: ChatTypeEnum,
+    @Param('provider') provider: LlmProviderEnum,
+    @Param('type') type: LlmTypeEnum,
     @Query('threadId') threadId: string,
     @Res() res,
   ) {

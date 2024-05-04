@@ -1,11 +1,17 @@
 import OpenAI from 'openai';
 import { Injectable } from '@nestjs/common';
 import { RedisService, SysConfigService } from 'src/infra/services';
-import { ChatCreateResVo, ChatSendDto } from 'src/core/models';
+import {
+  ChatCreateResVo,
+  ChatSendDto,
+  ChatStreamResVo,
+  LlmChatSendDto,
+} from 'src/core/models';
 import { ToolCallsService } from '../tool.calls/tool.calls.service';
 import { jsonrepair } from 'jsonrepair';
 import { randomUUID } from 'crypto';
 import { ILLMService } from 'src/core/models/interface/llm.service.interface';
+import { ChatStreamRes } from 'src/core/constants/enums/chat.stream.res.enum';
 
 @Injectable()
 export class OpenaiLlmService implements ILLMService {
@@ -42,30 +48,55 @@ export class OpenaiLlmService implements ILLMService {
     });
   }
 
-  async *sendChat(
-    businessId: string,
-    userId: string,
-    userName: string,
-    assistantId: string,
-    sessionId: string,
-    content: string,
-    functionSchema: any[] = null,
-  ): AsyncGenerator<ChatSendDto> {
-    const redisKey = `chat:${businessId}:${userId}:${sessionId}`;
+  async *sendChat(dto: LlmChatSendDto): AsyncGenerator<ChatStreamResVo> {
+    let continueChat = true;
+    while (continueChat) {
+      for await (const chatdto of this.call(dto)) {
+        //看要不要回圈3次後就跳出，避免LLM一直tool call導致使用者一直等待
+        switch (chatdto.type) {
+          case 'message':
+            yield new ChatStreamResVo({
+              type: ChatStreamRes.MESSAGE,
+              content: chatdto.content,
+            });
 
-    if (content) {
+            continueChat = false;
+            break;
+          case 'tool_call':
+            //tool call重打一次，因已將tool call的結果存入redis，所以清空content
+            dto.content = '';
+            continue;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
+  async *call(dto: LlmChatSendDto): AsyncGenerator<ChatSendDto> {
+    const redisKey = this.#getRedisKey(
+      dto.businessId,
+      dto.userId,
+      dto.threadId,
+    );
+
+    if (dto.content) {
       await this.redisService.addToList(
         redisKey,
-        JSON.stringify({ role: 'user', content, timestamp: new Date() }),
+        JSON.stringify({
+          role: 'user',
+          content: dto.content,
+          timestamp: new Date(),
+        }),
       );
     }
 
-    const messages = await this.getMessages(redisKey);
+    const messages = await this.#getMessages(redisKey);
 
     const completion = await this.openai.chat.completions.create({
       model: 'gpt-4-turbo',
       messages: messages,
-      tools: functionSchema,
+      tools: dto.toolcalls,
       tool_choice: 'auto',
       stream: true,
     });
@@ -125,9 +156,9 @@ export class OpenaiLlmService implements ILLMService {
         }
         let result = await this.toolCallsService.processToolCall(
           toolCallInfo,
-          businessId,
-          userId,
-          userName,
+          dto.businessId,
+          dto.userId,
+          dto.userName,
         );
 
         //store tool call result
@@ -153,7 +184,11 @@ export class OpenaiLlmService implements ILLMService {
     }
   }
 
-  private async getMessages(redisKey: string): Promise<any> {
+  #getRedisKey(businessId: string, userId: string, sessionId: string): string {
+    return `chat:${businessId}:${userId}:${sessionId}`;
+  }
+
+  async #getMessages(redisKey: string): Promise<any> {
     const msghistory = await this.redisService.getList(redisKey);
     return msghistory.map((msg) => {
       const json = JSON.parse(msg);

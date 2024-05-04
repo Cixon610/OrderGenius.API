@@ -1,4 +1,5 @@
 import { ChatSendDto } from '../dto/client/chat.send.dto/chat.send.dto';
+import { LlmChatSendDto } from '../dto/client/llm.chat.send.dto/llm.chat.send.dto';
 import { ChatCreateResVo } from '../vo/2c/res/chat/chat.create.res.vo/chat.create.res.vo';
 
 export interface ILLMService {
@@ -8,13 +9,5 @@ export interface ILLMService {
     systemPrompt: string,
   ): Promise<ChatCreateResVo>;
 
-  sendChat(
-    businessId: string,
-    userId: string,
-    userName: string,
-    assistantId: string,
-    threadId: string,
-    content: string,
-    functionSchema: any[],
-  ): AsyncGenerator<ChatSendDto>;
+  sendChat(dto: LlmChatSendDto): AsyncGenerator<ChatSendDto>;
 }

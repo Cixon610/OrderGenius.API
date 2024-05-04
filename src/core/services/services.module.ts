@@ -1,12 +1,12 @@
 import {
+  JwtStrategy,
+  LocalStrategy,
   LineService,
   MenuService,
-  JwtStrategy,
   FileService,
   OrderService,
   OpenaiAgentService,
   OpenaiLlmService,
-  LocalStrategy,
   MenuItemService,
   BusinessService,
   ClientUserService,
@@ -29,15 +29,16 @@ import {
 } from 'src/infra/services';
 import { JwtModule } from '@nestjs/jwt';
 import { InfraConfig } from 'src/infra/config';
+import { LlmFactory } from './factory/llm.factory';
 
 const entities = Object.values(typeorm);
 const exportServices = [
+  JwtStrategy,
+  LocalStrategy,
   LineService,
   MenuService,
-  JwtStrategy,
   FileService,
   OrderService,
-  LocalStrategy,
   MenuItemService,
   BusinessService,
   ClientUserService,
@@ -54,6 +55,7 @@ const exportServices = [
   SysConfigService,
   ChatService,
   ToolCallsService,
+  LlmFactory,
 ];
 const infraConfig = new InfraConfig();
 @Module({

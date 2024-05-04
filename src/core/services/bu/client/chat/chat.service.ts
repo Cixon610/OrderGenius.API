@@ -3,114 +3,55 @@ import {
   BusinessService,
   ClientUserService,
   MenuPromptService,
-  OpenaiAgentService,
-  OpenaiLlmService,
   OrderService,
   ShoppingCartService,
 } from 'src/core/services';
 import { GithubService, SysConfigService } from 'src/infra/services';
 import { ChatStreamRes } from 'src/core/constants/enums/chat.stream.res.enum';
-import { ChatCreateResVo, ChatStreamResVo } from 'src/core/models';
-import { ChatProviderEnum } from 'src/core/constants/enums/chat.provider.enum';
-import { ChatTypeEnum } from 'src/core/constants/enums/chat.type.enum';
+import {
+  ChatCreateResVo,
+  ChatStreamResVo,
+  LlmChatCreateDto,
+  LlmChatSendDto,
+} from 'src/core/models';
+import { LlmFactory } from 'src/core/services/factory/llm.factory';
 
 @Injectable()
 export class ChatService {
   constructor(
-    protected readonly sysConfigService: SysConfigService,
+    private readonly sysConfigService: SysConfigService,
     private readonly businessService: BusinessService,
     private readonly clientUserService: ClientUserService,
     private readonly orderService: OrderService,
     private readonly menuPromptService: MenuPromptService,
     private readonly shoppingCartService: ShoppingCartService,
     private readonly githubService: GithubService,
-    private readonly openaiLlmService: OpenaiLlmService,
-    private readonly openaiAgentService: OpenaiAgentService,
+    private readonly llmFactory: LlmFactory,
   ) {}
 
-  async create(
-    provider: ChatProviderEnum,
-    type: ChatTypeEnum,
-    businessId: string,
-    userId: string,
-  ): Promise<ChatCreateResVo> {
-    const business = await this.businessService.get(businessId);
+  async create(dto: LlmChatCreateDto): Promise<ChatCreateResVo> {
+    const business = await this.businessService.get(dto.businessId);
     const systemPrompt = await this.#getSystemPrompt(
-      userId,
+      dto.userId,
       business.id,
       business.name,
     );
-
-    switch (provider) {
-      case ChatProviderEnum.OPENAI:
-        switch (type) {
-          case ChatTypeEnum.ASSISTANT:
-            return await this.openaiAgentService.createChat(
-              business.id,
-              userId,
-            );
-          case ChatTypeEnum.LLM:
-            return await this.openaiLlmService.createChat(
-              business.id,
-              userId,
-              systemPrompt,
-            );
-          default:
-            throw new Error('Chat provider not supported');
-        }
-      default:
-        throw new Error('Chat provider not supported');
-    }
+    const llm = this.llmFactory.create(dto.provider, dto.type);
+    return llm.createChat(business.id, dto.userId, systemPrompt);
   }
 
-  async *call(
-    provider: ChatProviderEnum,
-    type: ChatTypeEnum,
-    businessId: string,
-    userId: string,
-    userName: string,
-    sessionId: string,
-    content: string,
-  ): AsyncGenerator<ChatStreamResVo> {
-    let continueChat = true;
-    const functionCallingSConfig = JSON.parse(
-      await this.githubService.getFunctionCallings(),
-    );
+  async *send(dto: LlmChatSendDto): AsyncGenerator<ChatStreamResVo> {
+    const llm = this.llmFactory.create(dto.provider, dto.type);
+    dto.toolcalls = JSON.parse(await this.githubService.getFunctionCallings());
 
-    while (continueChat) {
-      for await (const dto of this.openaiLlmService.sendChat(
-        businessId,
-        userId,
-        userName,
-        '',
-        sessionId,
-        content,
-        functionCallingSConfig,
-      )) {
-        //看要不要回圈3次後就跳出，避免LLM一直tool call導致使用者一直等待
-        switch (dto.type) {
-          case 'message':
-            yield new ChatStreamResVo({
-              type: ChatStreamRes.MESSAGE,
-              content: dto.content,
-            });
-
-            continueChat = false;
-            break;
-          case 'tool_call':
-            //tool call重打一次，因已將tool call的結果存入redis，所以清空content
-            content = '';
-            continue;
-          default:
-            break;
-        }
-      }
+    for await (const content of llm.sendChat(dto)) {
+      yield content;
     }
 
     const shoppingCart = await this.shoppingCartService.get(
-      businessId,
-      userId,
-      userName,
+      dto.businessId,
+      dto.userId,
+      dto.userName,
     );
 
     if (shoppingCart) {
@@ -132,19 +73,26 @@ export class ChatService {
     const orderHistory = Array.from(
       new Set(orders?.flatMap((x) => x.detail.map((y) => y.itemName))),
     )?.slice(0, 10);
-    const prompt = await this.githubService.getSysPrompt();
-    const systemPrompt = prompt.replace('${businessName}', businessName);
-    const costumerPrompt = `
-    # 客人資訊
-    1. 客人姓名: ${user.userName}
-    2. 客人電話: ${user.phone}
-    3. 客人地址: ${user.address}
-    4. 客人點餐歷史紀錄: ${orderHistory?.join(', ')}`;
 
-    const menuPrompt = await this.menuPromptService.getActiveCategory(
-      businessId,
-      businessName,
-    );
-    return `${systemPrompt} ${costumerPrompt} ${menuPrompt}`;
+    const prompt = await this.githubService.getSysPrompt();
+
+    if (this.sysConfigService.thirdParty.githubBranchName === 'master') {
+      const systemPrompt = prompt.replace('${businessName}', businessName);
+      const costumerPrompt = `
+        # 客人資訊
+        1. 客人姓名: ${user.userName}
+        2. 客人電話: ${user.phone}
+        3. 客人地址: ${user.address}
+        4. 客人點餐歷史紀錄: ${orderHistory?.join(', ')}`;
+
+      const menuPrompt = await this.menuPromptService.getActiveCategory(
+        businessId,
+        businessName,
+      );
+
+      return `${systemPrompt} ${costumerPrompt} ${menuPrompt}`;
+    }
+
+    return prompt;
   }
 }
