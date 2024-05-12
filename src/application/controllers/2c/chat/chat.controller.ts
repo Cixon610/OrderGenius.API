@@ -21,7 +21,7 @@ import {
   LlmChatSendDto,
 } from 'src/core/models';
 import { ChatService, OpenaiAgentService } from 'src/core/services';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LlmProviderEnum } from 'src/core/constants/enums/llm.provider.enum';
 import { LlmTypeEnum } from 'src/core/constants/enums/llm.type.enum';
 
@@ -37,6 +37,18 @@ export class ChatController {
   @Get(':provider/:type')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: ChatSendV2ResVo, description: 'sessionId' })
+  @ApiParam({
+    name: 'provider',
+    required: true,
+    description: 'The provider',
+    enum: LlmProviderEnum,
+  })
+  @ApiParam({
+    name: 'type',
+    required: true,
+    description: 'The type',
+    enum: LlmTypeEnum,
+  })
   async CreateV2(
     @Param('provider') provider: LlmProviderEnum,
     @Param('type') type: LlmTypeEnum,
@@ -59,6 +71,18 @@ export class ChatController {
   @Sse()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: Observable<MessageEvent> })
+  @ApiParam({
+    name: 'provider',
+    required: true,
+    description: 'The provider',
+    enum: LlmProviderEnum,
+  })
+  @ApiParam({
+    name: 'type',
+    required: true,
+    description: 'The type',
+    enum: LlmTypeEnum,
+  })
   async SendSSE(
     @Param('provider') provider: LlmProviderEnum,
     @Param('type') type: LlmTypeEnum,
@@ -73,6 +97,7 @@ export class ChatController {
           businessId: chatSendReqVo.businessId,
           userId: req.user.id,
           userName: req.user.username,
+          assistantId: chatSendReqVo.assistantId,
           threadId: chatSendReqVo.threadId,
           content: chatSendReqVo.content,
         }),
@@ -90,6 +115,18 @@ export class ChatController {
   @Post(':provider/:type/clear-runs')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: Boolean })
+  @ApiParam({
+    name: 'provider',
+    required: true,
+    description: 'The provider',
+    enum: LlmProviderEnum,
+  })
+  @ApiParam({
+    name: 'type',
+    required: true,
+    description: 'The type',
+    enum: LlmTypeEnum,
+  })
   async ClearRuns(
     @Param('provider') provider: LlmProviderEnum,
     @Param('type') type: LlmTypeEnum,

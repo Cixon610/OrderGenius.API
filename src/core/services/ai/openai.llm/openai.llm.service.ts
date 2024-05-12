@@ -31,8 +31,8 @@ export class OpenaiLlmService implements ILLMService {
     userId: string,
     systemPrompt: string,
   ): Promise<ChatCreateResVo> {
-    const sessionId = randomUUID();
-    const redisKey = `chat:${businessId}:${userId}:${sessionId}`;
+    const threadId = randomUUID();
+    const redisKey = this.#getRedisKey(businessId, userId, threadId);
     await this.redisService.addToList(
       redisKey,
       JSON.stringify({
@@ -44,7 +44,7 @@ export class OpenaiLlmService implements ILLMService {
 
     return new ChatCreateResVo({
       businessId,
-      threadId: sessionId,
+      threadId,
     });
   }
 

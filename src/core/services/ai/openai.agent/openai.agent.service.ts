@@ -40,17 +40,13 @@ export class OpenaiAgentService implements ILLMService {
   async createChat(
     businessId: string,
     userId: string,
+    systemPrompt: string,
   ): Promise<ChatCreateResVo> {
     const business = await this.businessService.get(businessId);
-    const prompt = await this.#getSystemPrompt(
-      userId,
-      business.id,
-      business.name,
-    );
     const assistant = await this.#getAssistant(
       businessId,
       business.name,
-      prompt,
+      systemPrompt,
     );
 
     const thread = await this.openai.beta.threads.create();
@@ -169,11 +165,11 @@ export class OpenaiAgentService implements ILLMService {
   // }
 
   async *sendChat(dto: LlmChatSendDto): AsyncGenerator<ChatSendDto> {
-    this.clearRuns(dto.threadId);
     await this.openai.beta.threads.messages.create(dto.threadId, {
       role: 'user',
       content: dto.content,
     });
+    
     const messages = [];
     let resolve;
     let promise = new Promise((r) => (resolve = r));
@@ -269,33 +265,6 @@ export class OpenaiAgentService implements ILLMService {
         model: this.sysConfigService.thirdParty.openaiModelId,
       });
     }
-  }
-
-  async #getSystemPrompt(
-    userId: string,
-    businessId: string,
-    businessName: string,
-  ): Promise<string> {
-    const user = await this.clientUserService.get(userId);
-    const orders = await this.orderService.getByUserId(userId, 20);
-    //Get latest 10 ordered item names
-    const orderHistory = Array.from(
-      new Set(orders?.flatMap((x) => x.detail.map((y) => y.itemName))),
-    )?.slice(0, 10);
-    const prompt = await this.githubService.getSysPrompt();
-    const systemPrompt = prompt.replace('${businessName}', businessName);
-    const costumerPrompt = `
-    # 客人資訊
-    1. 客人姓名: ${user.userName}
-    2. 客人電話: ${user.phone}
-    3. 客人地址: ${user.address}
-    4. 客人點餐歷史紀錄: ${orderHistory?.join(', ')}`;
-
-    const menuPrompt = await this.menuPromptService.getActiveCategory(
-      businessId,
-      businessName,
-    );
-    return `${systemPrompt} ${costumerPrompt} ${menuPrompt}`;
   }
 
   async #toolCalls(
