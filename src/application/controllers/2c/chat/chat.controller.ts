@@ -17,6 +17,7 @@ import { Observable, catchError, from, map, of } from 'rxjs';
 import {
   ChatSendReqVo,
   ChatSendV2ResVo,
+  ChatStreamResVo,
   LlmChatCreateDto,
   LlmChatSendDto,
 } from 'src/core/models';
@@ -70,7 +71,7 @@ export class ChatController {
   @Post(':provider/:type/send')
   @Sse()
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: Observable<MessageEvent> })
+  @ApiResponse({ status: 200, type: ChatStreamResVo })
   @ApiParam({
     name: 'provider',
     required: true,
