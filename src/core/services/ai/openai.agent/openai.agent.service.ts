@@ -194,14 +194,17 @@ export class OpenaiAgentService implements ILLMService {
   async *call(dto: LlmChatSendDto): AsyncGenerator<ChatStreamResVo> {
     const messages = [];
     let toolCallInfos = [];
+    let isToolCallEnd = false;
     let isProcessing = true;
     let resolve;
     let promise = new Promise((r) => (resolve = r));
 
-    await this.openai.beta.threads.messages.create(dto.threadId, {
-      role: 'user',
-      content: dto.content,
-    });
+    if (dto.content != '') {
+      await this.openai.beta.threads.messages.create(dto.threadId, {
+        role: 'user',
+        content: dto.content,
+      });
+    }
 
     const run = await this.openai.beta.threads.runs
       .stream(dto.threadId, {
@@ -278,6 +281,7 @@ export class OpenaiAgentService implements ILLMService {
             console.log('NO RUN FOUND');
             console.log(`runs are ${JSON.stringify(runs)}`);
           }
+          isToolCallEnd = true;
           resolve();
         }
       });
@@ -288,7 +292,8 @@ export class OpenaiAgentService implements ILLMService {
           type: ChatStreamRes.MESSAGE,
           content: messages.shift(),
         });
-      } else if (toolCallInfos.length > 0) {
+      } else if (toolCallInfos.length > 0 && isToolCallEnd) {
+        isProcessing = false;
         yield new ChatStreamResVo({
           type: ChatStreamRes.TOOL_CALL,
           content: toolCallInfos,

@@ -42,6 +42,9 @@ export class ToolCallsService {
         );
       case 'get_modification_by_item_id':
         return await this.getModificationByItemId(businessId, args?.id);
+      //For testing
+      case 'get_weather':
+        return { weather: 'sunny' };
       default:
         return null;
     }
