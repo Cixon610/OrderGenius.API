@@ -5,6 +5,7 @@ import {
   ChatCreateResVo,
   ChatSendDto,
   ChatSendResVo,
+  ChatStreamResVo,
   LlmChatSendDto,
 } from 'src/core/models';
 import { OrderService } from '../../bu/client/order/order.service';
@@ -17,6 +18,8 @@ import { MenuItemService } from '../../bu/business/menu/menu.item.service/menu.i
 import { RecommandService } from '../../bu/client/recommand/recommand.service';
 import { jsonrepair } from 'jsonrepair';
 import { ILLMService } from 'src/core/models/interface/llm.service.interface';
+import { ToolCallsService } from '../tool.calls/tool.calls.service';
+import { ChatStreamRes } from 'src/core/constants/enums/chat.stream.res.enum';
 
 @Injectable()
 export class OpenaiAgentService implements ILLMService {
@@ -24,9 +27,8 @@ export class OpenaiAgentService implements ILLMService {
   constructor(
     private readonly sysConfigService: SysConfigService,
     private readonly businessService: BusinessService,
-    private readonly clientUserService: ClientUserService,
+    private readonly toolCallsService: ToolCallsService,
     private readonly orderService: OrderService,
-    private readonly menuPromptService: MenuPromptService,
     private readonly shoppingCartService: ShoppingCartService,
     private readonly menuItemService: MenuItemService,
     private readonly recommandService: RecommandService,
@@ -164,54 +166,133 @@ export class OpenaiAgentService implements ILLMService {
   //   });
   // }
 
-  async *sendChat(dto: LlmChatSendDto): AsyncGenerator<ChatSendDto> {
+  async *sendChat(dto: LlmChatSendDto): AsyncGenerator<ChatStreamResVo> {
+    let continueChat = true;
+    while (continueChat) {
+      for await (const chatdto of this.call(dto)) {
+        //看要不要回圈3次後就跳出，避免LLM一直tool call導致使用者一直等待
+        switch (chatdto.type) {
+          case ChatStreamRes.MESSAGE:
+            yield new ChatStreamResVo({
+              type: ChatStreamRes.MESSAGE,
+              content: chatdto.content,
+            });
+
+            continueChat = false;
+            break;
+          case ChatStreamRes.TOOL_CALL:
+            //tool call重打一次，因已將tool call的結果存入redis，所以清空content
+            dto.content = '';
+            continue;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
+  async *call(dto: LlmChatSendDto): AsyncGenerator<ChatStreamResVo> {
+    const messages = [];
+    let toolCallInfos = [];
+    let isProcessing = true;
+    let resolve;
+    let promise = new Promise((r) => (resolve = r));
+
     await this.openai.beta.threads.messages.create(dto.threadId, {
       role: 'user',
       content: dto.content,
     });
-    
-    const messages = [];
-    let resolve;
-    let promise = new Promise((r) => (resolve = r));
 
     const run = await this.openai.beta.threads.runs
       .stream(dto.threadId, {
         assistant_id: dto.assistantId,
-      })
-      .on('textCreated', (text) => {
-        messages.push('\nassistant > ');
-        resolve();
       })
       .on('textDelta', (textDelta, snapshot) => {
         messages.push(textDelta.value);
         resolve();
       })
       .on('toolCallCreated', (toolCall) => {
-        messages.push(`\nassistant > ${toolCall.type}\n\n`);
+        console.log(toolCall);
+        toolCallInfos.push({
+          id: toolCall.id,
+          function: {
+            name: toolCall['function'].name,
+            arguments: toolCall['function'].arguments,
+          },
+          output: null,
+        });
         resolve();
       })
       .on('toolCallDelta', (toolCallDelta, snapshot) => {
-        if (toolCallDelta.type === 'code_interpreter') {
-          if (toolCallDelta.code_interpreter.input) {
-            messages.push(toolCallDelta.code_interpreter.input);
-            resolve();
+        if (toolCallDelta.type === 'function') {
+          const toolCall = toolCallInfos
+            .filter((x) => x.id === snapshot.id)
+            .pop();
+          toolCall.function.arguments += toolCallDelta.function.arguments;
+        }
+        resolve();
+      })
+      .on('end', async () => {
+        isProcessing = toolCallInfos.length > 0;
+        if (!isProcessing) resolve();
+        else {
+          for (const toolCallInfo of toolCallInfos) {
+            //fix json argument
+            if (toolCallInfo.function.arguments) {
+              toolCallInfo.function.arguments = JSON.parse(
+                jsonrepair(toolCallInfo.function.arguments),
+              );
+            }
+            let result = await this.toolCallsService.processToolCall(
+              toolCallInfo,
+              dto.businessId,
+              dto.userId,
+              dto.userName,
+            );
+            toolCallInfo.output = JSON.stringify(result);
           }
-          if (toolCallDelta.code_interpreter.outputs) {
-            messages.push('\noutput >\n');
-            resolve();
-            toolCallDelta.code_interpreter.outputs.forEach((output) => {
-              if (output.type === 'logs') {
-                messages.push(`\n${output.logs}\n`);
-                resolve();
-              }
+
+          //store tool call result
+          let runs = await this.openai.beta.threads.runs.list(dto.threadId);
+
+          const curr_run = runs.data.find(
+            (run) => run.status === 'requires_action',
+          );
+          if (curr_run) {
+            const tool_outputs = toolCallInfos.map((x) => {
+              return {
+                tool_call_id: x.id,
+                output: x.output,
+              };
             });
+            let submittedToolOutputs =
+              await this.openai.beta.threads.runs.submitToolOutputs(
+                dto.threadId,
+                curr_run.id,
+                { tool_outputs: tool_outputs },
+              );
+            console.log(
+              `Tool outputs submitted: ${JSON.stringify(submittedToolOutputs)}`,
+            );
+          } else {
+            console.log('NO RUN FOUND');
+            console.log(`runs are ${JSON.stringify(runs)}`);
           }
+          resolve();
         }
       });
 
-    while (true) {
+    while (isProcessing) {
       if (messages.length > 0) {
-        yield messages.shift();
+        yield new ChatStreamResVo({
+          type: ChatStreamRes.MESSAGE,
+          content: messages.shift(),
+        });
+      } else if (toolCallInfos.length > 0) {
+        yield new ChatStreamResVo({
+          type: ChatStreamRes.TOOL_CALL,
+          content: toolCallInfos,
+        });
       } else {
         await promise;
         promise = new Promise((r) => (resolve = r));
