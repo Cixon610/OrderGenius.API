@@ -35,6 +35,8 @@ export class ShoppingCartService {
         memo: '',
         detail: [],
         businessId,
+        tableNo: '',
+        status: 0,
       });
       await this.redisService.setT(key, newValue);
       value = newValue;
@@ -112,6 +114,8 @@ export class ShoppingCartService {
       userId: userId,
       userName: userName,
       businessId: vo.businessId,
+      tableNo: vo.tableNo,
+      status: 0,
     });
   }
 

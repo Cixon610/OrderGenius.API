@@ -44,4 +44,10 @@ export class Order {
 
   @Column('text', { name: 'business_id', nullable: true })
   businessId: string | null;
+
+  @Column('text', { name: 'table_no', nullable: true })
+  tableNo: string | null;
+
+  @Column('integer', { name: 'status', nullable: true })
+  status: number | null;
 }

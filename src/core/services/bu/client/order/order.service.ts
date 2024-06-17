@@ -123,6 +123,8 @@ export class OrderService {
       userId: user.id,
       userName: user.userName,
       businessId: order.businessId,
+      tableNo: order.tableNo,
+      status: order.status,
     });
   }
 
@@ -159,6 +161,8 @@ export class OrderService {
           userId: user.id,
           userName: user.userName,
           businessId: order.businessId,
+          tableNo: order.tableNo,
+          status: order.status,
         }),
       );
     }

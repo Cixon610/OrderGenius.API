@@ -52,4 +52,14 @@ export class OrderCreateReqVo {
   @IsOptional()
   @ApiProperty({ description: 'memo', example: 'memo' })
   memo: string | null = null;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ description: 'tableNo', example: 'No.8' })
+  tableNo: string | null = null;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({ description: 'status', example: '1' })
+  status: number | null = null;
 }
