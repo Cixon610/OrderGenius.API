@@ -7,6 +7,7 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { MenuItemModificationDto } from 'src/core/models';
+import { OrderStatusEnum } from 'src/core/constants/enums/order.status.enum';
 
 export class OrderDetail {
   @IsString()
@@ -60,6 +61,6 @@ export class OrderCreateReqVo {
 
   @IsNumber()
   @IsOptional()
-  @ApiProperty({ description: 'status', example: '1' })
+  @ApiProperty({ description: 'status', example: '1', enum: OrderStatusEnum })
   status: number | null = null;
 }

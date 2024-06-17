@@ -12,7 +12,11 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
-import { OrderCreateReqVo, OrderResVo } from 'src/core/models';
+import {
+  OrderCreateReqVo,
+  OrderResVo,
+  OrderUpdateStatusReqVo,
+} from 'src/core/models';
 import { OrderService } from 'src/core/services';
 
 @UseGuards(AuthGuard('jwt'), RoleGuard)
@@ -33,15 +37,23 @@ export class OrderController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: OrderResVo })
   async Get(@Query('id') id: string, @Res() res) {
-    const vo = await this.orderService.get(id);
-    res.json(vo);
+    const result = await this.orderService.get(id);
+    res.json(result);
   }
 
   @Get(':userId')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: OrderResVo })
   async GetByUserId(@Param('userId') userId: string, @Res() res) {
-    const vo = await this.orderService.getByUserId(userId);
-    res.json(vo);
+    const result = await this.orderService.getByUserId(userId);
+    res.json(result);
+  }
+
+  @Post('status')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: Boolean })
+  async UpdateStatus(@Body() vo: OrderUpdateStatusReqVo, @Res() res) {
+    const result = await this.orderService.updateStatus(vo.id, vo.status);
+    res.json(result);
   }
 }

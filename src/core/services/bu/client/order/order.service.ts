@@ -170,6 +170,20 @@ export class OrderService {
     return orderResVos;
   }
 
+  async updateStatus(orderId: string, status: number): Promise<boolean> {
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      throw new Error(`Order with id ${orderId} not found`);
+    }
+
+    order.status = status;
+    const result = await this.orderRepository.save(order);
+    return !!result;
+  }
+
   async #getOrderDetail(Orderid: string): Promise<OrderDetailVo[]> {
     const orderDetails = await this.orderDetailRepository.find({
       where: { orderId: Orderid },
