@@ -61,6 +61,10 @@ export class OrderCreateReqVo {
 
   @IsNumber()
   @IsOptional()
-  @ApiProperty({ description: 'status', example: '1', enum: OrderStatusEnum })
+  @ApiProperty({
+    description: 'PENDING = 0, MAKING = 1, COMPLETED = 2, CANCELLED = 3',
+    example: '1',
+    enum: OrderStatusEnum,
+  })
   status: number | null = null;
 }
