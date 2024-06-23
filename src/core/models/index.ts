@@ -52,6 +52,8 @@ export * from './vo/2c/req/order/order.create.req.vo/order.create.req.vo';
 export * from './vo/2c/req/client.user.update.req.vo/client.user.update.req.vo';
 export * from './vo/2c/req/chat/chat.send.v2.req.vo/chat.send.v2.req.vo';
 export * from './vo/2c/req/order/order.update.status.req.vo/order.update.status.req.vo';
+export * from './vo/2c/base/order.query.vo/order.query.vo';
+export * from './vo/2c/req/order/order.query.req.vo/order.query.req.vo';
 //vo res
 export * from './vo/2c/res/order/order.res.vo/order.res.vo';
 export * from './vo/2c/res/client.user.res.vo/client.user.res.vo';

@@ -2,9 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
-  Query,
   Req,
   Res,
   UseGuards,
@@ -14,6 +12,8 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
 import {
   OrderCreateReqVo,
+  OrderQueryReqVo,
+  OrderQueryVo,
   OrderResVo,
   OrderUpdateStatusReqVo,
 } from 'src/core/models';
@@ -33,19 +33,19 @@ export class OrderController {
     res.json(result);
   }
 
-  @Get()
+  @Post('query/business')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: OrderResVo })
-  async Get(@Query('id') id: string, @Res() res) {
-    const result = await this.orderService.get(id);
+  async QueryBusiness(@Body() vo: OrderQueryReqVo, @Res() res) {
+    const result = await this.orderService.query(vo);
     res.json(result);
   }
 
-  @Get(':userId')
+  @Post('query/client')
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: OrderResVo })
-  async GetByUserId(@Param('userId') userId: string, @Res() res) {
-    const result = await this.orderService.getByUserId(userId);
+  async QueryClient(@Body() vo: OrderQueryVo, @Res() res) {
+    const result = await this.orderService.query(vo);
     res.json(result);
   }
 

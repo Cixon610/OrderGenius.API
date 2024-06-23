@@ -7,10 +7,11 @@ import {
   OrderDetailDto,
   OrderDetailVo,
   OrderDto,
+  OrderQueryReqVo,
   OrderResVo,
 } from 'src/core/models';
 import { ClientUser, MenuItem, Order, OrderDetail } from 'src/infra/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
 
 @Injectable()
@@ -83,6 +84,85 @@ export class OrderService {
     await this.shoppingCartService.clear(vo.businessId, userPayLoad.id);
 
     return this.get(orderId);
+  }
+
+  async query(query: OrderQueryReqVo): Promise<OrderResVo[]> {
+    const qb = this.orderRepository.createQueryBuilder('order');
+    if (query.orderId) {
+      qb.andWhere('order.id = :orderId', { orderId: query.orderId });
+    }
+    if (query.userId) {
+      qb.andWhere('order.userCId = :userId', { userId: query.userId });
+    }
+    if (query.businessId) {
+      qb.andWhere('order.businessId = :businessId', {
+        businessId: query.businessId,
+      });
+    }
+    if (query.tableNo) {
+      qb.andWhere('order.tableNo = :tableNo', { tableNo: query.tableNo });
+    }
+    if (query.status) {
+      qb.andWhere('order.status = :status', { status: query.status });
+    }
+    if (query.dateFrom) {
+      qb.andWhere('order.createdAt >= :dateFrom', { dateFrom: query.dateFrom });
+    }
+    if (query.dateTo) {
+      qb.andWhere('order.createdAt <= :dateTo', { dateTo: query.dateTo });
+    }
+
+    const orders = await qb.getMany();
+    const orderIds = orders.map((v) => v.id);
+    const orderDetails = await this.orderDetailRepository.find({
+      where: { orderId: In(orderIds) },
+    });
+
+    const groupedOrderDetails: Record<string, OrderDetail[]> =
+      orderDetails.reduce((acc, orderDetail) => {
+        if (!acc[orderDetail.orderId]) {
+          acc[orderDetail.orderId] = [];
+        }
+        acc[orderDetail.orderId].push(orderDetail);
+        return acc;
+      }, {});
+
+    const orderResVos = [];
+    for (const orderId in groupedOrderDetails) {
+      const details = groupedOrderDetails[orderId];
+      const itemIds = details.map((v) => v.itemId);
+      const items = await this.itemRepository.find({
+        where: { id: In(itemIds) },
+      });
+
+      const orderVo = orders.find((v) => v.id === orderId);
+      const user = await this.userRepository.findOne({
+        where: { id: orderVo.userCId },
+      });
+
+      const orderDetailVos = [];
+
+      for (const v of details) {
+        const item = items.find((item) => item.id === v.itemId);
+        orderDetailVos.push(this.#orderDetailToVo(v, item));
+      }
+
+      orderResVos.push(
+        new OrderResVo({
+          id: orderVo.id,
+          detail: orderDetailVos,
+          totalValue: orderVo.totalValue,
+          totalCount: orderVo.totalCount,
+          memo: orderVo.memo,
+          userId: user.id,
+          userName: user.userName,
+          businessId: orderVo.businessId,
+          tableNo: orderVo.tableNo,
+          status: orderVo.status,
+        }),
+      );
+    }
+    return orderResVos;
   }
 
   async get(id: string): Promise<OrderResVo> {
@@ -170,6 +250,46 @@ export class OrderService {
     return orderResVos;
   }
 
+  async getByBusinessId(businessId: string): Promise<OrderResVo[]> {
+    const orders = await this.orderRepository.find({
+      where: { businessId },
+      order: { createdAt: 'DESC' },
+    });
+
+    if (orders?.length == 0) {
+      return [];
+    }
+
+    const orderResVos = [];
+
+    for (const order of orders) {
+      const user = await this.userRepository.findOne({
+        where: { id: order.userCId },
+      });
+      if (!user) {
+        throw new Error(`User with id ${order.userCId} not found`);
+      }
+
+      const orderDetails = await this.#getOrderDetail(order.id);
+      orderResVos.push(
+        new OrderResVo({
+          id: order.id,
+          detail: orderDetails,
+          totalValue: order.totalValue,
+          totalCount: order.totalCount,
+          memo: order.memo,
+          userId: user.id,
+          userName: user.userName,
+          businessId: order.businessId,
+          tableNo: order.tableNo,
+          status: order.status,
+        }),
+      );
+    }
+
+    return orderResVos;
+  }
+
   async updateStatus(orderId: string, status: number): Promise<boolean> {
     const order = await this.orderRepository.findOne({
       where: { id: orderId },
@@ -203,10 +323,7 @@ export class OrderService {
     return orderDetailVos;
   }
 
-  async #orderDetailToVo(
-    orderDetail: OrderDetail,
-    item,
-  ): Promise<OrderDetailVo> {
+  #orderDetailToVo(orderDetail: OrderDetail, item): OrderDetailVo {
     if (!orderDetail) {
       return null;
     }

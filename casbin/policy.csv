@@ -28,25 +28,33 @@ p, business, /modification/key?key=<string>, *
 p, business, /modification/:businessId
 p, business, /modification, *
 
+p, business, /order, *
+p, business, /order/status, *
+p, business, /order/query/business, *
+
+
 p, costumer, /business, read
 p, costumer, /menuCategory, read
 p, costumer, /menu, read
 p, costumer, /menuItem, read
 p, costumer, /modification, read
-p, costumer, /order/:orderId, *
-p, costumer, /order/:userId
+
 p, costumer, /order, *
+p, costumer, /order/query/client, *
+
 p, costumer, /shopping-cart, *
 p, costumer, /clientUser, *
+
 p, costumer, /chat, *
 p, costumer, /chat/send, *
 p, costumer, /chat/clearRuns, *
 p, costumer, /chat/v2, *
 p, costumer, /chat/v2/send/sse, *
-p, costumer, /recommand, *
-p, costumer, /recommand/itemNames, *
 p, costumer, /chat/:provider/:type, *
 p, costumer, /chat/:provider/:type/send, *
+
+p, costumer, /recommand, *
+p, costumer, /recommand/itemNames, *
 
 g, admin, business
 g, admin, costumer
