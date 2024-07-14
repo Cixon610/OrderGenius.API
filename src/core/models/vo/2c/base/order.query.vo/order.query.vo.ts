@@ -1,14 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { IsArray, isArray, IsOptional, IsString } from "class-validator";
 
 export class OrderQueryVo {
-  @IsString()
+  @IsArray()
   @IsOptional()
-  @ApiProperty({ description: 'orderId', type: String })
-  orderId?: string;
+  @ApiProperty({ description: 'orderId', type: [String] })
+  orderId?: string[];
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  @ApiProperty({ description: 'userId', type: String })
-  userId?: string;
+  @ApiProperty({ description: 'userId', type: [String] })
+  userId?: string[];
 }
