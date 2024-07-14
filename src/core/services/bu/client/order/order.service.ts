@@ -88,10 +88,10 @@ export class OrderService {
 
   async query(query: OrderQueryReqVo): Promise<OrderResVo[]> {
     const qb = this.orderRepository.createQueryBuilder('order');
-    if (query.orderId) {
+    if (query.orderId?.length > 0) {
       qb.andWhere('order.id  IN (:...orderId)', { orderId: query.orderId });
     }
-    if (query.userId) {
+    if (query.userId?.length > 0) {
       qb.andWhere('order.userCId IN (:...userId)', { userId: query.userId });
     }
     if (query.businessId) {
@@ -99,10 +99,10 @@ export class OrderService {
         businessId: query.businessId,
       });
     }
-    if (query.tableNo) {
+    if (query.tableNo?.length > 0) {
       qb.andWhere('order.tableNo IN (:...tableNo)', { tableNo: query.tableNo });
     }
-    if (query.status) {
+    if (query.status?.length > 0) {
       qb.andWhere('order.status IN (:...status)', { status: query.status });
     }
     if (query.dateFrom) {
