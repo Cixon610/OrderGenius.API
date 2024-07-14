@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Server } from 'socket.io';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
 import {
   OrderCreateReqVo,
@@ -23,7 +24,9 @@ import { OrderService } from 'src/core/services';
 @ApiTags('order')
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+  ) {}
 
   @Post()
   @ApiBearerAuth()
@@ -57,3 +60,4 @@ export class OrderController {
     res.json(result);
   }
 }
+

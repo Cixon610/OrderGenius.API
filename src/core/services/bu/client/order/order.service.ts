@@ -13,6 +13,7 @@ import {
 import { ClientUser, MenuItem, Order, OrderDetail } from 'src/infra/typeorm';
 import { In, Repository } from 'typeorm';
 import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
+import { OrderNotifyGateway } from 'src/core/gateways/order-notify/order-notify.gateway';
 
 @Injectable()
 export class OrderService {
@@ -26,6 +27,7 @@ export class OrderService {
     @InjectRepository(ClientUser)
     private readonly userRepository: Repository<ClientUser>,
     private readonly shoppingCartService: ShoppingCartService,
+    private readonly orderNotifyGateway: OrderNotifyGateway,
   ) {}
 
   async create(
@@ -82,6 +84,8 @@ export class OrderService {
 
     //清空購物車
     await this.shoppingCartService.clear(vo.businessId, userPayLoad.id);
+
+    this.orderNotifyGateway.handleOrderCreated(order);
 
     return this.get(orderId);
   }
