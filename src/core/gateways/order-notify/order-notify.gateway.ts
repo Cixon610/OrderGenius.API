@@ -20,21 +20,26 @@ export class OrderNotifyGateway {
   private clients: Map<string, Socket> = new Map();
 
   async handleConnection(client: Socket, ...args: any[]) {
-    const auth: ConnectionAuthVo = this.#GetAuthFromJWT(client);
-    const isValid = await this.#validateClient(auth);
-    if (!isValid) {
-      client.disconnect();
-      return;
-    }
+    try {
+      const auth: ConnectionAuthVo = this.#GetAuthFromJWT(client);
+      const isValid = await this.#validateClient(auth);
+      if (!isValid) {
+        client.disconnect();
+        return;
+      }
 
-    const roomName = this.#getRoomNameFromAuth(auth.businessId);
-    await client.join(roomName);
-    this.clients.set(auth.userId, client);
-    console.log(`Client connected: ${auth.userId}`);
-    client.emit('joinedRoom', {
-      roomName,
-      message: 'Successfully joined the room.',
-    });
+      const roomName = this.#getRoomNameFromAuth(auth.businessId);
+      await client.join(roomName);
+      this.clients.set(auth.userId, client);
+      console.log(`Client connected: ${auth.userId}`);
+      client.emit('joinedRoom', {
+        roomName,
+        message: 'Successfully joined the room.',
+      });
+    } catch (error) {
+      console.log('Error in handleConnection:', error);
+      client.disconnect();
+    }
   }
 
   handleDisconnect(client: Socket) {
@@ -50,16 +55,15 @@ export class OrderNotifyGateway {
     console.log(`Client disconnected: ${auth.userId}`);
   }
 
-  @SubscribeMessage('orderCreated')
-  handleOrderCreated(
-    @MessageBody() data: any,
-  ) {
-    const { businessId, orderDetails } = data;
+  // @SubscribeMessage('orderNotification')
+  handleOrderCreated(@MessageBody() data: any) {
+    const { businessId, OrderId } = data;
     const roomName = this.#getRoomNameFromAuth(businessId);
-    this.server.to(roomName).emit('orderNotification', orderDetails);
+    this.server.to(roomName).emit('orderNotification', OrderId);
   }
 
   async #validateClient(auth: ConnectionAuthVo): Promise<boolean> {
+    return true;
     const jwtDecoded = jwt.verify(
       auth.jwtToken,
       this.sysConfigService.infra.jwtSecret,
@@ -99,14 +103,26 @@ export class OrderNotifyGateway {
     return `Room-${businessId}`;
   }
 
-  #GetAuthFromJWT(client) {
-    const rawAuth = client.handshake.auth;
+  #GetAuthFromJWT(client: Socket): ConnectionAuthVo {
+    const timestamp = Number(client.handshake.headers?.timestamp);
+    if (!timestamp) {
+      throw new Error('Invalid timestamp');
+    }
+    const signature = client.handshake.headers?.signature.toString();
+    if (!signature) {
+      throw new Error('Invalid signature');
+    }
+    const token = client.handshake.headers?.token.toString();
+    if (!token) {
+      throw new Error('Invalid token');
+    }
+    const rawAuth = jwt.decode(token) as IUserPayload;
     const auth: ConnectionAuthVo = {
-      jwtToken: rawAuth.jwtToken,
-      userId: rawAuth.userId,
+      jwtToken: token,
+      userId: rawAuth.id,
       businessId: rawAuth.businessId,
-      timestamp: rawAuth.timestamp,
-      signature: rawAuth.signature,
+      timestamp: timestamp,
+      signature: signature,
     };
     return auth;
   }

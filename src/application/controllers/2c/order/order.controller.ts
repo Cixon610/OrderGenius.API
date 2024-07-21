@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -24,9 +26,7 @@ import { OrderService } from 'src/core/services';
 @ApiTags('order')
 @Controller('order')
 export class OrderController {
-  constructor(
-    private readonly orderService: OrderService,
-  ) {}
+  constructor(private readonly orderService: OrderService) {}
 
   @Post()
   @ApiBearerAuth()
@@ -59,5 +59,14 @@ export class OrderController {
     const result = await this.orderService.updateStatus(vo.id, vo.status);
     res.json(result);
   }
-}
 
+  @Get()
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: Boolean })
+  async Notify(@Query() businessId: string, @Query() orderId: string) {
+    this.orderService.notifyTest(
+      '7709e3c4-57bc-11ee-8c99-0242ac120002',
+      'Test123',
+    );
+  }
+}

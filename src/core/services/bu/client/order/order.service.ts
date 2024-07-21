@@ -85,7 +85,10 @@ export class OrderService {
     //清空購物車
     await this.shoppingCartService.clear(vo.businessId, userPayLoad.id);
 
-    this.orderNotifyGateway.handleOrderCreated(order);
+    this.orderNotifyGateway.handleOrderCreated({
+      businessId: vo.businessId,
+      OrderId: order.id,
+    });
 
     return this.get(orderId);
   }
@@ -341,6 +344,13 @@ export class OrderService {
       count: orderDetail.count,
       modifications: orderDetail.modification,
       memo: orderDetail.memo,
+    });
+  }
+
+  notifyTest(businessId: string, orderId: string): void {
+    this.orderNotifyGateway.handleOrderCreated({
+      businessId: businessId,
+      OrderId: orderId,
     });
   }
 }
