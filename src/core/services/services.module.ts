@@ -30,6 +30,7 @@ import {
 import { JwtModule } from '@nestjs/jwt';
 import { InfraConfig } from 'src/infra/config';
 import { LlmFactory } from './factory/llm.factory';
+import { OrderNotifyGateway } from '../gateways/order-notify/order-notify.gateway';
 
 const entities = Object.values(typeorm);
 const exportServices = [
@@ -56,6 +57,7 @@ const exportServices = [
   ChatService,
   ToolCallsService,
   LlmFactory,
+  OrderNotifyGateway
 ];
 const infraConfig = new InfraConfig();
 @Module({

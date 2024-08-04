@@ -11,6 +11,7 @@ import { join } from 'path';
 import { RedisModule } from '@songkeys/nestjs-redis';
 import { JwtMiddleware, LoggerMiddleware } from './core/middlewares';
 import { JwtModule } from '@nestjs/jwt';
+import { GatewaysModule } from './core/gateways/gateways.module';
 
 const entities = Object.values(typeorm);
 const infraConfig = new InfraConfig();
@@ -47,6 +48,7 @@ const infraConfig = new InfraConfig();
     ServicesModule,
     ApplicationModule,
     InfraModule,
+    GatewaysModule,
   ],
   providers: [JwtMiddleware],
   exports: [JwtMiddleware],

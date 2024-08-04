@@ -1,14 +1,17 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
-  Put,
+  Query,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Server } from 'socket.io';
 import { RoleGuard } from 'src/core/guards/role/role.guard';
 import {
   OrderCreateReqVo,
@@ -64,5 +67,16 @@ export class OrderController {
   async UpdateStatus(@Body() vo: OrderUpdateStatusReqVo, @Res() res) {
     const result = await this.orderService.updateStatus(vo.id, vo.status);
     res.json(result);
+  }
+
+  @Get()
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: Boolean })
+  async Notify(@Query() businessId: string, @Query() orderId: string) {const signaturePayload = `7709e3c4-57bc-11ee-8c99-0242ac120002_7d3f1a09-8068-4400-83d7-1b3631d78f5d_1722760838`;
+    this.orderService.test();
+    this.orderService.notifyTest(
+      '7709e3c4-57bc-11ee-8c99-0242ac120002',
+      'Test123',
+    );
   }
 }

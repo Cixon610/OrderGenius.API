@@ -89,3 +89,6 @@ export * from './vo/2b/prompt/prompt.category.vo/prompt.category.vo';
 export * from './vo/2b/prompt/prompt.item.vo/prompt.item.vo';
 export * from './vo/2b/prompt/prompt.menu.vo/prompt.menu.vo';
 export * from './vo/2b/prompt/prompt.modification.vo/prompt.modification.vo';
+
+//#region websocket model
+export * from './vo/ws/connection.auth.vo/connection.auth.vo';
