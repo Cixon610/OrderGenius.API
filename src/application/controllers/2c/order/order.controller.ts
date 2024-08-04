@@ -63,7 +63,8 @@ export class OrderController {
   @Get()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: Boolean })
-  async Notify(@Query() businessId: string, @Query() orderId: string) {
+  async Notify(@Query() businessId: string, @Query() orderId: string) {const signaturePayload = `7709e3c4-57bc-11ee-8c99-0242ac120002_7d3f1a09-8068-4400-83d7-1b3631d78f5d_1722760838`;
+    this.orderService.test();
     this.orderService.notifyTest(
       '7709e3c4-57bc-11ee-8c99-0242ac120002',
       'Test123',
