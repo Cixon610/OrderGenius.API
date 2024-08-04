@@ -95,7 +95,7 @@ export class OrderService {
     return orderResVo;
   }
 
-  async update(vo:OrderUpdateReqVo): Promise<boolean> {
+  async update(vo: OrderUpdateReqVo): Promise<boolean> {
     const order = await this.orderRepository.findOne({
       where: { id: vo.orderId },
     });
@@ -107,7 +107,7 @@ export class OrderService {
     if (vo.tableNo) order.tableNo = vo.tableNo;
     if (vo.status) order.status = vo.status;
     if (vo.memo) order.memo = vo.memo;
-    if(vo.detail){
+    if (vo.detail) {
       const orderDetails = await this.orderDetailRepository.find({
         where: { orderId: vo.orderId },
       });
@@ -403,10 +403,10 @@ export class OrderService {
     });
   }
 
-  test(): void {
-    this.orderNotifyGateway.test(
-      '7709e3c4-57bc-11ee-8c99-0242ac120002',
-      '7d3f1a09-8068-4400-83d7-1b3631d78f5d',
+  getSignature(businessId: string, userId: string): any {
+    return this.orderNotifyGateway.getSignature(
+      businessId,
+      userId,
       Math.floor(Date.now() / 1000),
     );
   }

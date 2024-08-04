@@ -62,12 +62,13 @@ export class OrderNotifyGateway {
     this.server.to(roomName).emit('orderNotification', OrderId);
   }
 
-  test(businessId: string, userId: string, timestamp: number) {
+  getSignature(businessId: string, userId: string, timestamp: number): any {
     const signaturePayload = `${businessId}_${userId}_${timestamp}`;
     const signature = crypto
       .createHmac('sha256', 'OrderGPT')
       .update(signaturePayload)
       .digest('hex');
+    return { signature, timestamp };
   }
   async #validateClient(auth: ConnectionAuthVo): Promise<boolean> {
     // return true;
