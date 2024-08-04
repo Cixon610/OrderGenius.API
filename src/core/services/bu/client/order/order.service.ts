@@ -84,13 +84,14 @@ export class OrderService {
 
     //清空購物車
     await this.shoppingCartService.clear(vo.businessId, userPayLoad.id);
-
+    //ws通知後台
+    const orderResVo = await this.get(orderId);
     this.orderNotifyGateway.handleOrderCreated({
       businessId: vo.businessId,
-      OrderId: order.id,
+      OrderVo: orderResVo,
     });
 
-    return this.get(orderId);
+    return orderResVo;
   }
 
   async query(query: OrderQueryReqVo): Promise<OrderResVo[]> {
@@ -352,5 +353,13 @@ export class OrderService {
       businessId: businessId,
       OrderId: orderId,
     });
+  }
+
+  test(): void {
+    this.orderNotifyGateway.test(
+      '7709e3c4-57bc-11ee-8c99-0242ac120002',
+      '7d3f1a09-8068-4400-83d7-1b3631d78f5d',
+      Math.floor(Date.now() / 1000),
+    );
   }
 }
