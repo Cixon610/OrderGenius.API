@@ -1,8 +1,8 @@
 import {
   Body,
   Controller,
-  Get,
   Post,
+  Put,
   Req,
   Res,
   UseGuards,
@@ -15,6 +15,7 @@ import {
   OrderQueryReqVo,
   OrderQueryVo,
   OrderResVo,
+  OrderUpdateReqVo,
   OrderUpdateStatusReqVo,
 } from 'src/core/models';
 import { OrderService } from 'src/core/services';
@@ -30,6 +31,14 @@ export class OrderController {
   @ApiResponse({ status: 200, type: OrderResVo })
   async Create(@Req() req, @Body() vo: OrderCreateReqVo, @Res() res) {
     const result = await this.orderService.create(req.user, vo);
+    res.json(result);
+  }
+
+  @Put()
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: Boolean })
+  async UpdateInfo(@Body() vo: OrderUpdateReqVo, @Res() res) {
+    const result = await this.orderService.update(vo);
     res.json(result);
   }
 

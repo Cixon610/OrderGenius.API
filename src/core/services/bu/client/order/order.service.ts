@@ -9,6 +9,7 @@ import {
   OrderDto,
   OrderQueryReqVo,
   OrderResVo,
+  OrderUpdateReqVo,
 } from 'src/core/models';
 import { ClientUser, MenuItem, Order, OrderDetail } from 'src/infra/typeorm';
 import { In, Repository } from 'typeorm';
@@ -84,6 +85,53 @@ export class OrderService {
     await this.shoppingCartService.clear(vo.businessId, userPayLoad.id);
 
     return this.get(orderId);
+  }
+
+  async update(vo:OrderUpdateReqVo): Promise<boolean> {
+    const order = await this.orderRepository.findOne({
+      where: { id: vo.orderId },
+    });
+
+    if (!order) {
+      throw new Error(`Order with id ${vo.orderId} not found`);
+    }
+
+    if (vo.tableNo) order.tableNo = vo.tableNo;
+    if (vo.status) order.status = vo.status;
+    if (vo.memo) order.memo = vo.memo;
+    if(vo.detail){
+      const orderDetails = await this.orderDetailRepository.find({
+        where: { orderId: vo.orderId },
+      });
+      const user = await this.userRepository.findOne({
+        where: { id: order.userCId },
+      });
+      const caculatedOrderVo =
+        await this.shoppingCartService.getCaculatedOrderVo(
+          vo as OrderCreateReqVo,
+          user.id,
+          user.userName,
+        );
+      for (const v of orderDetails) {
+        const resd = await this.orderDetailRepository.remove(v);
+      }
+      const detailDto = caculatedOrderVo.detail.map((v) => {
+        return new OrderDetailDto({
+          orderId: vo.orderId,
+          itemId: v.itemId,
+          itemPrice: v.itemPrice,
+          totalPrice: v.totalPrice,
+          count: v.count,
+          modification: v.modifications,
+          memo: v.memo,
+        });
+      });
+      const res = await this.orderDetailRepository.save(detailDto);
+      //跟新主單總價
+      order.totalValue = caculatedOrderVo.totalValue;
+    }
+    const result = await this.orderRepository.save(order);
+    return !!result;
   }
 
   async query(query: OrderQueryReqVo): Promise<OrderResVo[]> {

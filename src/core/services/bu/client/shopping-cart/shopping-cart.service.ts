@@ -75,17 +75,18 @@ export class ShoppingCartService {
       });
 
       //計算總價
-      let totalPrice = Number(item.price * v.count);
+      let singlePrice = Number(item.price);
       if (v.modifications) {
         v.modifications.forEach((modification) => {
           modification.options.forEach((option) => {
-            totalPrice += Number(option.price);
+            singlePrice += Number(option.price);
           });
           // Object.values(modification.options[0]).forEach((value) => {
           //   totalPrice += Number(value);
           // });
         });
       }
+      let totalPrice = singlePrice * v.count;
 
       const orderDetailDto = new OrderDetailVo({
         itemId: v.itemId,

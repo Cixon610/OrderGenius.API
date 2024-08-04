@@ -13,4 +13,10 @@ export class OrderVo {
 
   @ApiProperty({ example: 'memo', description: 'memo' })
   memo: string;
+
+  @ApiProperty({ description: 'tableNo', example: 'No.8' })
+  tableNo: string | null = null;
+
+  @ApiProperty({ description: 'status', example: '1' })
+  status: number | null = null;
 }
